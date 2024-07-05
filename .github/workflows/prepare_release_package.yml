@@ -1,0 +1,29 @@
+# Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
+name: Prepare Release Page
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  package-and-upload:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Main Branch
+      uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Create Main Zip Package
+      run: |
+        mkdir archive
+        zip -r meta-openxr-sdk.zip * -x 'archive/'
+        mv meta-openxr-sdk.zip archive/
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: archive/*.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
