@@ -94,7 +94,7 @@ class TempJniEnv {
 #if !defined(JNI_TMP_ENV)
 class TempJniEnv {
    public:
-    explicit TempJniEnv(JavaVM* vm, const char* /*file*/ = "<unspecified>", int /*line*/ = -1){};
+    explicit TempJniEnv(JavaVM*, const char* /*file*/ = "<unspecified>", int /*line*/ = -1){};
     ~TempJniEnv(){};
 
     operator JNIEnv*() {
@@ -808,6 +808,8 @@ inline const char* ovr_GetCurrentPackageName(
     jobject activityObject,
     char* packageName,
     int const maxLen) {
+    OVR_UNUSED(jni);
+    OVR_UNUSED(activityObject);
     packageName[0] = '\0';
     const char* currentPackageName = "test.package.name";
     OVR::OVR_sprintf(packageName, maxLen, "%s", currentPackageName);

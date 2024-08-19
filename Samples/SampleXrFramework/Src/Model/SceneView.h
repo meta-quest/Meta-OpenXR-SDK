@@ -143,6 +143,7 @@ class OvrSceneView {
     OVR::Vector3f GetCenterEyeForward() const;
     OVR::Matrix4f GetCenterEyeTransform() const;
     OVR::Matrix4f GetCenterEyeViewMatrix() const;
+    OVR::Matrix4f GetSceneCoordinateTransform() const;
 
     OVR::Matrix4f GetEyeViewMatrix(const int eye) const;
     OVR::Matrix4f

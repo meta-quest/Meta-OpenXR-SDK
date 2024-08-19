@@ -45,10 +45,12 @@ class XrHandHelper : public XrHelper {
             createInfo.handJointSet = XR_HAND_JOINT_SET_DEFAULT_EXT;
             createInfo.hand = isLeft_ ? XR_HAND_LEFT_EXT : XR_HAND_RIGHT_EXT;
 
-            XrHandTrackingWideMotionModeInfoMETA wideMotionModeInfo{XR_TYPE_HAND_TRACKING_WIDE_MOTION_MODE_INFO_META};
+            XrHandTrackingWideMotionModeInfoMETA wideMotionModeInfo{
+                XR_TYPE_HAND_TRACKING_WIDE_MOTION_MODE_INFO_META};
 
             if (handType_ == HANDTYPE_WMM) {
-                wideMotionModeInfo.requestedWideMotionMode = XR_HAND_TRACKING_WIDE_MOTION_MODE_HIGH_FIDELITY_BODY_TRACKING_META;
+                wideMotionModeInfo.requestedWideMotionMode =
+                    XR_HAND_TRACKING_WIDE_MOTION_MODE_HIGH_FIDELITY_BODY_TRACKING_META;
                 createInfo.next = &wideMotionModeInfo;
             }
 
@@ -139,8 +141,7 @@ class XrHandHelper : public XrHelper {
             XR_EXT_HAND_TRACKING_EXTENSION_NAME,
             XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME,
             XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME,
-            XR_META_HAND_TRACKING_WIDE_MOTION_MODE_EXTENSION_NAME
-        };
+            XR_META_HAND_TRACKING_WIDE_MOTION_MODE_EXTENSION_NAME};
     }
 
    public:

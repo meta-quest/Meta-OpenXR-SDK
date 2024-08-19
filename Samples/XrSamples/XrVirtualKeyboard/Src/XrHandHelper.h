@@ -112,7 +112,7 @@ class XrHandHelper : public XrHelper {
             locateInfo.time = predictedDisplayTime;
 
             matJointScaledFromUnscaled_ = OVR::Matrix4f::Identity();
-            
+
             bool result = oxr(xrLocateHandJointsEXT_(handTracker_, &locateInfo, &locations_));
             if (result) {
                 OVR::Matrix4f rootMat = OVR::Matrix4f(FromXrPosef(WristRootPose()));
@@ -192,7 +192,8 @@ class XrHandHelper : public XrHelper {
             for (int i = 0; i < XR_HAND_JOINT_COUNT_EXT; i++) {
                 // Apply offset to hand joints
                 auto j = OVR::Matrix4f(FromXrPosef(jointLocations_[i].pose));
-                jointLocations_[i].pose = ToXrPosef(OVR::Posef(rootMatrixOffset + (j - rootMatrix)));
+                jointLocations_[i].pose =
+                    ToXrPosef(OVR::Posef(rootMatrixOffset + (j - rootMatrix)));
             }
         }
     }

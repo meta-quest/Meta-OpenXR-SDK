@@ -118,7 +118,7 @@ bool SkyboxRenderer::Init(std::string modelPath, OVRFW::ovrFileSys* fileSys) {
     programs.ProgSimplePBR = &ProgRenderModel;
     programs.ProgSkinnedSimplePBR = &ProgRenderModel;
 
-    if( fileSys ) {
+    if (fileSys) {
         OVRFW::ovrFileSys& fs = *fileSys;
         RenderModel = LoadModelFile(fs, modelPath.c_str(), programs, materials);
     } else {
@@ -160,11 +160,11 @@ void SkyboxRenderer::Shutdown() {
 
 void SkyboxRenderer::Render(std::vector<ovrDrawSurface>& surfaceList) {
     if (RenderModel != nullptr) {
-        for( int i=0; i < static_cast<int>(RenderModel->Models.size()); i++ ) {
+        for (int i = 0; i < static_cast<int>(RenderModel->Models.size()); i++) {
             auto& model = RenderModel->Models[i];
             auto& node = RenderModel->Nodes[i];
             ovrDrawSurface controllerSurface;
-            for( int j=0; j < static_cast<int>(model.surfaces.size()); j++ ) {
+            for (int j = 0; j < static_cast<int>(model.surfaces.size()); j++) {
                 controllerSurface.surface = &(model.surfaces[j].surfaceDef);
                 controllerSurface.modelMatrix = node.GetGlobalTransform();
                 surfaceList.push_back(controllerSurface);

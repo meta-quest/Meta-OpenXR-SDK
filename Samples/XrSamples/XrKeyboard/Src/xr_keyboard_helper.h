@@ -22,10 +22,8 @@ class XrKeyboardHelper : public XrHelper {
         oxr(xrGetInstanceProcAddr(
             instance, "xrCreateKeyboardSpaceFB", (PFN_xrVoidFunction*)(&xrCreateKeyboardSpaceFB_)));
 
-        fakeLocation_.locationFlags =
-            XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT |
-            XR_SPACE_LOCATION_POSITION_TRACKED_BIT |
-            XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
+        fakeLocation_.locationFlags = XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT |
+            XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
             XR_SPACE_LOCATION_POSITION_VALID_BIT;
     }
 

@@ -138,7 +138,8 @@ void XrRenderModelHelper::LazyInitialize() {
     if (pathCount > 0) {
         ALOG("XrRenderModelHelper: found %u models", pathCount);
 
-        std::vector<XrRenderModelPathInfoFB> pathInfos(pathCount, {XR_TYPE_RENDER_MODEL_PATH_INFO_FB});
+        std::vector<XrRenderModelPathInfoFB> pathInfos(
+            pathCount, {XR_TYPE_RENDER_MODEL_PATH_INFO_FB});
         oxr(xrEnumerateRenderModelPathsFB_(session_, pathCount, &pathCount, pathInfos.data()));
 
         // Try to get properties for each model

@@ -520,10 +520,6 @@ class XrInputSampleApp : public OVRFW::XrApp {
         SetupActionUIPanels();
         SetupMenuPanels();
 
-        /// Disable scene navitgation
-        GetScene().SetFootPos({0.0_m, 0.0_m, 0.0_m});
-        this->FreeMove = false;
-
         if (false == controllerRenderL_.Init(true)) {
             ALOG("SessionInit::Init L controller renderer FAILED.");
             return false;

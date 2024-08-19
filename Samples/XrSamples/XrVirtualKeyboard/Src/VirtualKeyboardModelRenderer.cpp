@@ -146,8 +146,7 @@ void UpdateGlTexture(OVRFW::GlTexture texture, const uint8_t* textureData) {
 }
 
 const OVRFW::ModelNode* FindCollisionNode(const OVRFW::ModelFile& model) {
-    auto iter =
-        std::find_if(model.Nodes.begin(), model.Nodes.end(), [](const auto& node) {
+    auto iter = std::find_if(model.Nodes.begin(), model.Nodes.end(), [](const auto& node) {
         return node.name == "collision";
     });
     if (iter == model.Nodes.end()) {

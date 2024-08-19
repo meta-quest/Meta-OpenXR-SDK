@@ -136,13 +136,17 @@ class XrAppBaseApp : public OVRFW::XrApp {
             // Create one button for each supported color space conversion
             float posY = 2.0f;
             for (auto colorSpace : colorSpaces) {
-                ui_.AddButton(XrEnumStr(colorSpace), {-1.0f, posY, -2.0f}, {600.0f, 60.0f}, [=]() {
-                    // Set source color space with xrSetColorSpaceFB when button is pressed
-                    // Remember that this is the source colorspace and no the target colorspace
-                    OXR(xrSetColorSpaceFB(GetSession(), colorSpace));
+                ui_.AddButton(
+                    XrEnumStr(colorSpace),
+                    {-1.0f, posY, -2.0f},
+                    {600.0f, 60.0f},
+                    [this, colorSpace]() {
+                        // Set source color space with xrSetColorSpaceFB when button is pressed
+                        // Remember that this is the source colorspace and no the target colorspace
+                        OXR(xrSetColorSpaceFB(GetSession(), colorSpace));
 
-                    declaredColorSpace_ = colorSpace; // For display in the UI
-                });
+                        declaredColorSpace_ = colorSpace; // For display in the UI
+                    });
                 posY -= 0.15f;
             }
         }
@@ -150,10 +154,6 @@ class XrAppBaseApp : public OVRFW::XrApp {
         // Create the rest of the UI
         CreateColorCheckerCubes();
         CreateSampleDescriptionPanel();
-
-        /// Disable scene navitgation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
 
         // Init objects that need OpenXR Session
         if (false == controllerRenderL_.Init(true)) {

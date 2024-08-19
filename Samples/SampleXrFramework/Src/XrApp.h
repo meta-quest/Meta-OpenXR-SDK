@@ -396,20 +396,20 @@ class XrApp {
         XrCompositionLayerEquirectKHR Equirect;
         XrCompositionLayerPassthroughFB Passthrough;
     };
-    virtual void PreProjectionAddLayer(xrCompositorLayerUnion* layers, int& layerCount) {
+    virtual void PreProjectionAddLayer(xrCompositorLayerUnion*, int& /*layerCount*/) {
         /// do nothing
     }
     /// Default proejction layer
-    virtual void ProjectionAddLayer(xrCompositorLayerUnion* layers, int& layerCount);
-    virtual void PostProjectionAddLayer(xrCompositorLayerUnion* layers, int& layerCount) {
+    virtual void ProjectionAddLayer(xrCompositorLayerUnion*, int& /*layerCount*/);
+    virtual void PostProjectionAddLayer(xrCompositorLayerUnion*, int& /*layerCount*/) {
         /// do nothing
     }
 
     // Add application specified SessionCreateInfo
-    virtual void PreCreateSession(XrSessionCreateInfo& sci) {
+    virtual void PreCreateSession(XrSessionCreateInfo&) {
         // do nothing
     }
-    virtual void PostCreateSession(XrSessionCreateInfo& sci) {
+    virtual void PostCreateSession(XrSessionCreateInfo&) {
         // do nothing
     }
 
@@ -424,7 +424,7 @@ class XrApp {
         const std::unordered_map<XrPath, std::vector<XrActionSuggestedBinding>>
             allSuggestedBindings);
 
-    virtual void PreWaitFrame(XrFrameWaitInfo& waitFrameInfo) {}
+    virtual void PreWaitFrame(XrFrameWaitInfo&) {}
 
     /// Xr Helpers
     XrInstance& GetInstance() {
@@ -513,7 +513,7 @@ class XrApp {
 
    public:
     OVR::Vector4f BackgroundColor;
-    bool FreeMove;
+    bool FreeMove{false};
 
    protected:
     xrJava Context;

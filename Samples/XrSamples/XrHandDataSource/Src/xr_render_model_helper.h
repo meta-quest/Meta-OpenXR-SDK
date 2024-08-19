@@ -42,7 +42,7 @@ class XrRenderModelHelper : public XrHelper {
         session_ = XR_NULL_HANDLE;
         return true;
     }
-    virtual bool Update(XrSpace currentSpace, XrTime predictedDisplayTime) override {
+    virtual bool Update(XrSpace /*currentSpace*/, XrTime /*predictedDisplayTime*/) override {
         OneTimeInitialize();
         return true;
     }
@@ -60,7 +60,7 @@ class XrRenderModelHelper : public XrHelper {
         return properties_;
     }
 
-    std::vector<uint8_t> LoadRenderModel(const std::string &strToCheck) {
+    std::vector<uint8_t> LoadRenderModel(const std::string& strToCheck) {
         std::vector<uint8_t> buffer;
         XrInstance instance = GetInstance();
 
@@ -133,7 +133,7 @@ class XrRenderModelHelper : public XrHelper {
             oxr(xrEnumerateRenderModelPathsFB_(session_, pathCount, &pathCount, nullptr));
             if (pathCount > 0) {
                 XRLOG("XrRenderModelHelper: found %u models ", pathCount);
-                paths_.resize(pathCount, { XR_TYPE_RENDER_MODEL_PATH_INFO_FB });
+                paths_.resize(pathCount, {XR_TYPE_RENDER_MODEL_PATH_INFO_FB});
                 /// Fill in the path data
                 oxr(xrEnumerateRenderModelPathsFB_(session_, pathCount, &pathCount, &paths_[0]));
                 /// Print paths for debug purpose

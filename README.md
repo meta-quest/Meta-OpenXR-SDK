@@ -21,7 +21,7 @@ As these API definitions reach their final stages, they will be incorporated int
 |[`XrKeyboard`](Samples/XrSamples/XrKeyboard/) |`XR_FB_keyboard_tracking`,`XR_FB_passthrough_keyboard_hands`,`XR_FB_render_model`|Meta Quest 2 and later|
 |[`XrPassthrough`](Samples/XrSamples/XrPassthrough/)                |`XR_FB_passthrough`|All Meta Quest devices|Demonstrates the use of still and animated styles, selective and projected passthrough.
 |[`XrPassthroughOcclusion`](Samples/XrSamples/XrPassthroughOcclusion/)        |`XR_META_envionment_depth`|Meta Quest 3 and later|
-|[`XrSceneModel`](Samples/XrSamples/XrSceneModel/)                 |`XR_FB_scene`|Meta Quest 2 and later|Demonstrates a scene-aware experience including floor, walls, and furniture.
+|[`XrSceneModel`](Samples/XrSamples/XrSceneModel/)                 |`XR_FB_scene_capture`, `XR_FB_scene`, `XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_container`, `XR_META_spatial_entity_mesh`, `XR_META_boundary_visibility`|Meta Quest 2 and later|Demonstrates a scene-aware experience including floor, walls, and furniture.
 |[`XrSpaceWarp`](Samples/XrSamples/XrSpaceWarp/)                   |`XR_FB_space_warp`|Meta Quest 2 and later|
 |[`XrSpatialAnchor`](Samples/XrSamples/XrSpatialAnchor/)              |`XR_FB_spatial_entity`, `XR_FB_spatial_entity_query`, `XR_FB_spatial_entity_storage`, `XR_FB_spatial_entity_storage_batch`, `XR_FB_spatial_entity_sharing`, `XR_FB_spatial_entity_user`|Meta Quest 2 and later|
 |[`XrVirtualKeyboard`](Samples/XrSamples/XrVirtualKeyboard/) |`XR_META_virtual_keyboard`,`XR_FB_render_model`|Meta Quest 2 and later|

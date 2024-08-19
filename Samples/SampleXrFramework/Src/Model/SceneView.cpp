@@ -327,7 +327,7 @@ const char* SimplePBRFragmentShaderSrc = R"glsl(
 uniform lowp vec4 BaseColorFactor;
 void main()
 {
-   gl_FragColor = BaseColorFactor; 
+   gl_FragColor = BaseColorFactor;
 }
 )glsl";
 
@@ -338,10 +338,10 @@ varying highp vec2 oTexCoord;
 void main()
 {
    lowp vec4 BaseColor = texture2D( BaseColorTexture, oTexCoord );
-   gl_FragColor.r = BaseColor.r * BaseColorFactor.r; 
-   gl_FragColor.g = BaseColor.g * BaseColorFactor.g; 
-   gl_FragColor.b = BaseColor.b * BaseColorFactor.b; 
-   gl_FragColor.w = BaseColor.w * BaseColorFactor.w; 
+   gl_FragColor.r = BaseColor.r * BaseColorFactor.r;
+   gl_FragColor.g = BaseColor.g * BaseColorFactor.g;
+   gl_FragColor.b = BaseColor.b * BaseColorFactor.b;
+   gl_FragColor.w = BaseColor.w * BaseColorFactor.w;
 }
 )glsl";
 
@@ -354,16 +354,16 @@ varying highp vec2 oTexCoord;
 void main()
 {
    lowp vec4 BaseColor = texture2D( Texture0, oTexCoord );
-   BaseColor.r = BaseColor.r * BaseColorFactor.r; 
-   BaseColor.g = BaseColor.g * BaseColorFactor.g; 
-   BaseColor.b = BaseColor.b * BaseColorFactor.b; 
-   BaseColor.w = BaseColor.w * BaseColorFactor.w; 
+   BaseColor.r = BaseColor.r * BaseColorFactor.r;
+   BaseColor.g = BaseColor.g * BaseColorFactor.g;
+   BaseColor.b = BaseColor.b * BaseColorFactor.b;
+   BaseColor.w = BaseColor.w * BaseColorFactor.w;
    lowp vec4 EmissiveColor = texture2D( Texture1, oTexCoord );
-   EmissiveColor.r = EmissiveColor.r * EmissiveFactor.r; 
-   EmissiveColor.g = EmissiveColor.g * EmissiveFactor.g; 
-   EmissiveColor.b = EmissiveColor.b * EmissiveFactor.b; 
-   EmissiveColor.w = EmissiveColor.w * EmissiveFactor.w; 
-   gl_FragColor = BaseColor + EmissiveColor; 
+   EmissiveColor.r = EmissiveColor.r * EmissiveFactor.r;
+   EmissiveColor.g = EmissiveColor.g * EmissiveFactor.g;
+   EmissiveColor.b = EmissiveColor.b * EmissiveFactor.b;
+   EmissiveColor.w = EmissiveColor.w * EmissiveFactor.w;
+   gl_FragColor = BaseColor + EmissiveColor;
 }
 )glsl";
 
@@ -919,22 +919,27 @@ float OvrSceneView::GetEyeHeight() const {
     return EyeHeight;
 }
 
+Matrix4f OvrSceneView::GetSceneCoordinateTransform() const {
+    Matrix4f result;
+    if (YawMod > 0.0f) {
+        result = Matrix4f::Translation(GetNeutralHeadCenter()) *
+            Matrix4f::RotationY((StickYaw - fmodf(StickYaw, YawMod)) + SceneYaw) *
+            Matrix4f::RotationX(StickPitch);
+    } else {
+        result = Matrix4f::Translation(GetNeutralHeadCenter()) *
+            Matrix4f::RotationY(StickYaw + SceneYaw) * Matrix4f::RotationX(StickPitch);
+    }
+    return result;
+}
+
 // This is called by Frame(), but it must be explicitly called when FootPos is
 // updated, or calls to GetCenterEyePosition() won't reflect changes until the
 // following frame.
 void OvrSceneView::UpdateCenterEye() {
-    Matrix4f input;
-    if (YawMod > 0.0f) {
-        input = Matrix4f::Translation(GetNeutralHeadCenter()) *
-            Matrix4f::RotationY((StickYaw - fmodf(StickYaw, YawMod)) + SceneYaw) *
-            Matrix4f::RotationX(StickPitch);
-    } else {
-        input = Matrix4f::Translation(GetNeutralHeadCenter()) *
-            Matrix4f::RotationY(StickYaw + SceneYaw) * Matrix4f::RotationX(StickPitch);
-    }
+    Matrix4f sceneTransform = GetSceneCoordinateTransform();
 
-    const Matrix4f transform(CurrentTracking.HeadPose);
-    CenterEyeTransform = input * transform;
+    const Matrix4f headTransform(CurrentTracking.HeadPose);
+    CenterEyeTransform = sceneTransform * headTransform;
     CenterEyeViewMatrix = CenterEyeTransform.Inverted();
 }
 

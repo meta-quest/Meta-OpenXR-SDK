@@ -188,7 +188,8 @@ void AppInput_init(App& app) {
         bindings.push_back(
             ActionSuggestedBinding(app, gripPoseAction, "/user/hand/right/input/grip/pose"));
 
-        XrInteractionProfileSuggestedBinding suggestedBindings = {XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+        XrInteractionProfileSuggestedBinding suggestedBindings = {
+            XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
         suggestedBindings.interactionProfile = interactionProfilePath;
         suggestedBindings.suggestedBindings = &bindings[0];
         suggestedBindings.countSuggestedBindings = bindings.size();

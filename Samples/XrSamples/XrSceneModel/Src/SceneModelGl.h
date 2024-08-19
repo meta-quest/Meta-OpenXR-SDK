@@ -22,6 +22,7 @@
 #include <meta_openxr_preview/openxr_oculus_helpers.h>
 #include <openxr/openxr_platform.h>
 
+
 #include "OVR_Math.h"
 
 #define NUM_EYES 2
@@ -188,6 +189,7 @@ struct ovrMesh {
     bool IsVisible_ = true;
     bool IsPoseSet_ = false;
 };
+
 
 struct ovrScene {
    public:

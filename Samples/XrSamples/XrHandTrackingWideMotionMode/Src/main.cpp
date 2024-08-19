@@ -75,7 +75,8 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
         }
 
         /// hand tracking
-        hand_Base_L_ = std::make_unique<XrHandHelper>(GetInstance(), true, XrHandHelper::HandType::HANDTYPE_BASE);
+        hand_Base_L_ = std::make_unique<XrHandHelper>(
+            GetInstance(), true, XrHandHelper::HandType::HANDTYPE_BASE);
         OXR(hand_Base_L_->GetLastError());
         hand_Base_R_ = std::make_unique<XrHandHelper>(
             GetInstance(), false, XrHandHelper::HandType::HANDTYPE_BASE);
@@ -92,13 +93,13 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
         CreateSampleDescriptionPanel();
 
         bigText_ = ui_.AddLabel("OpenXR Wide Motion Mode", {0.1f, -0.5f, -2.0f}, {1300.0f, 100.0f});
-        bigText_->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        bigText_->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
 
         renderLabelBaseHandsButton_ = ui_.AddLabel("X", {-0.51f, 0.25f, -2.01f}, {550.0f, 110.0f});
         renderLabelBaseHandsButton_->SetSurfaceColor(0, {1.0f, 0.0f, 0.0f, 1.0f});
 
-        renderBaseHandsButton_ =
-            ui_.AddButton("Stop Rendering Base Hands", {-0.5f, 0.25f, -2.0f}, {500.0f, 100.0f}, [=]() {
+        renderBaseHandsButton_ = ui_.AddButton(
+            "Stop Rendering Base Hands", {-0.5f, 0.25f, -2.0f}, {500.0f, 100.0f}, [this]() {
                 renderBaseHands_ = !renderBaseHands_;
                 if (renderBaseHands_) {
                     renderBaseHandsButton_->SetText("Stop Rendering Base Hands");
@@ -111,19 +112,26 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
                 }
             });
 
-        renderLabelWideMotionModeHandsButton_ = ui_.AddLabel("X", {-0.51f, 0.0, -2.01f}, {550.0f, 110.0f});
+        renderLabelWideMotionModeHandsButton_ =
+            ui_.AddLabel("X", {-0.51f, 0.0, -2.01f}, {550.0f, 110.0f});
         renderLabelWideMotionModeHandsButton_->SetSurfaceColor(0, {0.0f, 1.0f, 0.0f, 1.0f});
 
         renderWideMotionModeHandsButton_ = ui_.AddButton(
-            "Stop Rendering Wide Motion Mode Hands", {-0.5f, 0.0f, -2.0f}, {500.0f, 100.0f}, [=]() {
+            "Stop Rendering Wide Motion Mode Hands",
+            {-0.5f, 0.0f, -2.0f},
+            {500.0f, 100.0f},
+            [this]() {
                 renderWideMotionModeHands_ = !renderWideMotionModeHands_;
                 if (renderWideMotionModeHands_) {
-                    renderWideMotionModeHandsButton_->SetText("Stop Rendering Wide Motion Mode Hands");
-                    renderLabelWideMotionModeHandsButton_->SetSurfaceColor(0, {0.0f, 1.0f, 0.0f, 1.0f});
+                    renderWideMotionModeHandsButton_->SetText(
+                        "Stop Rendering Wide Motion Mode Hands");
+                    renderLabelWideMotionModeHandsButton_->SetSurfaceColor(
+                        0, {0.0f, 1.0f, 0.0f, 1.0f});
                     renderLabelWideMotionModeHandsButton_->SetText("X");
                 } else {
                     renderWideMotionModeHandsButton_->SetText("Render Wide Motion Mode Hands");
-                    renderLabelWideMotionModeHandsButton_->SetSurfaceColor(0, {0.0f, 0.75f, 0.0f, 0.25f});
+                    renderLabelWideMotionModeHandsButton_->SetSurfaceColor(
+                        0, {0.0f, 0.75f, 0.0f, 0.25f});
                     renderLabelWideMotionModeHandsButton_->SetText("");
                 }
             });
@@ -146,7 +154,7 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
         // Tilt the description billboard 45 degrees towards the user
         descriptionLabel->SetLocalRotation(
             OVR::Quat<float>::FromRotationVector({0, OVR::DegreeToRad(-30.0f), 0}));
-        descriptionLabel->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        descriptionLabel->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
     }
 
     virtual void AppShutdown(const xrJava* context) override {
@@ -162,9 +170,6 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
     virtual bool SessionInit() override {
         /// Use LocalSpace instead of Stage Space.
         CurrentSpace = LocalSpace;
-        /// Disable scene navigation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
         beamRenderer_.Init(GetFileSys(), nullptr, OVR::Vector4f(1.0f), 1.0f);
 
         /// hands
@@ -286,10 +291,8 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
         /// Render UI
         ui_.Render(in, out);
 
-
         /// Render beams
         beamRenderer_.Render(in, out);
-
 
         if (renderBaseHands_) {
             if (hand_Base_L_->AreLocationsActive() && hand_Base_L_->IsPositionValid()) {
@@ -324,7 +327,6 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
 
    public:
    private:
-
     OVRFW::TinyUI ui_;
     OVRFW::SimpleBeamRenderer beamRenderer_;
     std::vector<OVRFW::ovrBeamRenderer::handle_t> beams_;

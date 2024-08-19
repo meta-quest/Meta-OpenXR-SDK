@@ -250,29 +250,29 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         baseTouchBindings.emplace_back(
             ActionSuggestedBinding(mainHapticAction_, "/user/hand/right/output/haptic"));
 
-       // Proximity
-        baseTouchBindings.emplace_back(
-            ActionSuggestedBinding(thumbFbProxAction_, "/user/hand/left/input/thumb_fb/proximity_fb"));
+        // Proximity
+        baseTouchBindings.emplace_back(ActionSuggestedBinding(
+            thumbFbProxAction_, "/user/hand/left/input/thumb_fb/proximity_fb"));
         baseTouchBindings.emplace_back(ActionSuggestedBinding(
             thumbFbProxAction_, "/user/hand/right/input/thumb_fb/proximity_fb"));
 
         // Trigger Value
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            triggerValueAction_, "/user/hand/left/input/trigger/value"));
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            triggerValueAction_, "/user/hand/right/input/trigger/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(triggerValueAction_, "/user/hand/left/input/trigger/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(triggerValueAction_, "/user/hand/right/input/trigger/value"));
 
         // Trigger Touch
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            triggerTouchAction_, "/user/hand/left/input/trigger/touch"));
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            triggerTouchAction_, "/user/hand/right/input/trigger/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(triggerTouchAction_, "/user/hand/left/input/trigger/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(triggerTouchAction_, "/user/hand/right/input/trigger/touch"));
 
         // Squeeze Value
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            squeezeValueAction_, "/user/hand/left/input/squeeze/value"));
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            squeezeValueAction_, "/user/hand/right/input/squeeze/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(squeezeValueAction_, "/user/hand/left/input/squeeze/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(squeezeValueAction_, "/user/hand/right/input/squeeze/value"));
 
         // Copy(construct) base paths since these interaction profiles are similar
         std::vector<XrActionSuggestedBinding> touchProBindings(baseTouchBindings);
@@ -326,10 +326,10 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             ActionSuggestedBinding(triggerCurlAction_, "/user/hand/left/input/trigger/curl_meta"));
         touchPlusBindings.emplace_back(
             ActionSuggestedBinding(triggerCurlAction_, "/user/hand/right/input/trigger/curl_meta"));
-        touchPlusBindings.emplace_back(
-            ActionSuggestedBinding(triggerSlideAction_, "/user/hand/left/input/trigger/slide_meta"));
-        touchPlusBindings.emplace_back(
-            ActionSuggestedBinding(triggerSlideAction_, "/user/hand/right/input/trigger/slide_meta"));
+        touchPlusBindings.emplace_back(ActionSuggestedBinding(
+            triggerSlideAction_, "/user/hand/left/input/trigger/slide_meta"));
+        touchPlusBindings.emplace_back(ActionSuggestedBinding(
+            triggerSlideAction_, "/user/hand/right/input/trigger/slide_meta"));
 
         // Now that we are done using these for pro and plus, add these to the base touch as well
         baseTouchBindings.emplace_back(ActionSuggestedBinding(
@@ -354,8 +354,8 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         /// Hook up extensions
 
         /// Build UI
-        bigText_ = ui_.AddLabel(
-            "OpenXR Controllers Sample", {0.0f, -0.8f, -1.9f}, {1300.0f, 100.0f});
+        bigText_ =
+            ui_.AddLabel("OpenXR Controllers Sample", {0.0f, -0.8f, -1.9f}, {1300.0f, 100.0f});
 
         OVR::Vector2f size = {200.0f, 100.0f};
         OVR::Vector3f position = {+0.0f, 0.5f, -1.9f};
@@ -400,8 +400,8 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         triggerProxLText_ = ui_.AddLabel("trProx L 0.0", positionL, size);
         triggerProxRText_ = ui_.AddLabel("trProx R 0.0", positionR, size);
 
-        positionL.y += dh * 3/4.0f;
-        positionR.y += dh * 3/4.0f;
+        positionL.y += dh * 3 / 4.0f;
+        positionR.y += dh * 3 / 4.0f;
         position.y += dh;
         ui_.AddLabel("Thumb Prox", position, size);
         const OVR::Vector2f halfSize{size.x, size.y / 2.0f};
@@ -433,38 +433,38 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         squeezeValueLText_ = ui_.AddLabel("sqVal L 0.0", positionL, size);
         squeezeValueRText_ = ui_.AddLabel("sqVal R 0.0", positionR, size);
 
-        ipText_ = ui_.AddLabel(
-            "Interaction Profiles", {0.0f, 0.5f, -1.9f}, {600.0f, 100.0f});
+        ipText_ = ui_.AddLabel("Interaction Profiles", {0.0f, 0.5f, -1.9f}, {600.0f, 100.0f});
 
-        ui_.AddButton("Haptic Main S", {-0.8f, 0.5f, -1.9f}, size, [=]() {
-            VibrateController(mainHapticAction_, LeftHandPath, XR_MIN_HAPTIC_DURATION, 157.0f, 1.0f);
+        ui_.AddButton("Haptic Main S", {-0.8f, 0.5f, -1.9f}, size, [this]() {
+            VibrateController(
+                mainHapticAction_, LeftHandPath, XR_MIN_HAPTIC_DURATION, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Main S", {+0.8f, 0.5f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Main S", {+0.8f, 0.5f, -1.9f}, size, [this]() {
             VibrateController(
                 mainHapticAction_, RightHandPath, XR_MIN_HAPTIC_DURATION, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Main M", {-1.2f, 0.5f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Main M", {-1.2f, 0.5f, -1.9f}, size, [this]() {
             VibrateController(mainHapticAction_, LeftHandPath, 0.1f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Main M", {+1.2f, 0.5f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Main M", {+1.2f, 0.5f, -1.9f}, size, [this]() {
             VibrateController(mainHapticAction_, RightHandPath, 0.1f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Main L", {-1.6f, 0.5f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Main L", {-1.6f, 0.5f, -1.9f}, size, [this]() {
             VibrateController(mainHapticAction_, LeftHandPath, 1.0f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Main L", {+1.6f, 0.5f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Main L", {+1.6f, 0.5f, -1.9f}, size, [this]() {
             VibrateController(mainHapticAction_, RightHandPath, 1.0f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Trigger", {-0.8f, 0.7f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Trigger", {-0.8f, 0.7f, -1.9f}, size, [this]() {
             VibrateController(triggerHapticAction_, LeftHandPath, 0.1f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Trigger", {+0.8f, 0.7f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Trigger", {+0.8f, 0.7f, -1.9f}, size, [this]() {
             VibrateController(triggerHapticAction_, RightHandPath, 0.1f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Thumb", {-0.8f, 0.9f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Thumb", {-0.8f, 0.9f, -1.9f}, size, [this]() {
             VibrateController(thumbHapticAction_, LeftHandPath, 0.1f, 157.0f, 1.0f);
         });
-        ui_.AddButton("Haptic Thumb", {+0.8f, 0.9f, -1.9f}, size, [=]() {
+        ui_.AddButton("Haptic Thumb", {+0.8f, 0.9f, -1.9f}, size, [this]() {
             VibrateController(thumbHapticAction_, RightHandPath, 0.1f, 157.0f, 1.0f);
         });
         position.y += dh;
@@ -473,7 +473,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         // Left Hand
         const float sampleDurationBuffered = 0.002f; // 2ms
         position = {-1.2f, 0.7f, -1.9f};
-        ui_.AddButton("AE Scroll", position, size, [=]() {
+        ui_.AddButton("AE Scroll", position, size, [this, sampleDurationBuffered]() {
             VibrateControllerAmplitude(
                 mainHapticAction_,
                 LeftHandPath,
@@ -486,7 +486,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         for (int i = 0; i < 500; i++) {
             aeBufferSimple[i] = 0.1;
         }
-        ui_.AddButton("AE 1s", position, size, [=]() {
+        ui_.AddButton("AE 1s", position, size, [this, aeBufferSimple, sampleDurationBuffered]() {
             VibrateControllerAmplitude(
                 mainHapticAction_,
                 LeftHandPath,
@@ -495,14 +495,14 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
                 sampleDurationBuffered * std::size(aeBufferSimple));
         });
         position.x -= 0.4f;
-        ui_.AddButton("AE 0.5s\n(Downsample)", position, size, [=]() {
+        ui_.AddButton("AE 0.5s\n(Downsample)", position, size, [this, aeBufferSimple]() {
             VibrateControllerAmplitude(
                 mainHapticAction_, LeftHandPath, aeBufferSimple, std::size(aeBufferSimple), 0.5f);
         });
 
         // Right Hand
         position = {+1.2f, 0.7f, -1.9f};
-        ui_.AddButton("AE Scroll", position, size, [=]() {
+        ui_.AddButton("AE Scroll", position, size, [this, sampleDurationBuffered]() {
             VibrateControllerAmplitude(
                 mainHapticAction_,
                 RightHandPath,
@@ -512,13 +512,13 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         });
         position.x += 0.4f;
         float aeBufferSingle[2] = {1, 0.5f};
-        ui_.AddButton("AE 1s (Upsample)", position, size, [=]() {
+        ui_.AddButton("AE 1s (Upsample)", position, size, [this, aeBufferSingle]() {
             VibrateControllerAmplitude(
                 mainHapticAction_, RightHandPath, aeBufferSingle, std::size(aeBufferSingle), 1.0f);
         });
 
         position.x += 0.4f;
-        ui_.AddButton("AE Fail:\nexceeding\nmax samples", position, size, [=]() {
+        ui_.AddButton("AE Fail:\nexceeding\nmax samples", position, size, [this, aeBufferSingle]() {
             VibrateControllerAmplitude(
                 mainHapticAction_, RightHandPath, aeBufferSingle, std::size(aeBufferSingle), 10.0f);
         });
@@ -541,14 +541,15 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         std::vector<float> decayingSineWave =
             createPCMSamples(40, std::size(reducingIntensity), reducingIntensity, ToXrTime(2));
 
-        ui_.AddButton("Decaying sine\nwave", position, size, [=]() {
-            VibrateControllerPCM(
-                mainHapticAction_,
-                RightHandPath,
-                decayingSineWave.data(),
-                decayingSineWave.size(),
-                sampleRate);
-        });
+        ui_.AddButton(
+            "Decaying sine\nwave", position, size, [this, decayingSineWave, sampleRate]() {
+                VibrateControllerPCM(
+                    mainHapticAction_,
+                    RightHandPath,
+                    decayingSineWave.data(),
+                    decayingSineWave.size(),
+                    sampleRate);
+            });
 
         auto copyReducingSineWave =
             createPCMSamples(40, std::size(reducingIntensity), reducingIntensity, ToXrTime(1));
@@ -568,34 +569,35 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         }
 
         position.x += 0.4f;
-        ui_.AddButton("Long wave (10s)", position, size, [=]() {
-            VibrateControllerPCM(
-                mainHapticAction_,
-                RightHandPath,
-                decayingSineWaveLong.data(),
-                decayingSineWaveLong.size(),
-                sampleRate);
-        });
+        ui_.AddButton(
+            "Long wave (10s)", position, size, [this, decayingSineWaveLong, sampleRate]() {
+                VibrateControllerPCM(
+                    mainHapticAction_,
+                    RightHandPath,
+                    decayingSineWaveLong.data(),
+                    decayingSineWaveLong.size(),
+                    sampleRate);
+            });
 
         std::vector<float> sineWave =
             createPCMSamples(157, std::size(constantIntensity), constantIntensity, ToXrTime(1));
 
         position.x += 0.4f;
-        ui_.AddButton("Wave 1s", position, size, [=]() {
+        ui_.AddButton("Wave 1s", position, size, [this, sineWave, sampleRate]() {
             VibrateControllerPCM(
                 mainHapticAction_, RightHandPath, sineWave.data(), sineWave.size(), sampleRate);
         });
 
         position.x += 0.4f;
         sampleRate = 1000.0f;
-        ui_.AddButton("Upsampled Wave\n2s", position, size, [=]() {
+        ui_.AddButton("Upsampled Wave\n2s", position, size, [this, sineWave, sampleRate]() {
             VibrateControllerPCM(
                 mainHapticAction_, RightHandPath, sineWave.data(), sineWave.size(), sampleRate);
         });
 
         position.x += 0.4f;
         sampleRate = 4000.0f;
-        ui_.AddButton("Downsampled\nWave\n0.5s", position, size, [=]() {
+        ui_.AddButton("Downsampled\nWave\n0.5s", position, size, [this, sineWave, sampleRate]() {
             VibrateControllerPCM(
                 mainHapticAction_, RightHandPath, sineWave.data(), sineWave.size(), sampleRate);
         });
@@ -604,52 +606,54 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         position.x -= 2.4f;
         sampleRate = 2000.0f;
 
-        ui_.AddButton("Decaying sine\nwave 1s", position, size, [=]() {
-            VibrateControllerPCM(
-                mainHapticAction_,
-                LeftHandPath,
-                decayingSineWave.data(),
-                decayingSineWave.size(),
-                sampleRate);
-        });
+        ui_.AddButton(
+            "Decaying sine\nwave 1s", position, size, [this, decayingSineWave, sampleRate]() {
+                VibrateControllerPCM(
+                    mainHapticAction_,
+                    LeftHandPath,
+                    decayingSineWave.data(),
+                    decayingSineWave.size(),
+                    sampleRate);
+            });
 
         position.x -= 0.4f;
-        ui_.AddButton("Long wave (10s)", position, size, [=]() {
-            VibrateControllerPCM(
-                mainHapticAction_,
-                LeftHandPath,
-                decayingSineWaveLong.data(),
-                decayingSineWaveLong.size(),
-                sampleRate);
-        });
+        ui_.AddButton(
+            "Long wave (10s)", position, size, [this, decayingSineWaveLong, sampleRate]() {
+                VibrateControllerPCM(
+                    mainHapticAction_,
+                    LeftHandPath,
+                    decayingSineWaveLong.data(),
+                    decayingSineWaveLong.size(),
+                    sampleRate);
+            });
 
         position.x -= 0.4f;
         // 2s Sine wave
         float singleIntensity[]{1};
         sineWave = createPCMSamples(157, std::size(singleIntensity), singleIntensity, ToXrTime(2));
 
-        ui_.AddButton("Wave 2s", position, size, [=]() {
+        ui_.AddButton("Wave 2s", position, size, [this, sineWave, sampleRate]() {
             VibrateControllerPCM(
                 mainHapticAction_, LeftHandPath, sineWave.data(), sineWave.size(), sampleRate);
         });
 
         position.x -= 0.4f;
         sampleRate = 1500.0f;
-        ui_.AddButton("Upsampled Wave\n2.67s", position, size, [=]() {
+        ui_.AddButton("Upsampled Wave\n2.67s", position, size, [this, sineWave, sampleRate]() {
             VibrateControllerPCM(
                 mainHapticAction_, LeftHandPath, sineWave.data(), sineWave.size(), sampleRate);
         });
 
         position.x -= 0.4f;
         sampleRate = 3000.0f;
-        ui_.AddButton("Downsampled\nWave\n1.3s", position, size, [=]() {
+        ui_.AddButton("Downsampled\nWave\n1.3s", position, size, [this, sineWave, sampleRate]() {
             VibrateControllerPCM(
                 mainHapticAction_, LeftHandPath, sineWave.data(), sineWave.size(), sampleRate);
         });
 
         // Playing haptics on both controllers by passing XR_NULL_PATH in subActionPath
         position = {+0.0f, +0.1f, -1.9f};
-        ui_.AddButton("Haptic Main (both)", position, size, [=]() {
+        ui_.AddButton("Haptic Main (both)", position, size, [this]() {
             VibrateController(mainHapticAction_, XR_NULL_PATH, 1.0f, 157.0f, 0.5f);
         });
         OXR(xrGetInstanceProcAddr(
@@ -659,67 +663,67 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
 
         // both triggers
         position.x -= 0.4f;
-        ui_.AddButton("Thumb (2s, both)", position, size, [=]() {
+        ui_.AddButton("Thumb (2s, both)", position, size, [this]() {
             VibrateController(thumbHapticAction_, XR_NULL_PATH, 2.0f, 157.0f, 0.25f);
         });
         // both grips
         position.x -= 0.4f;
-        ui_.AddButton("Trigger (2s, both)", position, size, [=]() {
+        ui_.AddButton("Trigger (2s, both)", position, size, [this]() {
             VibrateController(triggerHapticAction_, XR_NULL_PATH, 2.0f, 157.0f, 0.25f);
         });
         position = {+0.0f, 0.1f, -1.9f};
         position.x += 0.4f;
-        ui_.AddButton("Thumb (2s, right)", position, size, [=]() {
+        ui_.AddButton("Thumb (2s, right)", position, size, [this]() {
             VibrateController(thumbHapticAction_, RightHandPath, 2.0f, 157.0f, 0.25f);
         });
         // both grips
         position.x += 0.4f;
-        ui_.AddButton("Trigger (2s, right)", position, size, [=]() {
+        ui_.AddButton("Trigger (2s, right)", position, size, [this]() {
             VibrateController(triggerHapticAction_, RightHandPath, 2.0f, 157.0f, 0.25f);
         });
 
         position = {+0.0f, -0.1f, -1.9f};
-        ui_.AddButton("Stop BOTH Main", position, size, [=]() {
+        ui_.AddButton("Stop BOTH Main", position, size, [this]() {
             StopHapticEffect(mainHapticAction_, XR_NULL_PATH);
         });
 
         position.x -= 0.4f;
-        ui_.AddButton("Stop Left Main", position, size, [=]() {
+        ui_.AddButton("Stop Left Main", position, size, [this]() {
             StopHapticEffect(mainHapticAction_, LeftHandPath);
         });
 
-        position.x += 2*0.4f;
-        ui_.AddButton("Stop Right Main", position, size, [=]() {
+        position.x += 2 * 0.4f;
+        ui_.AddButton("Stop Right Main", position, size, [this]() {
             StopHapticEffect(mainHapticAction_, RightHandPath);
         });
 
         position = {+0.0f, -0.3f, -1.9f};
-        ui_.AddButton("Stop BOTH Thumb", position, size, [=]() {
+        ui_.AddButton("Stop BOTH Thumb", position, size, [this]() {
             StopHapticEffect(thumbHapticAction_, XR_NULL_PATH);
         });
 
         position.x -= 0.4f;
-        ui_.AddButton("Stop Left Thumb", position, size, [=]() {
+        ui_.AddButton("Stop Left Thumb", position, size, [this]() {
             StopHapticEffect(thumbHapticAction_, LeftHandPath);
         });
 
         position.x += 2 * 0.4f;
-        ui_.AddButton("Stop Right Thumb", position, size, [=]() {
+        ui_.AddButton("Stop Right Thumb", position, size, [this]() {
             StopHapticEffect(thumbHapticAction_, RightHandPath);
         });
 
         position = {+0.0f, -0.5f, -1.9f};
-        ui_.AddButton("Stop BOTH Trigger", position, size, [=]() {
+        ui_.AddButton("Stop BOTH Trigger", position, size, [this]() {
             StopHapticEffect(triggerHapticAction_, XR_NULL_PATH);
         });
 
         position.x -= 0.4f;
-        ui_.AddButton("Stop Left Trigger", position, size, [=]() {
+        ui_.AddButton("Stop Left Trigger", position, size, [this]() {
             StopHapticEffect(triggerHapticAction_, LeftHandPath);
         });
 
-        position.x += 2*0.4f;
-        ui_.AddButton("Stop Right Trigger", position, size, [=]() {
+        position.x += 2 * 0.4f;
+        ui_.AddButton("Stop Right Trigger", position, size, [this]() {
             StopHapticEffect(triggerHapticAction_, RightHandPath);
         });
 
@@ -736,9 +740,6 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
     virtual bool SessionInit() override {
         /// Use LocalSpace instead of Stage Space.
         CurrentSpace = LocalSpace;
-        /// Disable scene navitgation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
         /// Init session bound objects
         if (false == controllerRenderL_.Init(true)) {
             ALOG("AppInit::Init L controller renderer FAILED.");
@@ -787,8 +788,10 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             thumbFBProxL_ = GetActionStateBoolean(thumbFbProxAction_, LeftHandPath).currentState;
             thumbFBProxR_ = GetActionStateBoolean(thumbFbProxAction_, RightHandPath).currentState;
             // same as above on touch plus
-            thumbMetaProxL_ = GetActionStateBoolean(thumbMetaProxAction_, LeftHandPath).currentState;
-            thumbMetaProxR_ = GetActionStateBoolean(thumbMetaProxAction_, RightHandPath).currentState;
+            thumbMetaProxL_ =
+                GetActionStateBoolean(thumbMetaProxAction_, LeftHandPath).currentState;
+            thumbMetaProxR_ =
+                GetActionStateBoolean(thumbMetaProxAction_, RightHandPath).currentState;
             /// Trigger Value
             triggerValueL_ = GetActionStateBoolean(triggerValueAction_, LeftHandPath).currentState;
             triggerValueR_ = GetActionStateBoolean(triggerValueAction_, RightHandPath).currentState;
@@ -869,26 +872,28 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
 
         /// Update labels
         {
-            XrInteractionProfileState lIpState {XR_TYPE_INTERACTION_PROFILE_STATE};
+            XrInteractionProfileState lIpState{XR_TYPE_INTERACTION_PROFILE_STATE};
             OXR(xrGetCurrentInteractionProfile(Session, LeftHandPath, &lIpState));
-            XrInteractionProfileState rIpState {XR_TYPE_INTERACTION_PROFILE_STATE};
+            XrInteractionProfileState rIpState{XR_TYPE_INTERACTION_PROFILE_STATE};
             OXR(xrGetCurrentInteractionProfile(Session, LeftHandPath, &rIpState));
 
             char lBuf[XR_MAX_PATH_LENGTH];
             uint32_t written = 0;
-            if(lIpState.interactionProfile != XR_NULL_PATH) {
-                OXR(xrPathToString(Instance, lIpState.interactionProfile, XR_MAX_PATH_LENGTH, &written, lBuf));
+            if (lIpState.interactionProfile != XR_NULL_PATH) {
+                OXR(xrPathToString(
+                    Instance, lIpState.interactionProfile, XR_MAX_PATH_LENGTH, &written, lBuf));
             }
-            if(written == 0) {
+            if (written == 0) {
                 strcpy(lBuf, "<none>");
             }
 
             char rBuf[XR_MAX_PATH_LENGTH];
             written = 0;
-            if(rIpState.interactionProfile != XR_NULL_PATH) {
-                OXR(xrPathToString(Instance, rIpState.interactionProfile, XR_MAX_PATH_LENGTH, &written, rBuf));
+            if (rIpState.interactionProfile != XR_NULL_PATH) {
+                OXR(xrPathToString(
+                    Instance, rIpState.interactionProfile, XR_MAX_PATH_LENGTH, &written, rBuf));
             }
-            if(written == 0) {
+            if (written == 0) {
                 strcpy(rBuf, "<none>");
             }
 
@@ -1085,7 +1090,8 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             squeezeValueAction_,
         };
         for (size_t i = 0; i < sizeof(actionsToEnumerate) / sizeof(actionsToEnumerate[0]); ++i) {
-            XrBoundSourcesForActionEnumerateInfo enumerateInfo = {XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO};
+            XrBoundSourcesForActionEnumerateInfo enumerateInfo = {
+                XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO};
             enumerateInfo.action = actionsToEnumerate[i];
 
             // Get Count
@@ -1101,7 +1107,8 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
                 OXR(xrEnumerateBoundSourcesForAction(
                     Session, &enumerateInfo, 16, &countOutput, actionPathsBuffer));
                 for (uint32_t a = 0; a < countOutput; ++a) {
-                    XrInputSourceLocalizedNameGetInfo nameGetInfo = {XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO};
+                    XrInputSourceLocalizedNameGetInfo nameGetInfo = {
+                        XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO};
                     nameGetInfo.sourcePath = actionPathsBuffer[a];
                     nameGetInfo.whichComponents = XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT |
                         XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT |

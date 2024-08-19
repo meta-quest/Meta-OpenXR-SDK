@@ -1,6 +1,7 @@
 /************************************************************************************************
 Filename    :   EnvironmentRenderer.cpp
-Content     :   A variant of ModelRenderer suited for rendering gltf scenes with vertex color based fog
+Content     :   A variant of ModelRenderer suited for rendering gltf scenes with
+                vertex color based fog
 Created     :   July 2023
 Authors     :   Alexander Borsboom
 Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
@@ -120,7 +121,7 @@ void main()
 
 /// clang-format on
 
-} // namespace EnvironmentRenderer
+} // namespace EnvironmentShaders
 
 bool EnvironmentRenderer::Init(std::string modelPath, OVRFW::ovrFileSys* fileSys) {
     /// Shader
@@ -152,7 +153,7 @@ bool EnvironmentRenderer::Init(std::string modelPath, OVRFW::ovrFileSys* fileSys
     programs.ProgSimplePBR = &ProgRenderModel;
     programs.ProgSkinnedSimplePBR = &ProgRenderModel;
 
-    if( fileSys ) {
+    if (fileSys) {
         OVRFW::ovrFileSys& fs = *fileSys;
         RenderModel = LoadModelFile(fs, modelPath.c_str(), programs, materials);
     } else {
@@ -174,7 +175,8 @@ bool EnvironmentRenderer::Init(std::string modelPath, OVRFW::ovrFileSys* fileSys
         gc.UniformData[2].Data = &SpecularLightDirection;
         gc.UniformData[3].Data = &SpecularLightColor;
         gc.UniformData[4].Data = &AmbientLightColor;
-        FogStrengths[modelIndex] = OVR::Size<float>(gc.GpuState.blendEnable == ovrGpuState::BLEND_ENABLE ? 1.0f : 0.0f);
+        FogStrengths[modelIndex] =
+            OVR::Size<float>(gc.GpuState.blendEnable == ovrGpuState::BLEND_ENABLE ? 1.0f : 0.0f);
         gc.UniformData[5].Data = &FogStrengths[modelIndex];
         gc.UniformData[6].Data = &FogColor;
         gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
@@ -198,7 +200,7 @@ void EnvironmentRenderer::Shutdown() {
         delete RenderModel;
         RenderModel = nullptr;
     }
-    if(FogStrengths != nullptr) {
+    if (FogStrengths != nullptr) {
         delete FogStrengths;
         FogStrengths = nullptr;
     }
@@ -207,11 +209,11 @@ void EnvironmentRenderer::Shutdown() {
 void EnvironmentRenderer::Render(std::vector<ovrDrawSurface>& surfaceList) {
     /// toggle alpha override
     if (RenderModel != nullptr) {
-        for( int i=0; i < static_cast<int>(RenderModel->Models.size()); i++ ) {
+        for (int i = 0; i < static_cast<int>(RenderModel->Models.size()); i++) {
             auto& model = RenderModel->Models[i];
-            auto& node = RenderModel->Nodes[i+1];
+            auto& node = RenderModel->Nodes[i + 1];
             ovrDrawSurface controllerSurface;
-            for( int j=0; j < static_cast<int>(model.surfaces.size()); j++ ) {
+            for (int j = 0; j < static_cast<int>(model.surfaces.size()); j++) {
                 controllerSurface.surface = &(model.surfaces[j].surfaceDef);
                 controllerSurface.modelMatrix = node.GetGlobalTransform();
                 surfaceList.push_back(controllerSurface);

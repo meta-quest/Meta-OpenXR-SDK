@@ -82,21 +82,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetDefaultEventChannelEXTX1(
 #endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_EXTX1_event_channel */
 
-#ifdef  XR_EXTX1_EVENT_CHANNEL_TAG_ALIAS
-typedef XrEventChannelCreateInfoEXTX1 XrEventChannelCreateInfoEXT;
-typedef XrEventChannelEXTX1 XrEventChannelEXT;
-typedef XrEventChannelTargetEXTX1 XrEventChannelTargetEXT;
-typedef XrSelectEventChannelFlagsEXTX1 XrSelectEventChannelFlagsEXT;
-typedef XrSelectEventChannelInfoEXTX1 XrSelectEventChannelInfoEXT;
-#define XR_EXT_event_channel_SPEC_VERSION XR_EXTX1_event_channel_SPEC_VERSION
-#define XR_EXT_EVENT_CHANNEL_EXTENSION_NAME XR_EXTX1_EVENT_CHANNEL_EXTENSION_NAME
-#define XR_TYPE_EVENT_CHANNEL_CREATE_INFO_EXT XR_TYPE_EVENT_CHANNEL_CREATE_INFO_EXTX1
-#define XR_TYPE_EVENT_CHANNEL_TARGET_EXT  XR_TYPE_EVENT_CHANNEL_TARGET_EXTX1
-#define XR_TYPE_SELECT_EVENT_CHANNEL_INFO_EXT XR_TYPE_SELECT_EVENT_CHANNEL_INFO_EXTX1
-#define XR_OBJECT_TYPE_EVENT_CHANNEL_EXT  XR_OBJECT_TYPE_EVENT_CHANNEL_EXTX1
-#endif /* XR_EXTX1_EVENT_CHANNEL_TAG_ALIAS */
-
-
 #ifdef __cplusplus
 }
 #endif

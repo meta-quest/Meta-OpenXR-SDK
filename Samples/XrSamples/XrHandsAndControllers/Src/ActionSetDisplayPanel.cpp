@@ -48,7 +48,8 @@ void ActionSetDisplayPanel::AddPoseAction(XrAction action, const char* actionNam
     labels_.push_back(headerLabel);
 }
 
-std::pair<VRMenuObject*, VRMenuObject*> ActionSetDisplayPanel::CreateActionLabel(const char* actionName) {
+std::pair<VRMenuObject*, VRMenuObject*> ActionSetDisplayPanel::CreateActionLabel(
+    const char* actionName) {
     auto label = ui_->AddLabel(actionName, GetNextLabelLocation(), {widthPx_, 45.0f});
     auto stateLabel = ui_->AddLabel("state", GetNextStateLabelLocation(), {widthPx_, 250.0f});
 
@@ -95,7 +96,8 @@ void ActionSetDisplayPanel::Update() {
             state.isActive ? "True " : "False",
             state.lastChangeTime / (1000 * 1000)); // convert from ns to ms
         label->SetSurfaceColor(
-            0, state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
+            0,
+            state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
         label->SetSelected(state.currentState);
     }
 
@@ -118,8 +120,9 @@ void ActionSetDisplayPanel::Update() {
             state.changedSinceLastSync ? "True " : "False",
             state.isActive ? "True " : "False",
             state.lastChangeTime / (1000 * 1000)); // convert from ns to ms
-            label->SetSurfaceColor(
-                0, state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
+        label->SetSurfaceColor(
+            0,
+            state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
     }
 
     for (auto& pair : vec2Actions_) {
@@ -142,8 +145,9 @@ void ActionSetDisplayPanel::Update() {
             state.changedSinceLastSync ? "True " : "False",
             state.isActive ? "True " : "False",
             state.lastChangeTime / (1000 * 1000)); // convert from ns to ms
-            label->SetSurfaceColor(
-                0, state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
+        label->SetSurfaceColor(
+            0,
+            state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
     }
 
     for (auto& pair : poseActions_) {
@@ -159,14 +163,14 @@ void ActionSetDisplayPanel::Update() {
 
         label->SetText("isActive: %s\n" + bindingText, state.isActive ? "True " : "False");
         label->SetSurfaceColor(
-            0, state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
+            0,
+            state.isActive ? OVR::Vector4f(0., 0.1, 0., 1.) : OVR::Vector4f(0.05, 0.05, 0.05, 1.));
     }
 }
 
 void ActionSetDisplayPanel::UpdateAllLabelRotation(OVR::Quatf const& rot) {
     for (auto& label : labels_) {
         label->SetLocalRotation(rot);
-
     }
     for (auto& pair : boolActions_) {
         VRMenuObject* label = pair.second;

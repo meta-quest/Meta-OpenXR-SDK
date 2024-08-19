@@ -36,6 +36,7 @@ class XrVirtualKeyboardApp : public OVRFW::XrApp {
         "The keyboard supports multiple input modes including far         \n"
         "raycast based input, direct touch input, and swipe typing        \n"
         "for both modalities.                                               ";
+
    public:
     XrVirtualKeyboardApp() = default;
 
@@ -117,10 +118,6 @@ class XrVirtualKeyboardApp : public OVRFW::XrApp {
     virtual bool SessionInit() override {
         // Use LocalSpace instead of Stage Space
         CurrentSpace = LocalSpace;
-
-        // Disable scene navigation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        FreeMove = false;
 
         // Init session bound objects
         if (false == controllerRenderL_.Init(true)) {
@@ -535,10 +532,14 @@ class XrVirtualKeyboardApp : public OVRFW::XrApp {
             "Hide Keyboard", {-0.3f, 0.8f, -1.5f}, {300.0f, 50.0f}, [this]() { HideKeyboard(); });
 
         // Space buttons
-        localSpaceButton_ = ui_.AddButton(
-            "Local Space", {-0.3f, 0.7f, -1.5f}, {300.0f, 50.0f}, [this]() { SetSpace(GetLocalSpace()); });
-        stageSpaceButton_ = ui_.AddButton(
-            "Stage Space", {0.3f, 0.7f, -1.5f}, {300.0f, 50.0f}, [this]() { SetSpace(GetStageSpace()); });
+        localSpaceButton_ =
+            ui_.AddButton("Local Space", {-0.3f, 0.7f, -1.5f}, {300.0f, 50.0f}, [this]() {
+                SetSpace(GetLocalSpace());
+            });
+        stageSpaceButton_ =
+            ui_.AddButton("Stage Space", {0.3f, 0.7f, -1.5f}, {300.0f, 50.0f}, [this]() {
+                SetSpace(GetStageSpace());
+            });
         SetSpace(GetCurrentSpace());
 
         // Keyboard location controls

@@ -726,8 +726,7 @@ int main() {
         XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME,
 #endif // defined(XR_USE_PLATFORM_ANDROID)
         XR_FB_PASSTHROUGH_EXTENSION_NAME,
-        XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME
-    };
+        XR_META_ENVIRONMENT_DEPTH_EXTENSION_NAME};
     const uint32_t numRequiredExtensions =
         sizeof(requiredExtensionNames) / sizeof(requiredExtensionNames[0]);
 
@@ -813,7 +812,8 @@ int main() {
     OXR(initResult = xrGetSystem(app.Instance, &systemGetInfo, &systemId));
     if (initResult != XR_SUCCESS) {
         if (initResult == XR_ERROR_FORM_FACTOR_UNAVAILABLE) {
-            ALOGE("Failed to get system; the specified form factor is not available. Is your headset connected?");
+            ALOGE(
+                "Failed to get system; the specified form factor is not available. Is your headset connected?");
         } else {
             ALOGE("xrGetSystem failed, error %d", initResult);
         }

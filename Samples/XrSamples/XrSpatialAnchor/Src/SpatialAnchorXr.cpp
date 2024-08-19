@@ -1404,21 +1404,21 @@ int main() {
     }
 
     // Check that the extensions required are present.
-    std::vector<const char*> requiredExtensionNames {
+    std::vector<const char*> requiredExtensionNames{
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
         XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
 #elif defined(XR_USE_GRAPHICS_API_OPENGL)
         XR_KHR_OPENGL_ENABLE_EXTENSION_NAME,
 #endif
 #if defined(XR_USE_PLATFORM_ANDROID)
-            XR_EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME,
-            XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME,
+        XR_EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME,
+        XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME,
 #endif // defined(XR_USE_PLATFORM_ANDROID)
-            XR_FB_PASSTHROUGH_EXTENSION_NAME, XR_FB_SPATIAL_ENTITY_EXTENSION_NAME,
-            XR_FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME,
-            XR_META_SPATIAL_ENTITY_DISCOVERY_EXTENSION_NAME,
-            XR_META_SPATIAL_ENTITY_PERSISTENCE_EXTENSION_NAME
-    };
+        XR_FB_PASSTHROUGH_EXTENSION_NAME,
+        XR_FB_SPATIAL_ENTITY_EXTENSION_NAME,
+        XR_FB_SPATIAL_ENTITY_QUERY_EXTENSION_NAME,
+        XR_META_SPATIAL_ENTITY_DISCOVERY_EXTENSION_NAME,
+        XR_META_SPATIAL_ENTITY_PERSISTENCE_EXTENSION_NAME};
     const uint32_t numRequiredExtensions = requiredExtensionNames.size();
 
     std::vector<const char*> localMultiplayerExtensionNames{

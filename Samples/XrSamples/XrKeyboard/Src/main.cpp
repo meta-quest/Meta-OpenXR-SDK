@@ -48,6 +48,7 @@ class XrKeyboardApp : public OVRFW::XrApp {
         "                                                                   \n"
         "You will need to setup your device with a connected or remote      \n"
         "tracked keyboard. You can do this from Quest Settings.             ";
+
    public:
     XrKeyboardApp() : OVRFW::XrApp() {
         BackgroundColor = OVR::Vector4f(0.60f, 0.95f, 0.4f, 1.0f);
@@ -121,7 +122,7 @@ class XrKeyboardApp : public OVRFW::XrApp {
             {-0.7f, 0.0f, -1.9f},
             {450.0f, 100.0f});
         connectionRequiredButton_ = ui_.AddButton(
-            "Toggle Require Keyboard Connected", {-0.7f, 0.25f, -1.9f}, {450.0f, 100.0f}, [=]() {
+            "Toggle Require Keyboard Connected", {-0.7f, 0.25f, -1.9f}, {450.0f, 100.0f}, [this]() {
                 bool currentState = keyboard_->RequireKeyboardConnectedToTrack();
                 bool newState = !currentState;
                 SetSwitchConnectionRequired(bigText_, connectionRequiredButton_, newState);
@@ -130,7 +131,7 @@ class XrKeyboardApp : public OVRFW::XrApp {
         SetSwitchConnectionRequired(bigText_, connectionRequiredButton_, true);
 
         useRemoteKeyboardButton_ = ui_.AddButton(
-            "Toggle Local or Remote Keyboard", {-0.7f, 0.5f, -1.9f}, {450.0f, 100.0f}, [=]() {
+            "Toggle Local or Remote Keyboard", {-0.7f, 0.5f, -1.9f}, {450.0f, 100.0f}, [this]() {
                 bool currentState = keyboard_->UseRemoteKeyboard();
                 bool newState = !currentState;
                 SetSwitchUseRemoteKeyboard(
@@ -140,8 +141,8 @@ class XrKeyboardApp : public OVRFW::XrApp {
         SetSwitchUseRemoteKeyboard(
             bigText_, connectionRequiredButton_, useRemoteKeyboardButton_, false);
 
-        trackingRequiredButton_ =
-            ui_.AddButton("Show Untracked Keyboard", {-0.7f, 0.75f, -1.9f}, {450.0f, 100.0f}, [=]() {
+        trackingRequiredButton_ = ui_.AddButton(
+            "Show Untracked Keyboard", {-0.7f, 0.75f, -1.9f}, {450.0f, 100.0f}, [this]() {
                 bool currentState = keyboard_->TrackingRequired();
                 bool newState = !currentState;
                 SetTrackingRequired(
@@ -180,9 +181,6 @@ class XrKeyboardApp : public OVRFW::XrApp {
     virtual bool SessionInit() override {
         /// Use LocalSpace instead of Stage Space.
         CurrentSpace = LocalSpace;
-        /// Disable scene navigation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
         /// Init session bound objects
         if (false == controllerRenderL_.Init(true)) {
             ALOG("SessionInit::Init L controller renderer FAILED.");
@@ -362,9 +360,7 @@ class XrKeyboardApp : public OVRFW::XrApp {
             gr_.SetPose(planePose);
             const float padding = 0.1f; // provide some padding
             gr_.SetScale(
-                {(dimensions_.x * 0.5f) + padding,
-                 (dimensions_.z * 0.5f) + padding,
-                 1.0f});
+                {(dimensions_.x * 0.5f) + padding, (dimensions_.z * 0.5f) + padding, 1.0f});
             gr_.Update();
         } else {
             renderKeyboard_ = false;

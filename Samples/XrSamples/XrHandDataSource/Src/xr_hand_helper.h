@@ -8,7 +8,6 @@ Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All
 ************************************************************************************************/
 #pragma once
 
-
 #include "xr_helper.h"
 
 #include <array>
@@ -47,8 +46,7 @@ class XrHandHelper : public XrHelper {
                 XR_HAND_TRACKING_DATA_SOURCE_CONTROLLER_EXT,
             };
 
-            XrHandTrackingDataSourceInfoEXT usageInfo{
-                XR_TYPE_HAND_TRACKING_DATA_SOURCE_INFO_EXT};
+            XrHandTrackingDataSourceInfoEXT usageInfo{XR_TYPE_HAND_TRACKING_DATA_SOURCE_INFO_EXT};
             usageInfo.requestedDataSourceCount = (uint32_t)dataSources.size();
             usageInfo.requestedDataSources = dataSources.data();
 
@@ -152,7 +150,6 @@ class XrHandHelper : public XrHelper {
             } else {
                 return false;
             }
-
         }
         return false;
     }

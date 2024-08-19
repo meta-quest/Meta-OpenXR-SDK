@@ -85,61 +85,69 @@ class XrHandsApp : public OVRFW::XrApp {
         /// Build UI
         CreateSampleDescriptionPanel();
 
-        ui_.AddLabel(
-            "OpenXR Hands + FB extensions Sample", {0.1f, 1.25f, -2.0f}, {1300.0f, 100.0f})->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
-        ui_.AddLabel("Left Hand", {-1.0f, 2.5f, -2.0f}, {200.0f, 100.0f})->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        ui_.AddLabel("OpenXR Hands + FB extensions Sample", {0.1f, 1.25f, -2.0f}, {1300.0f, 100.0f})
+            ->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
+        ui_.AddLabel("Left Hand", {-1.0f, 2.5f, -2.0f}, {200.0f, 100.0f})
+            ->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
 
-        renderMeshLButton_ = ui_.AddButton("Mesh: On", {-1.0f, 2.25f, -2.0f}, {200.0f, 100.0f}, [=]() {
-            renderMeshL_ = !renderMeshL_;
-            if (renderMeshL_) {
-                renderMeshLButton_->SetText("Mesh: On");
-            } else {
-                renderMeshLButton_->SetText("Mesh: Off");
-            }
-        });
-        renderJointsLButton_ = ui_.AddButton("Joints: Off", {-1.0f, 2.0f, -2.0f}, {200.0f, 100.0f}, [=]() {
-            renderJointsL_ = !renderJointsL_;
-            if (renderJointsL_) {
-                renderJointsLButton_->SetText("Joints: On");
-            } else {
-                renderJointsLButton_->SetText("Joints: Off");
-            }
-        });
-        renderCapsulesLButton_ = ui_.AddButton("Capsules: Off", {-1.0f, 1.75f, -2.0f}, {200.0f, 100.0f}, [=]() {
-            renderCapsulesL_ = !renderCapsulesL_;
-            if (renderCapsulesL_) {
-                renderCapsulesLButton_->SetText("Capsules: On");
-            } else {
-                renderCapsulesLButton_->SetText("Capsules: Off");
-            }
-        });
+        renderMeshLButton_ =
+            ui_.AddButton("Mesh: On", {-1.0f, 2.25f, -2.0f}, {200.0f, 100.0f}, [this]() {
+                renderMeshL_ = !renderMeshL_;
+                if (renderMeshL_) {
+                    renderMeshLButton_->SetText("Mesh: On");
+                } else {
+                    renderMeshLButton_->SetText("Mesh: Off");
+                }
+            });
+        renderJointsLButton_ =
+            ui_.AddButton("Joints: Off", {-1.0f, 2.0f, -2.0f}, {200.0f, 100.0f}, [this]() {
+                renderJointsL_ = !renderJointsL_;
+                if (renderJointsL_) {
+                    renderJointsLButton_->SetText("Joints: On");
+                } else {
+                    renderJointsLButton_->SetText("Joints: Off");
+                }
+            });
+        renderCapsulesLButton_ =
+            ui_.AddButton("Capsules: Off", {-1.0f, 1.75f, -2.0f}, {200.0f, 100.0f}, [this]() {
+                renderCapsulesL_ = !renderCapsulesL_;
+                if (renderCapsulesL_) {
+                    renderCapsulesLButton_->SetText("Capsules: On");
+                } else {
+                    renderCapsulesLButton_->SetText("Capsules: Off");
+                }
+            });
 
-        ui_.AddLabel("Right Hand", {0.0f, 2.5f, -2.0f}, {200.0f, 100.0f})->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        ui_.AddLabel("Right Hand", {0.0f, 2.5f, -2.0f}, {200.0f, 100.0f})
+            ->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
 
-        renderMeshRButton_ = ui_.AddButton("Mesh: On", {0.0f, 2.25f, -2.0f}, {200.0f, 100.0f}, [=]() {
-            renderMeshR_ = !renderMeshR_;
-            if (renderMeshR_) {
-                renderMeshRButton_->SetText("Mesh: On");
-            } else {
-                renderMeshRButton_->SetText("Mesh: Off");
-            }
-        });
-        renderJointsRButton_ = ui_.AddButton("Joints: Off", {0.0f, 2.0f, -2.0f}, {200.0f, 100.0f}, [=]() {
-            renderJointsR_ = !renderJointsR_;
-            if (renderJointsR_) {
-                renderJointsRButton_->SetText("Joints: On");
-            } else {
-                renderJointsRButton_->SetText("Joints: Off");
-            }
-        });
-        renderCapsulesRButton_ = ui_.AddButton("Capsules: Off", {0.0f, 1.75f, -2.0f}, {200.0f, 100.0f}, [=]() {
-            renderCapsulesR_ = !renderCapsulesR_;
-            if (renderCapsulesR_) {
-                renderCapsulesRButton_->SetText("Capsules: On");
-            } else {
-                renderCapsulesRButton_->SetText("Capsules: Off");
-            }
-        });
+        renderMeshRButton_ =
+            ui_.AddButton("Mesh: On", {0.0f, 2.25f, -2.0f}, {200.0f, 100.0f}, [this]() {
+                renderMeshR_ = !renderMeshR_;
+                if (renderMeshR_) {
+                    renderMeshRButton_->SetText("Mesh: On");
+                } else {
+                    renderMeshRButton_->SetText("Mesh: Off");
+                }
+            });
+        renderJointsRButton_ =
+            ui_.AddButton("Joints: Off", {0.0f, 2.0f, -2.0f}, {200.0f, 100.0f}, [this]() {
+                renderJointsR_ = !renderJointsR_;
+                if (renderJointsR_) {
+                    renderJointsRButton_->SetText("Joints: On");
+                } else {
+                    renderJointsRButton_->SetText("Joints: Off");
+                }
+            });
+        renderCapsulesRButton_ =
+            ui_.AddButton("Capsules: Off", {0.0f, 1.75f, -2.0f}, {200.0f, 100.0f}, [this]() {
+                renderCapsulesR_ = !renderCapsulesR_;
+                if (renderCapsulesR_) {
+                    renderCapsulesRButton_->SetText("Capsules: On");
+                } else {
+                    renderCapsulesRButton_->SetText("Capsules: Off");
+                }
+            });
 
         // Inspect hand tracking system properties
         XrSystemHandTrackingPropertiesEXT handTrackingSystemProperties{
@@ -192,7 +200,7 @@ class XrHandsApp : public OVRFW::XrApp {
         // Tilt the description billboard 45 degrees towards the user
         descriptionLabel->SetLocalRotation(
             OVR::Quat<float>::FromRotationVector({0, OVR::DegreeToRad(-30.0f), 0}));
-        descriptionLabel->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        descriptionLabel->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
     }
 
     virtual void AppShutdown(const xrJava* context) override {
@@ -207,9 +215,6 @@ class XrHandsApp : public OVRFW::XrApp {
     }
 
     virtual bool SessionInit() override {
-        /// Disable scene navitgation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
         /// Init session bound objects
         if (false == controllerRenderL_.Init(true)) {
             ALOG("AppInit::Init L controller renderer FAILED.");

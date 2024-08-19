@@ -1,6 +1,7 @@
 /************************************************************************************************
 Filename    :   EnvironmentRenderer.h
-Content     :   A variant of ModelRenderer suited for rendering gltf scenes with vertex color based fog
+Content     :   A variant of ModelRenderer suited for rendering gltf scenes with
+                vertex color based fog
 Created     :   July 2023
 Authors     :   Alexander Borsboom
 Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
@@ -43,7 +44,9 @@ class EnvironmentRenderer {
     bool Init(std::string modelPath, OVRFW::ovrFileSys* fileSys);
     void Shutdown();
     void Render(std::vector<ovrDrawSurface>& surfaceList);
-    bool IsInitialized() const { return Initialized;}
+    bool IsInitialized() const {
+        return Initialized;
+    }
 
    public:
     OVR::Vector3f SpecularLightDirection;

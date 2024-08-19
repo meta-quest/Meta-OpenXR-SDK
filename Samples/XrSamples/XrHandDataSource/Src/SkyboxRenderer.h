@@ -42,7 +42,9 @@ class SkyboxRenderer {
     bool Init(std::string modelPath, OVRFW::ovrFileSys* fileSys);
     void Shutdown();
     void Render(std::vector<ovrDrawSurface>& surfaceList);
-    bool IsInitialized() const { return Initialized;}
+    bool IsInitialized() const {
+        return Initialized;
+    }
 
    public:
     OVR::Vector3f TopColor;

@@ -61,7 +61,7 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
             XR_TYPE_SYSTEM_EYE_TRACKING_PROPERTIES_FB};
         XrSystemBodyTrackingPropertiesFB bodyTrackingSystemProperties{
             XR_TYPE_SYSTEM_BODY_TRACKING_PROPERTIES_FB};
-        XrSystemFaceTrackingProperties2FB faceTrackingSystemProperties2 {
+        XrSystemFaceTrackingProperties2FB faceTrackingSystemProperties2{
             XR_TYPE_SYSTEM_FACE_TRACKING_PROPERTIES2_FB};
 
         XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
@@ -113,7 +113,8 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
                 GetInstance(), "xrGetEyeGazesFB", (PFN_xrVoidFunction*)(&xrGetEyeGazesFB_)));
         }
 
-         if (faceTrackingSystemProperties2.supportsAudioFaceTracking || faceTrackingSystemProperties2.supportsVisualFaceTracking) {
+        if (faceTrackingSystemProperties2.supportsAudioFaceTracking ||
+            faceTrackingSystemProperties2.supportsVisualFaceTracking) {
             ALOG(
                 "xrGetSystemProperties XR_TYPE_SYSTEM_FACE_TRACKING_PROPERTIES2_FB OK - tongue and audio-driven face tracking are supported.");
             /// Hook up extensions for face tracking (v2)
@@ -161,9 +162,6 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
     virtual bool SessionInit() override {
         CreateSampleDescriptionPanel();
 
-        /// Disable scene navitgation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
         /// Init session bound objects
         if (false == controllerRenderL_.Init(true)) {
             ALOG("AppInit::Init L controller renderer FAILED.");
@@ -207,8 +205,7 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
             createInfo.faceExpressionSet = XR_FACE_EXPRESSION_SET2_DEFAULT_FB;
             createInfo.requestedDataSourceCount = 2;
             XrFaceTrackingDataSource2FB dataSources[2] = {
-                XR_FACE_TRACKING_DATA_SOURCE2_VISUAL_FB,
-                XR_FACE_TRACKING_DATA_SOURCE2_AUDIO_FB};
+                XR_FACE_TRACKING_DATA_SOURCE2_VISUAL_FB, XR_FACE_TRACKING_DATA_SOURCE2_AUDIO_FB};
             createInfo.requestedDataSources = dataSources;
             OXR(xrCreateFaceTracker2FB_(GetSession(), &createInfo, &faceTracker2_));
             ALOG("xrCreateFaceTracker2FB faceTracker2_=%llx", (long long)faceTracker2_);
@@ -335,10 +332,12 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
                             const auto p1 = FromXrVector3f(toJoint.pose.position);
                             const auto d = (p1 - p0);
 
-                            const OVR::Quatf look = OVR::Quatf::LookRotation(d.Normalized(), {0, 1, 0});
+                            const OVR::Quatf look =
+                                OVR::Quatf::LookRotation(d.Normalized(), {0, 1, 0});
                             /// apply inverse scale here
                             const float h = d.Length();
-                            const OVR::Vector3f start = p0 + look.Rotate(OVR::Vector3f(0, 0, -h / 2));
+                            const OVR::Vector3f start =
+                                p0 + look.Rotate(OVR::Vector3f(0, 0, -h / 2));
 
                             // Skip root and hips
                             OVRFW::GeometryRenderer& gr = bodySkeletonRenderers[i - 2];
@@ -404,14 +403,15 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
                     }
                 }
                 return EmojiExpression::Neutral;
-            } else if (expressionWeights.weights[XR_FACE_EXPRESSION2_LIP_CORNER_PULLER_L_FB] > 0.5 &&
+            } else if (
+                expressionWeights.weights[XR_FACE_EXPRESSION2_LIP_CORNER_PULLER_L_FB] > 0.5 &&
                 expressionWeights.weights[XR_FACE_EXPRESSION2_LIP_CORNER_PULLER_R_FB] > 0.5) {
                 return EmojiExpression::Smile;
             } else if (
                 expressionWeights.weights[XR_FACE_EXPRESSION2_LIP_PUCKER_L_FB] > 0.25 &&
                 expressionWeights.weights[XR_FACE_EXPRESSION2_LIP_PUCKER_R_FB] > 0.25) {
                 return EmojiExpression::Kiss;
-             } else if (expressionWeights.weights[XR_FACE_EXPRESSION2_TONGUE_OUT_FB] > 0.5) {
+            } else if (expressionWeights.weights[XR_FACE_EXPRESSION2_TONGUE_OUT_FB] > 0.5) {
                 return EmojiExpression::TongueOut;
             } else {
                 return EmojiExpression::Neutral;
@@ -419,7 +419,7 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
         };
 
         /// Face
-       if (faceTracker2_ != XR_NULL_HANDLE) {
+        if (faceTracker2_ != XR_NULL_HANDLE) {
             float weights_[XR_FACE_EXPRESSION2_COUNT_FB] = {};
             float confidence_[XR_FACE_CONFIDENCE2_COUNT_FB] = {};
 

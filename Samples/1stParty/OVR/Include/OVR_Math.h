@@ -1210,8 +1210,24 @@ class Vector4 {
         return Vector4(x * b.x, y * b.y, z * b.z, w * b.w);
     }
 
+    Vector4& operator*=(const Vector4& b) {
+        x *= b.x;
+        y *= b.y;
+        z *= b.z;
+        w *= b.w;
+        return *this;
+    }
+
     Vector4 operator/(const Vector4& b) const {
         return Vector4(x / b.x, y / b.y, z / b.z, w / b.w);
+    }
+
+    Vector4& operator/=(const Vector4& b) {
+        x /= b.x;
+        y /= b.y;
+        z /= b.z;
+        w /= b.w;
+        return *this;
     }
 
     // Dot product
@@ -4783,6 +4799,45 @@ struct FovPort {
         return fov;
     }
 };
+
+template <typename T>
+struct MapRange {
+   public:
+    MapRange(OVR::Vector2<T> _from, OVR::Vector2<T> _to) : from(_from), to(_to) {}
+    T minInput() const {
+        return from.x;
+    }
+    T maxInput() const {
+        return from.y;
+    }
+    T minOutput() const {
+        return to.x;
+    }
+    T maxOutput() const {
+        return to.y;
+    }
+    T map(T value, bool doClamp = true) const {
+        T fromRange = from.y - from.x;
+        T toRange = to.y - to.x;
+
+        if (fromRange == T(0.0)) {
+            return T(0.0);
+        }
+
+        T in = (value - from.x) / fromRange;
+        if (doClamp) {
+            in = std::clamp(in, T(0.0), T(1.0));
+        }
+        T out = in * toRange + to.x;
+
+        return out;
+    }
+    OVR::Vector2<T> from;
+    OVR::Vector2<T> to;
+};
+
+typedef MapRange<float> MapRangef;
+typedef MapRange<double> MapRanged;
 
 } // Namespace OVR
 

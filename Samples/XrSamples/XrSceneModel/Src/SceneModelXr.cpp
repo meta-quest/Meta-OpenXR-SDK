@@ -40,6 +40,7 @@ Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rig
 #include <meta_openxr_preview/meta_boundary_visibility.h>
 
 
+
 #if defined(_WIN32)
 // Favor the high performance NVIDIA or AMD GPUs
 extern "C" {
@@ -166,6 +167,7 @@ static const std::map<std::string, XrColor4f> SemanticLabelToColorMap = {
     {"PLANT", {0.1f, 0.9f, 0.2f, 0.6f}},
     {"WALL_ART", {1.0f, 0.6f, 0.0f, 0.6f}},
     {"OTHER", {1.0f, 0.0f, 1.0f, 0.2f}}};
+
 
 XrColor4f GetColorForSemanticLabels(const std::string& labels) {
     const XrColor4f defaultColor = {0.2f, 0.2f, 0.0f, 0.2f};
@@ -466,7 +468,7 @@ struct ovrExtensionFunctionPointers {
     PFN_xrPassthroughLayerSetStyleFB xrPassthroughLayerSetStyleFB = nullptr;
     PFN_xrPassthroughStartFB xrPassthroughStartFB = nullptr;
     PFN_xrPassthroughPauseFB xrPassthroughPauseFB = nullptr;
-    PFN_xrEnumerateSpaceSupportedComponentsFB xrEnumerateSpaceSupportedComponentsFB = nullptr;
+        PFN_xrEnumerateSpaceSupportedComponentsFB xrEnumerateSpaceSupportedComponentsFB = nullptr;
     PFN_xrGetSpaceComponentStatusFB xrGetSpaceComponentStatusFB = nullptr;
     PFN_xrSetSpaceComponentStatusFB xrSetSpaceComponentStatusFB = nullptr;
     PFN_xrQuerySpacesFB xrQuerySpacesFB = nullptr;
@@ -482,7 +484,7 @@ struct ovrExtensionFunctionPointers {
     PFN_xrRequestSceneCaptureFB xrRequestSceneCaptureFB = nullptr;
 #endif
     PFN_xrRequestBoundaryVisibilityMETA xrRequestBoundaryVisibilityMETA = nullptr;
-};
+    };
 
 struct ovrApp {
     void Clear();
@@ -527,7 +529,7 @@ struct ovrApp {
         QueryAll,
         QueryAllBounded2DEnabled,
         QueryAllRoomLayoutEnabled,
-        QueryByUuids,
+                QueryByUuids,
     };
     QueryType NextQueryType;
     bool QueryAllAnchorsInRoom = true;
@@ -543,7 +545,7 @@ struct ovrApp {
     enum class VisualizationMode {
         VisualizeAll = 0,
         VisualizePlanesAndVolumes,
-        VisualizeMeshes,
+                VisualizeMeshes,
         Count, // Not a valid enum
     };
     VisualizationMode CurrentVisualizationMode = VisualizationMode::VisualizeAll;
@@ -564,7 +566,7 @@ struct ovrApp {
 
     XrBoundaryVisibilityMETA CurrentBoundaryVisibility = XR_BOUNDARY_VISIBILITY_NOT_SUPPRESSED_META;
 
-};
+    };
 
 void ovrApp::Clear() {
 #if defined(XR_USE_PLATFORM_ANDROID)
@@ -770,7 +772,8 @@ std::string GetSemanticLabels(ovrApp& app, const XrSpace space) {
     const XrSemanticLabelsSupportInfoFB semanticLabelsSupportInfo = {
         XR_TYPE_SEMANTIC_LABELS_SUPPORT_INFO_FB,
         nullptr,
-        XR_SEMANTIC_LABELS_SUPPORT_MULTIPLE_SEMANTIC_LABELS_BIT_FB | XR_SEMANTIC_LABELS_SUPPORT_ACCEPT_DESK_TO_TABLE_MIGRATION_BIT_FB |
+        XR_SEMANTIC_LABELS_SUPPORT_MULTIPLE_SEMANTIC_LABELS_BIT_FB |
+            XR_SEMANTIC_LABELS_SUPPORT_ACCEPT_DESK_TO_TABLE_MIGRATION_BIT_FB |
             XR_SEMANTIC_LABELS_SUPPORT_ACCEPT_INVISIBLE_WALL_FACE_BIT_FB,
         recognizedLabels.c_str()};
 
@@ -882,6 +885,7 @@ bool UpdateOvrMesh(ovrApp& app, ovrMesh& mesh) {
     return true;
 }
 
+
 void ovrApp::HandleXrEvents() {
     XrEventDataBuffer eventDataBuffer = {};
 
@@ -968,7 +972,8 @@ void ovrApp::HandleXrEvents() {
                             }
                         }
                         if (IsComponentEnabled(
-                                setStatusComplete->space, XR_SPACE_COMPONENT_TYPE_TRIANGLE_MESH_META)) {
+                                setStatusComplete->space,
+                                XR_SPACE_COMPONENT_TYPE_TRIANGLE_MESH_META)) {
                             ovrMesh mesh(setStatusComplete->space);
                             if (UpdateOvrMesh(*this, mesh)) {
                                 AppRenderer.Scene.Meshes.emplace_back(mesh);
@@ -1063,7 +1068,7 @@ void ovrApp::HandleXrEvents() {
                         }
                     }
 
-                }
+                                    }
             } break;
             case XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB: {
                 ALOGV("xrPollEvent: received XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB");
@@ -1095,7 +1100,7 @@ void ovrApp::HandleXrEvents() {
                     "xrPollEvent: Boundary visibility changed to %s",
                     BoundaryVisibilityToString(CurrentBoundaryVisibility).c_str());
             } break;
-            default:
+                            default:
                 ALOGV("xrPollEvent: Unknown event");
                 break;
         }
@@ -1288,7 +1293,7 @@ void CycleSceneVisualizationMode(ovrApp& app) {
     const bool isVisiblePlanesAndVolumes =
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeAll ||
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizePlanesAndVolumes;
-    const bool isVisibleMeshes =
+        const bool isVisibleMeshes =
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeAll ||
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeMeshes;
 
@@ -1299,7 +1304,7 @@ void CycleSceneVisualizationMode(ovrApp& app) {
     for (auto& volume : scene.Volumes) {
         volume.SetVisible(isVisiblePlanesAndVolumes);
     }
-    for (auto& mesh : scene.Meshes) {
+        for (auto& mesh : scene.Meshes) {
         mesh.SetVisible(isVisibleMeshes);
     }
 }
@@ -1335,6 +1340,7 @@ void UpdateSceneMeshes(ovrApp& app, const XrFrameState& frameState) {
         mesh.SetPose(spaceLocation.pose);
     }
 }
+
 
 void CreatePassthrough(ovrApp& app) {
     XrPassthroughCreateInfoFB ptci = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
@@ -1455,7 +1461,7 @@ int main() {
         XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME,
         XR_META_SPATIAL_ENTITY_MESH_EXTENSION_NAME,
         XR_META_BOUNDARY_VISIBILITY_EXTENSION_NAME,
-        XR_FB_SCENE_EXTENSION_NAME,
+                XR_FB_SCENE_EXTENSION_NAME,
 #if defined(ANDROID)
         XR_FB_SCENE_CAPTURE_EXTENSION_NAME,
 #endif
@@ -1533,7 +1539,8 @@ int main() {
     OXR(initResult = xrGetSystem(instance, &systemGetInfo, &systemId));
     if (initResult != XR_SUCCESS) {
         if (initResult == XR_ERROR_FORM_FACTOR_UNAVAILABLE) {
-            ALOGE("Failed to get system; the specified form factor is not available. Is your headset connected?");
+            ALOGE(
+                "Failed to get system; the specified form factor is not available. Is your headset connected?");
         } else {
             ALOGE("xrGetSystem failed, error %d", initResult);
         }
@@ -1861,7 +1868,7 @@ int main() {
         instance,
         "xrPassthroughPauseFB",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrPassthroughPauseFB)));
-    OXR(xrGetInstanceProcAddr(
+        OXR(xrGetInstanceProcAddr(
         instance,
         "xrEnumerateSpaceSupportedComponentsFB",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrEnumerateSpaceSupportedComponentsFB)));
@@ -1917,7 +1924,7 @@ int main() {
         instance,
         "xrRequestBoundaryVisibilityMETA",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrRequestBoundaryVisibilityMETA)));
-
+    
     CreatePassthrough(app);
 
     // Two values for left and right controllers.
@@ -2004,11 +2011,12 @@ int main() {
             }
             app.AppRenderer.Scene.Meshes.clear();
 
+
             app.ClearScene = false;
 
             app.UuidSet.clear();
 
-
+            
             app.IsQueryComplete = true;
         }
 
@@ -2026,7 +2034,7 @@ int main() {
                 result = QueryAllAnchorsWithSpecificComponentEnabled(
                     app, XR_SPACE_COMPONENT_TYPE_ROOM_LAYOUT_FB);
                 app.NextQueryType = ovrApp::QueryType::QueryByUuids;
-            } else if (app.NextQueryType == ovrApp::QueryType::QueryByUuids) {
+                        } else if (app.NextQueryType == ovrApp::QueryType::QueryByUuids) {
                 result = QueryAnchorsByUuids(app);
                 app.NextQueryType = ovrApp::QueryType::None;
             }
@@ -2076,6 +2084,7 @@ int main() {
 
         UpdateSceneMeshes(app, frameState);
 
+
         assert(input != nullptr);
         // A Button: Refresh all by querying room entity that has room layout component enabled.
         if (input->IsButtonAPressed()) {
@@ -2105,7 +2114,7 @@ int main() {
             app.ClearScene = true;
             app.NextQueryType = ovrApp::QueryType::QueryAllRoomLayoutEnabled;
             app.QueryAllAnchorsInRoom = false;
-            lastInputTimes[0] = frameState.predictedDisplayTime;
+                        lastInputTimes[0] = frameState.predictedDisplayTime;
         }
 
         // Left Index Trigger: Toggle plane visualization mode.
@@ -2118,7 +2127,7 @@ int main() {
             CycleSceneVisualizationMode(app);
         }
 
-
+        
 #if defined(ANDROID)
         // Right Index Trigger: Request scene capture.
         if (input->IsTriggerPressed(SimpleXrInput::Side_Right)) {
@@ -2145,9 +2154,11 @@ int main() {
         // Right Grip: Toggle boundary visibility request.
         if (input->IsGripPressed(SimpleXrInput::Side_Right)) {
             const XrBoundaryVisibilityMETA boundaryVisibilityRequested =
-                (app.CurrentBoundaryVisibility == XR_BOUNDARY_VISIBILITY_NOT_SUPPRESSED_META) ?
-                XR_BOUNDARY_VISIBILITY_SUPPRESSED_META : XR_BOUNDARY_VISIBILITY_NOT_SUPPRESSED_META;
-            OXR(app.FunPtrs.xrRequestBoundaryVisibilityMETA(app.Session, boundaryVisibilityRequested));
+                (app.CurrentBoundaryVisibility == XR_BOUNDARY_VISIBILITY_NOT_SUPPRESSED_META)
+                ? XR_BOUNDARY_VISIBILITY_SUPPRESSED_META
+                : XR_BOUNDARY_VISIBILITY_NOT_SUPPRESSED_META;
+            OXR(app.FunPtrs.xrRequestBoundaryVisibilityMETA(
+                app.Session, boundaryVisibilityRequested));
             lastInputTimes[1] = frameState.predictedDisplayTime;
         }
 
@@ -2233,7 +2244,8 @@ int main() {
         memset(app.Layers, 0, sizeof(ovrCompositorLayer_Union) * ovrMaxLayerCount);
 
         if (app.DisplayPassthrough && app.PassthroughLayer != XR_NULL_HANDLE) {
-            XrCompositionLayerPassthroughFB passthroughLayer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
+            XrCompositionLayerPassthroughFB passthroughLayer = {
+                XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
             passthroughLayer.layerHandle = app.PassthroughLayer;
             passthroughLayer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
             passthroughLayer.space = XR_NULL_HANDLE;

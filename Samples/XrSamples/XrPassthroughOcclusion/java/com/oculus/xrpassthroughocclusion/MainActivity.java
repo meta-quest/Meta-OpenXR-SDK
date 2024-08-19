@@ -20,7 +20,6 @@ public class MainActivity extends android.app.Activity {
   // be made explicitly in the code!
   private static final String PERMISSIONS[] = {"com.oculus.permission.USE_SCENE"};
 
-  private static final String NATIVE_LIBRARIES[] = {"openxr_loader", "xrpassthroughocclusion"};
   private final int PERMISSION_REQUEST_CODE = 1;
 
   private Set<String> mRequestedPermissions = new HashSet<>();
@@ -91,9 +90,6 @@ public class MainActivity extends android.app.Activity {
   private void startNativeActivity() {
     Log.d(TAG, "Starting native activity");
 
-    for (String libraryName : NATIVE_LIBRARIES) {
-      System.loadLibrary(libraryName);
-    }
     Intent intent = new Intent(getApplicationContext(), MainNativeActivity.class);
     startActivity(intent);
     finish();

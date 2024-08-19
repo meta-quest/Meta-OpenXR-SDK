@@ -73,8 +73,8 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             isExtensionAvailable(XR_META_DETACHED_CONTROLLERS_EXTENSION_NAME);
         isExtHandInteractionExtensionAvailable_ =
             isExtensionAvailable(XR_EXT_HAND_INTERACTION_EXTENSION_NAME);
-        isSimultaneousHandsControllersExtensionAvailable_ = isExtensionAvailable(
-            XR_META_SIMULTANEOUS_HANDS_AND_CONTROLLERS_EXTENSION_NAME);
+        isSimultaneousHandsControllersExtensionAvailable_ =
+            isExtensionAvailable(XR_META_SIMULTANEOUS_HANDS_AND_CONTROLLERS_EXTENSION_NAME);
 
         extensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
         extensions.push_back(XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME);
@@ -108,8 +108,12 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
         actionSetMenu_ = CreateActionSet(0, "menu_action_set", "UI Action Set");
         actionSetWorld_ = CreateActionSet(0, "world_action_set", "World Action Set");
         actionSetGestures_ = CreateActionSet(0, "gesture_action_set", "Gesture Action Set");
-        actionSetExtHandInteractionValues_ = CreateActionSet(0, "ext_hand_interaction_values_action_set", "Ext Hand Interaction Values Action Set");
-        actionSetExtHandInteractionReady_ = CreateActionSet(0, "ext_hand_interaction_ready_action_set", "Ext Hand Interaction Ready_Ext Action Set");
+        actionSetExtHandInteractionValues_ = CreateActionSet(
+            0, "ext_hand_interaction_values_action_set", "Ext Hand Interaction Values Action Set");
+        actionSetExtHandInteractionReady_ = CreateActionSet(
+            0,
+            "ext_hand_interaction_ready_action_set",
+            "Ext Hand Interaction Ready_Ext Action Set");
         actionSelect_ = CreateAction(
             actionSetMenu_,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
@@ -307,9 +311,7 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
         ///////////////////////////////////////////////////////////
 
         OXR(xrStringToPath(
-            instance,
-            "/interaction_profiles/oculus/touch_controller",
-            &touchInteractionProfile_));
+            instance, "/interaction_profiles/oculus/touch_controller", &touchInteractionProfile_));
 
         // Binding the same action to both hands is not a problem,
         // since you can use subActionPath later to distinguish them
@@ -493,39 +495,49 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             // Start with basic interactions
             suggestedBindings[extHandInteractionProfile_].emplace_back(
                 ActionSuggestedBinding(actionHandSelect_, "/user/hand/left/input/pinch_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionHandSelect_, "/user/hand/right/input/pinch_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionHandSqueeze_, "/user/hand/left/input/aim_activate_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionHandSqueeze_, "/user/hand/right/input/aim_activate_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionHandSelect_, "/user/hand/right/input/pinch_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionHandSqueeze_, "/user/hand/left/input/aim_activate_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionHandSqueeze_, "/user/hand/right/input/aim_activate_ext/value"));
 
             // Further bind the raw values, to make it easier to display/debug
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionLeftPinchValue_, "/user/hand/left/input/pinch_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionRightPinchValue_, "/user/hand/right/input/pinch_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionLeftAimActivateValue_, "/user/hand/left/input/aim_activate_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionRightAimActivateValue_, "/user/hand/right/input/aim_activate_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionLeftGraspValue_, "/user/hand/left/input/grasp_ext/value"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionRightGraspValue_, "/user/hand/right/input/grasp_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionLeftPinchValue_, "/user/hand/left/input/pinch_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionRightPinchValue_,
+                "/user/hand/right/input/pinch_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionLeftAimActivateValue_,
+                "/user/hand/left/input/aim_activate_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionRightAimActivateValue_,
+                "/user/hand/right/input/aim_activate_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionLeftGraspValue_, "/user/hand/left/input/grasp_ext/value"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionRightGraspValue_,
+                "/user/hand/right/input/grasp_ext/value"));
 
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionLeftPinchReady_, "/user/hand/left/input/pinch_ext/ready_ext"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionRightPinchReady_, "/user/hand/right/input/pinch_ext/ready_ext"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionLeftAimActivateReady_, "/user/hand/left/input/aim_activate_ext/ready_ext"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionRightAimActivateReady_, "/user/hand/right/input/aim_activate_ext/ready_ext"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionLeftGraspReady_, "/user/hand/left/input/grasp_ext/ready_ext"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionExtHandInteractionRightGraspReady_, "/user/hand/right/input/grasp_ext/ready_ext"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionLeftPinchReady_,
+                "/user/hand/left/input/pinch_ext/ready_ext"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionRightPinchReady_,
+                "/user/hand/right/input/pinch_ext/ready_ext"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionLeftAimActivateReady_,
+                "/user/hand/left/input/aim_activate_ext/ready_ext"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionRightAimActivateReady_,
+                "/user/hand/right/input/aim_activate_ext/ready_ext"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionLeftGraspReady_,
+                "/user/hand/left/input/grasp_ext/ready_ext"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionExtHandInteractionRightGraspReady_,
+                "/user/hand/right/input/grasp_ext/ready_ext"));
 
             // Hands aim, grip, pinch, & poke poses
             // T160738252: Pinch & poke funnel the data through but don't do anything right now
@@ -537,14 +549,14 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
                 ActionSuggestedBinding(actionHandGripPose_, "/user/hand/left/input/grip/pose"));
             suggestedBindings[extHandInteractionProfile_].emplace_back(
                 ActionSuggestedBinding(actionHandGripPose_, "/user/hand/right/input/grip/pose"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionHandPinchPose_, "/user/hand/left/input/pinch_ext/pose"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionHandPinchPose_, "/user/hand/right/input/pinch_ext/pose"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionHandPinchPose_, "/user/hand/left/input/pinch_ext/pose"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionHandPinchPose_, "/user/hand/right/input/pinch_ext/pose"));
             suggestedBindings[extHandInteractionProfile_].emplace_back(
                 ActionSuggestedBinding(actionHandPokePose_, "/user/hand/left/input/poke_ext/pose"));
-            suggestedBindings[extHandInteractionProfile_].emplace_back(
-                ActionSuggestedBinding(actionHandPokePose_, "/user/hand/right/input/poke_ext/pose"));
+            suggestedBindings[extHandInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                actionHandPokePose_, "/user/hand/right/input/poke_ext/pose"));
         }
 
         return suggestedBindings;
@@ -560,7 +572,7 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
 
         auto fileSys = std::unique_ptr<OVRFW::ovrFileSys>(OVRFW::ovrFileSys::Create(*context));
 
-        if( fileSys ) {
+        if (fileSys) {
             std::string environmentPath = "apk:///assets/SmallRoom.gltf.ovrscene";
             environmentRenderer_.Init(environmentPath, fileSys.get());
             std::string skyboxPath = "apk:///assets/Skybox.gltf.ovrscene";
@@ -572,7 +584,8 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT};
         XrSystemProperties systemProperties{
             XR_TYPE_SYSTEM_PROPERTIES, &handTrackingSystemProperties};
-        XrSystemSimultaneousHandsAndControllersPropertiesMETA simultaneousHandsControllersSystemProperties{
+        XrSystemSimultaneousHandsAndControllersPropertiesMETA
+            simultaneousHandsControllersSystemProperties{
                 XR_TYPE_SYSTEM_SIMULTANEOUS_HANDS_AND_CONTROLLERS_PROPERTIES_META};
         reinterpret_cast<XrBaseOutStructure*>(&handTrackingSystemProperties)->next =
             reinterpret_cast<XrBaseOutStructure*>(&simultaneousHandsControllersSystemProperties);
@@ -617,13 +630,8 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
     }
 
     virtual bool SessionInit() override {
-
         /// Use LocalSpace instead of Stage Space.
         CurrentSpace = LocalSpace;
-
-        /// Disable scene navigation
-        GetScene().SetFootPos({0.0_m, 0.0_m, 0.0_m});
-        this->FreeMove = false;
 
         XrActionSpaceCreateInfo actionSpaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
         actionSpaceCreateInfo.action = actionControllerAimPose_;
@@ -685,7 +693,11 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             // Attach ActionSets to session
             // This is required before any call to xrSyncActions for these action sets
             std::vector<XrActionSet> actionSets{
-                {actionSetWorld_, actionSetMenu_, actionSetGestures_, actionSetExtHandInteractionValues_, actionSetExtHandInteractionReady_}};
+                {actionSetWorld_,
+                 actionSetMenu_,
+                 actionSetGestures_,
+                 actionSetExtHandInteractionValues_,
+                 actionSetExtHandInteractionReady_}};
             XrSessionActionSetsAttachInfo attachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
             attachInfo.countActionSets = actionSets.size();
             attachInfo.actionSets = actionSets.data();
@@ -727,7 +739,6 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
                     .AddPoseAction(actionDetachedControllerAimPose_, "Detached Aim Pose");
             }
 
-
             actionSetPanels_.insert(
                 {actionSetGestures_,
                  ActionSetDisplayPanel(
@@ -740,41 +751,73 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             if (isExtHandInteractionExtensionAvailable_) {
                 handActionSetPanels_.insert(
                     {actionSetExtHandInteractionValues_,
-                    ActionSetDisplayPanel(
-                        "Ext Hand Interaction Values Action Set", Session, Instance, &ui_, {2.5_m, 3.0_m, -1.5_m})});
-                handActionSetPanels_.at(actionSetExtHandInteractionValues_).AddFloatAction(actionExtHandInteractionLeftPinchValue_, "Left Pinch Value");
-                handActionSetPanels_.at(actionSetExtHandInteractionValues_).AddFloatAction(actionExtHandInteractionLeftAimActivateValue_, "Left Aim Activate Value");
-                handActionSetPanels_.at(actionSetExtHandInteractionValues_).AddFloatAction(actionExtHandInteractionLeftGraspValue_, "Left Grasp Value");
+                     ActionSetDisplayPanel(
+                         "Ext Hand Interaction Values Action Set",
+                         Session,
+                         Instance,
+                         &ui_,
+                         {2.5_m, 3.0_m, -1.5_m})});
+                handActionSetPanels_.at(actionSetExtHandInteractionValues_)
+                    .AddFloatAction(actionExtHandInteractionLeftPinchValue_, "Left Pinch Value");
+                handActionSetPanels_.at(actionSetExtHandInteractionValues_)
+                    .AddFloatAction(
+                        actionExtHandInteractionLeftAimActivateValue_, "Left Aim Activate Value");
+                handActionSetPanels_.at(actionSetExtHandInteractionValues_)
+                    .AddFloatAction(actionExtHandInteractionLeftGraspValue_, "Left Grasp Value");
 
-                handActionSetPanels_.at(actionSetExtHandInteractionValues_).AddFloatAction(actionExtHandInteractionRightPinchValue_, "Right Pinch Value");
-                handActionSetPanels_.at(actionSetExtHandInteractionValues_).AddFloatAction(actionExtHandInteractionRightAimActivateValue_, "Right Aim Activate Value");
-                handActionSetPanels_.at(actionSetExtHandInteractionValues_).AddFloatAction(actionExtHandInteractionRightGraspValue_, "Right Grasp Value");
+                handActionSetPanels_.at(actionSetExtHandInteractionValues_)
+                    .AddFloatAction(actionExtHandInteractionRightPinchValue_, "Right Pinch Value");
+                handActionSetPanels_.at(actionSetExtHandInteractionValues_)
+                    .AddFloatAction(
+                        actionExtHandInteractionRightAimActivateValue_, "Right Aim Activate Value");
+                handActionSetPanels_.at(actionSetExtHandInteractionValues_)
+                    .AddFloatAction(actionExtHandInteractionRightGraspValue_, "Right Grasp Value");
 
                 handActionSetPanels_.insert(
                     {actionSetExtHandInteractionReady_,
-                    ActionSetDisplayPanel(
-                        "Ext Hand Interaction Ready_Ext Action Set", Session, Instance, &ui_, {3.5_m, 3.0_m, -0.5_m})});
-                handActionSetPanels_.at(actionSetExtHandInteractionReady_).AddBoolAction(actionExtHandInteractionLeftPinchReady_, "Left Pinch Ready");
-                handActionSetPanels_.at(actionSetExtHandInteractionReady_).AddBoolAction(actionExtHandInteractionLeftAimActivateReady_, "Left Aim Activate Ready");
-                handActionSetPanels_.at(actionSetExtHandInteractionReady_).AddBoolAction(actionExtHandInteractionLeftGraspReady_, "Left Grasp Ready");
+                     ActionSetDisplayPanel(
+                         "Ext Hand Interaction Ready_Ext Action Set",
+                         Session,
+                         Instance,
+                         &ui_,
+                         {3.5_m, 3.0_m, -0.5_m})});
+                handActionSetPanels_.at(actionSetExtHandInteractionReady_)
+                    .AddBoolAction(actionExtHandInteractionLeftPinchReady_, "Left Pinch Ready");
+                handActionSetPanels_.at(actionSetExtHandInteractionReady_)
+                    .AddBoolAction(
+                        actionExtHandInteractionLeftAimActivateReady_, "Left Aim Activate Ready");
+                handActionSetPanels_.at(actionSetExtHandInteractionReady_)
+                    .AddBoolAction(actionExtHandInteractionLeftGraspReady_, "Left Grasp Ready");
 
-                handActionSetPanels_.at(actionSetExtHandInteractionReady_).AddBoolAction(actionExtHandInteractionRightPinchReady_, "Right Pinch Ready");
-                handActionSetPanels_.at(actionSetExtHandInteractionReady_).AddBoolAction(actionExtHandInteractionRightAimActivateReady_, "Right Aim Activate Ready");
-                handActionSetPanels_.at(actionSetExtHandInteractionReady_).AddBoolAction(actionExtHandInteractionRightGraspReady_, "Right Grasp Ready");
+                handActionSetPanels_.at(actionSetExtHandInteractionReady_)
+                    .AddBoolAction(actionExtHandInteractionRightPinchReady_, "Right Pinch Ready");
+                handActionSetPanels_.at(actionSetExtHandInteractionReady_)
+                    .AddBoolAction(
+                        actionExtHandInteractionRightAimActivateReady_, "Right Aim Activate Ready");
+                handActionSetPanels_.at(actionSetExtHandInteractionReady_)
+                    .AddBoolAction(actionExtHandInteractionRightGraspReady_, "Right Grasp Ready");
 
                 handActionSetPanels_.insert(
                     {actionSetWorld_,
-                    ActionSetDisplayPanel(
-                        "Ext Hand Interaction Poses", Session, Instance, &ui_, {4.5_m, 2.45_m, 0.8_m})});
-                handActionSetPanels_.at(actionSetWorld_).AddPoseAction(actionHandAimPose_, "Hand Aim Pose");
-                handActionSetPanels_.at(actionSetWorld_).AddPoseAction(actionHandGripPose_, "Hand Grip Pose");
-                handActionSetPanels_.at(actionSetWorld_).AddPoseAction(actionHandPinchPose_, "Hand Pinch Pose");
-                handActionSetPanels_.at(actionSetWorld_).AddPoseAction(actionHandPokePose_, "Hand Poke Pose");
+                     ActionSetDisplayPanel(
+                         "Ext Hand Interaction Poses",
+                         Session,
+                         Instance,
+                         &ui_,
+                         {4.5_m, 2.45_m, 0.8_m})});
+                handActionSetPanels_.at(actionSetWorld_)
+                    .AddPoseAction(actionHandAimPose_, "Hand Aim Pose");
+                handActionSetPanels_.at(actionSetWorld_)
+                    .AddPoseAction(actionHandGripPose_, "Hand Grip Pose");
+                handActionSetPanels_.at(actionSetWorld_)
+                    .AddPoseAction(actionHandPinchPose_, "Hand Pinch Pose");
+                handActionSetPanels_.at(actionSetWorld_)
+                    .AddPoseAction(actionHandPokePose_, "Hand Poke Pose");
 
                 // Update the panel orientation to make the panels all visible
                 for (auto& panelPair : handActionSetPanels_) {
-                    panelPair.second.UpdateAllLabelRotation(
-                        OVR::Quat<float>::FromRotationVector({0.0f, OVR::DegreeToRad(300.0f), 0.0f}));
+                    panelPair.second.UpdateAllLabelRotation(OVR::Quat<float>::FromRotationVector(
+                        {0.0f, OVR::DegreeToRad(300.0f), 0.0f}));
                 }
             }
         }
@@ -798,8 +841,8 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
                 buttonLabel->SetText("Clicked %d times.", TimesClicked);
             });
 
-        auto mmButtonLabel =
-            ui_.AddLabel("Simultaneous Hands and Controllers Enabled", {-2.5f, 1.5f, -1.5f}, {700.0f, 45.0f});
+        auto mmButtonLabel = ui_.AddLabel(
+            "Simultaneous Hands and Controllers Enabled", {-2.5f, 1.5f, -1.5f}, {700.0f, 45.0f});
         auto mmButton = ui_.AddButton(
             "Click to enable/disable simultaneous hands and controllers",
             {-2.5f, 1.3f, -1.5f},
@@ -809,22 +852,30 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
 
                 isSimultaneousHandsControllersEnabled = !isSimultaneousHandsControllersEnabled;
                 self->setSimultaneousHandsControllersMode(isSimultaneousHandsControllersEnabled);
-                mmButtonLabel->SetText("Simultaneous Hands and Controllers %s", isSimultaneousHandsControllersEnabled ? "Enabled" : "Disabled");
+                mmButtonLabel->SetText(
+                    "Simultaneous Hands and Controllers %s",
+                    isSimultaneousHandsControllersEnabled ? "Enabled" : "Disabled");
             });
 
         // Try out haptics
-        auto leftAttachedHapticButton = ui_.AddButton("Left Hand Haptic", {-2.5f, 1.1f, -1.5f}, {350.0f, 90.0f}, [=]() {
-            VibrateController(attachedHapticAction_, leftHandPath_, 1.0f, 157.0f, 1.0f);
-        });
-        auto leftDetachedHapticButton = ui_.AddButton("Left Detached Haptic", {-2.5f, 0.9f, -1.5f}, {350.0f, 90.0f}, [=]() {
-            VibrateController(detachedHapticAction_, leftDetachedControllerPath_, 1.0f, 157.0f, 1.0f);
-        });
-        auto rightAttachedHapticButton = ui_.AddButton("Right Hand Haptic", {-2.5f, 0.7f, -1.5f}, {350.0f, 90.0f}, [=]() {
-            VibrateController(attachedHapticAction_, rightHandPath_, 1.0f, 157.0f, 1.0f);
-        });
-        auto rightDetachedHapticButton = ui_.AddButton("Right Detached Haptic", {-2.5f, 0.5f, -1.5f}, {350.0f, 90.0f}, [=]() {
-            VibrateController(detachedHapticAction_, rightDetachedControllerPath_, 1.0f, 157.0f, 1.0f);
-        });
+        auto leftAttachedHapticButton =
+            ui_.AddButton("Left Hand Haptic", {-2.5f, 1.1f, -1.5f}, {350.0f, 90.0f}, [this]() {
+                VibrateController(attachedHapticAction_, leftHandPath_, 1.0f, 157.0f, 1.0f);
+            });
+        auto leftDetachedHapticButton =
+            ui_.AddButton("Left Detached Haptic", {-2.5f, 0.9f, -1.5f}, {350.0f, 90.0f}, [this]() {
+                VibrateController(
+                    detachedHapticAction_, leftDetachedControllerPath_, 1.0f, 157.0f, 1.0f);
+            });
+        auto rightAttachedHapticButton =
+            ui_.AddButton("Right Hand Haptic", {-2.5f, 0.7f, -1.5f}, {350.0f, 90.0f}, [this]() {
+                VibrateController(attachedHapticAction_, rightHandPath_, 1.0f, 157.0f, 1.0f);
+            });
+        auto rightDetachedHapticButton =
+            ui_.AddButton("Right Detached Haptic", {-2.5f, 0.5f, -1.5f}, {350.0f, 90.0f}, [this]() {
+                VibrateController(
+                    detachedHapticAction_, rightDetachedControllerPath_, 1.0f, 157.0f, 1.0f);
+            });
 
         // Tilt the interaction UI towards user
         interactionProfileTextTitle_->SetLocalRotation(
@@ -882,8 +933,11 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
     virtual void Update(const OVRFW::ovrApplFrameIn& in) override {
         {
             // xrSyncAction
-            std::vector<XrActiveActionSet> activeActionSets = {{actionSetWorld_}, {actionSetMenu_},
-                {actionSetGestures_}, {actionSetExtHandInteractionValues_},
+            std::vector<XrActiveActionSet> activeActionSets = {
+                {actionSetWorld_},
+                {actionSetMenu_},
+                {actionSetGestures_},
+                {actionSetExtHandInteractionValues_},
                 {actionSetExtHandInteractionReady_}};
 
             XrActionsSyncInfo syncInfo = {XR_TYPE_ACTIONS_SYNC_INFO};
@@ -970,22 +1024,13 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
 
             // Detached controllers
             OXR(xrLocateSpace(
-                spaceDetachedControllerGripLeft_,
-                spaceLocal_,
-                time,
-                &gripDetachedLeftLocation_));
+                spaceDetachedControllerGripLeft_, spaceLocal_, time, &gripDetachedLeftLocation_));
             OXR(xrLocateSpace(
-                spaceDetachedControllerGripRight_,
-                spaceLocal_,
-                time,
-                &gripDetachedRightLocation_));
+                spaceDetachedControllerGripRight_, spaceLocal_, time, &gripDetachedRightLocation_));
             OXR(xrLocateSpace(
                 spaceDetachedControllerAimLeft_, spaceLocal_, time, &aimDetachedLeftLocation_));
             OXR(xrLocateSpace(
-                spaceDetachedControllerAimRight_,
-                spaceLocal_,
-                time,
-                &aimDetachedRightLocation_));
+                spaceDetachedControllerAimRight_, spaceLocal_, time, &aimDetachedRightLocation_));
         }
 
         // Check validity of grip location before updating controllers with new location
@@ -1006,8 +1051,7 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
         }
 
         // Check validity of detached grip locations
-        if ((gripDetachedLeftLocation_.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) !=
-            0) {
+        if ((gripDetachedLeftLocation_.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0) {
             controllerRendererL_.Update(FromXrPosef(gripDetachedLeftLocation_.pose));
         }
         if ((gripDetachedRightLocation_.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) !=
@@ -1018,7 +1062,6 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
         for (auto& panelPair : actionSetPanels_) {
             panelPair.second.Update();
         }
-
 
         if (isExtHandInteractionExtensionAvailable_) {
             for (auto& panelPair : handActionSetPanels_) {
@@ -1303,7 +1346,6 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
     void UpdateHandsInformation(const OVRFW::ovrApplFrameIn& in) {
         // Perform the same operations for both hands
         for (int handIndex = 0; handIndex < 2; ++handIndex) {
-
             const bool isLeft = (handIndex == 0);
             auto& handPath = isLeft ? leftHandPath_ : rightHandPath_;
             auto& handInFrame = isLeft ? handInFrameL_ : handInFrameR_;
@@ -1340,11 +1382,12 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             OXR(xrGetCurrentInteractionProfile(GetSession(), handPath, &ipState));
             if (locations.isActive &&
                 (ipState.interactionProfile == 0 ||
-                ipState.interactionProfile == extHandInteractionProfile_)) {
+                 ipState.interactionProfile == extHandInteractionProfile_)) {
                 handTracked = true;
 
                 for (int i = 0; i < (int)locations.jointCount; ++i) {
-                    if ((handJointLocations[i].locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) &&
+                    if ((handJointLocations[i].locationFlags &
+                         XR_SPACE_LOCATION_POSITION_VALID_BIT) &&
                         (handJointLocations[i].locationFlags &
                          XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)) {
                         handInFrame = true;
@@ -1441,9 +1484,11 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
     bool isSimultaneousHandsControllersExtensionAvailable_ = false;
 
     // Control of the simultaneous hands and controllers mode
-    XrResult (XRAPI_PTR *xrResumeSimultaneousHandsAndControllersTrackingMETA_)(XrSession session,
+    XrResult(XRAPI_PTR* xrResumeSimultaneousHandsAndControllersTrackingMETA_)(
+        XrSession session,
         const XrSimultaneousHandsAndControllersTrackingResumeInfoMETA* createInfo) = nullptr;
-    XrResult (XRAPI_PTR *xrPauseSimultaneousHandsAndControllersTrackingMETA_)(XrSession session,
+    XrResult(XRAPI_PTR* xrPauseSimultaneousHandsAndControllersTrackingMETA_)(
+        XrSession session,
         const XrSimultaneousHandsAndControllersTrackingPauseInfoMETA* createInfo) = nullptr;
 
     // Controllers

@@ -622,7 +622,8 @@ int main() {
     xrGetInstanceProcAddr(
         XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*)&xrInitializeLoaderKHR);
     if (xrInitializeLoaderKHR != NULL) {
-        XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid = {XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
+        XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid = {
+            XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
         loaderInitializeInfoAndroid.applicationVM = androidApp->activity->vm;
         loaderInitializeInfoAndroid.applicationContext = androidApp->activity->clazz;
         xrInitializeLoaderKHR((XrLoaderInitInfoBaseHeaderKHR*)&loaderInitializeInfoAndroid);
@@ -645,7 +646,8 @@ int main() {
 
         uint32_t layerCount = 0;
         OXR(xrEnumerateApiLayerProperties(0, &layerCount, NULL));
-        std::vector<XrApiLayerProperties> layerProperties(layerCount, {XR_TYPE_API_LAYER_PROPERTIES});
+        std::vector<XrApiLayerProperties> layerProperties(
+            layerCount, {XR_TYPE_API_LAYER_PROPERTIES});
         OXR(xrEnumerateApiLayerProperties(layerCount, &layerCount, layerProperties.data()));
 
         for (const auto& layer : layerProperties) {
@@ -665,8 +667,7 @@ int main() {
         XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME,
 #endif // defined(XR_USE_PLATFORM_ANDROID)
         XR_FB_PASSTHROUGH_EXTENSION_NAME,
-        XR_FB_TRIANGLE_MESH_EXTENSION_NAME
-    };
+        XR_FB_TRIANGLE_MESH_EXTENSION_NAME};
     const uint32_t numRequiredExtensions =
         sizeof(requiredExtensionNames) / sizeof(requiredExtensionNames[0]);
 
@@ -742,7 +743,8 @@ int main() {
     OXR(initResult = xrGetSystem(app.Instance, &systemGetInfo, &systemId));
     if (initResult != XR_SUCCESS) {
         if (initResult == XR_ERROR_FORM_FACTOR_UNAVAILABLE) {
-            ALOGE("Failed to get system; the specified form factor is not available. Is your headset connected?");
+            ALOGE(
+                "Failed to get system; the specified form factor is not available. Is your headset connected?");
         } else {
             ALOGE("xrGetSystem failed, error %d", initResult);
         }
@@ -776,7 +778,8 @@ int main() {
         "xrGetOpenGLESGraphicsRequirementsKHR",
         (PFN_xrVoidFunction*)(&pfnGetOpenGLESGraphicsRequirementsKHR)));
 
-    XrGraphicsRequirementsOpenGLESKHR graphicsRequirements = {XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
+    XrGraphicsRequirementsOpenGLESKHR graphicsRequirements = {
+        XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
     OXR(pfnGetOpenGLESGraphicsRequirementsKHR(app.Instance, systemId, &graphicsRequirements));
 #elif defined(XR_USE_GRAPHICS_API_OPENGL)
     PFN_xrGetOpenGLGraphicsRequirementsKHR pfnGetOpenGLGraphicsRequirementsKHR = NULL;
@@ -785,7 +788,8 @@ int main() {
         "xrGetOpenGLGraphicsRequirementsKHR",
         (PFN_xrVoidFunction*)(&pfnGetOpenGLGraphicsRequirementsKHR)));
 
-    XrGraphicsRequirementsOpenGLKHR graphicsRequirements = {XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
+    XrGraphicsRequirementsOpenGLKHR graphicsRequirements = {
+        XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR};
     OXR(pfnGetOpenGLGraphicsRequirementsKHR(app.Instance, systemId, &graphicsRequirements));
 #endif
 
@@ -837,7 +841,8 @@ int main() {
 
     // Create the OpenXR Session.
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-    XrGraphicsBindingOpenGLESAndroidKHR graphicsBinding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
+    XrGraphicsBindingOpenGLESAndroidKHR graphicsBinding = {
+        XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR};
     graphicsBinding.display = app.egl.Display;
     graphicsBinding.config = app.egl.Config;
     graphicsBinding.context = app.egl.Context;
@@ -1444,7 +1449,8 @@ int main() {
         // FB_passthrough sample begin
         // passthrough layer is backmost layer (if available)
         if (passthroughLayer != XR_NULL_HANDLE) {
-            XrCompositionLayerPassthroughFB passthrough_layer = {XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
+            XrCompositionLayerPassthroughFB passthrough_layer = {
+                XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB};
             passthrough_layer.layerHandle = passthroughLayer;
             passthrough_layer.flags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
             passthrough_layer.space = XR_NULL_HANDLE;

@@ -85,7 +85,8 @@ bool XrVirtualKeyboardHelper::IsSupported() const {
     XrResult result = xrGetSystem(GetInstance(), &systemGetInfo, &systemId);
     if (result != XR_SUCCESS) {
         if (result == XR_ERROR_FORM_FACTOR_UNAVAILABLE) {
-            ALOGE("Failed to get system; the specified form factor is not available. Is your headset connected?");
+            ALOGE(
+                "Failed to get system; the specified form factor is not available. Is your headset connected?");
         } else {
             ALOGE("xrGetSystem failed, error %d", result);
         }
@@ -132,7 +133,8 @@ bool XrVirtualKeyboardHelper::CreateVirtualKeyboardSpace(
         return false;
     }
     if (xrCreateVirtualKeyboardSpaceMETA_) {
-        return oxr(xrCreateVirtualKeyboardSpaceMETA_(session_, keyboardHandle_, locationInfo, &space_));
+        return oxr(
+            xrCreateVirtualKeyboardSpaceMETA_(session_, keyboardHandle_, locationInfo, &space_));
     }
     return false;
 }
@@ -257,7 +259,8 @@ bool XrVirtualKeyboardHelper::GetDirtyTextures(std::vector<uint64_t>& textureIds
     }
 
     uint32_t textureIdCountOutput = 0;
-    bool result = oxr(xrGetVirtualKeyboardDirtyTexturesMETA_(keyboardHandle_, 0, &textureIdCountOutput, nullptr));
+    bool result = oxr(
+        xrGetVirtualKeyboardDirtyTexturesMETA_(keyboardHandle_, 0, &textureIdCountOutput, nullptr));
     if (!result) {
         return false;
     }
@@ -268,7 +271,8 @@ bool XrVirtualKeyboardHelper::GetDirtyTextures(std::vector<uint64_t>& textureIds
     }
 
     textureIds.resize(textureIdCountOutput);
-    result = oxr(xrGetVirtualKeyboardDirtyTexturesMETA_(keyboardHandle_, textureIdCountOutput, &textureIdCountOutput, textureIds.data()));
+    result = oxr(xrGetVirtualKeyboardDirtyTexturesMETA_(
+        keyboardHandle_, textureIdCountOutput, &textureIdCountOutput, textureIds.data()));
     return result;
 }
 

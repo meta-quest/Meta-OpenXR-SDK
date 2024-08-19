@@ -45,8 +45,8 @@ class OvrGuiSys {
         virtual ~SoundEffectPlayer() {}
         virtual bool Has(const char* name) const = 0;
         virtual void Play(const char* name) = 0;
-        virtual void Stop(const char* name) {}
-        virtual void LoadSoundAsset(const char* name) {}
+        virtual void Stop(const char* /*name*/) {}
+        virtual void LoadSoundAsset(const char* /*name*/) {}
     };
 
     class ovrDummySoundEffectPlayer : public SoundEffectPlayer {

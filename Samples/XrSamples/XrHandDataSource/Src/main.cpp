@@ -102,12 +102,12 @@ class XrHandDataSourceApp : public OVRFW::XrApp {
 
         /// Build UI
         CreateSampleDescriptionPanel();
-        bigText_ = ui_.AddLabel(
-            "OpenXR Hand Data Source Sample", {0.1f, 0.9f, -2.0f}, {1300.0f, 100.0f});
-        bigText_->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        bigText_ =
+            ui_.AddLabel("OpenXR Hand Data Source Sample", {0.1f, 0.9f, -2.0f}, {1300.0f, 100.0f});
+        bigText_->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
 
         renderTrackedRemoteButton_ =
-            ui_.AddButton("Render Controllers", {-0.5f, -0.15f, -2.0f}, {500.0f, 100.0f}, [=]() {
+            ui_.AddButton("Render Controllers", {-0.5f, -0.15f, -2.0f}, {500.0f, 100.0f}, [this]() {
                 renderTrackedRemotes_ = !renderTrackedRemotes_;
                 if (renderTrackedRemotes_) {
                     renderTrackedRemoteButton_->SetText("Stop Rendering Controllers");
@@ -116,8 +116,8 @@ class XrHandDataSourceApp : public OVRFW::XrApp {
                 }
             });
 
-        controllerHandDataTypeButton_ =
-            ui_.AddButton("Set Hand Type to Natural", {0.75f, -0.15f, -2.0f}, {500.0f, 100.0f}, [=]() {
+        controllerHandDataTypeButton_ = ui_.AddButton(
+            "Set Hand Type to Natural", {0.75f, -0.15f, -2.0f}, {500.0f, 100.0f}, [this]() {
                 handDataTypeNatural_ = !handDataTypeNatural_;
                 if (handDataTypeNatural_) {
                     controllerHandDataTypeButton_->SetText("Set Hand Type to Controller");
@@ -149,7 +149,7 @@ class XrHandDataSourceApp : public OVRFW::XrApp {
         fontParams.AlignHoriz = OVRFW::HORIZONTAL_LEFT;
         descriptionLabel->SetFontParms(fontParams);
         descriptionLabel->SetTextLocalPosition({-0.7f, 0, 0});
-        descriptionLabel->SetSurfaceColor(0 ,{0.0f, 0.0f, 1.0f, 1.0f});
+        descriptionLabel->SetSurfaceColor(0, {0.0f, 0.0f, 1.0f, 1.0f});
     }
 
     virtual void AppShutdown(const xrJava* context) override {
@@ -165,9 +165,6 @@ class XrHandDataSourceApp : public OVRFW::XrApp {
     virtual bool SessionInit() override {
         /// Use LocalSpace instead of Stage Space.
         CurrentSpace = LocalSpace;
-        /// Disable scene navigation
-        GetScene().SetFootPos({0.0f, 0.0f, 0.0f});
-        this->FreeMove = false;
         beamRenderer_.Init(GetFileSys(), nullptr, OVR::Vector4f(1.0f), 1.0f);
 
         /// hands
