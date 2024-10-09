@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /*******************************************************************************
 
 Filename    :   Main.cpp
@@ -103,6 +121,10 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
         OXR(xrStringToPath(
             Instance, "/user/detached_controller_meta/right", &rightDetachedControllerPath_));
 
+        // In order to be able to distinguish between left and right hand versions
+        // of these actions, we need to pass in subactionPaths
+        XrPath handsTopLevelPaths[]{leftHandPath_, rightHandPath_};
+
         // Get the default bindings suggested by XrApp framework
         auto suggestedBindings = XrApp::GetSuggestedBindings(instance);
         actionSetMenu_ = CreateActionSet(0, "menu_action_set", "UI Action Set");
@@ -118,9 +140,10 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             actionSetMenu_,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
             "select",
-            "Select/Click UI Element" // Displayed to users, should be translated to the user's
-                                      // local language
-        );
+            "Select/Click UI Element", // Displayed to users, should be translated to the user's
+                                       // local language
+            2,
+            handsTopLevelPaths);
 
         actionGrab_ = CreateAction(
             actionSetWorld_, XR_ACTION_TYPE_BOOLEAN_INPUT, "action_grab", "Simple Grab");
@@ -222,9 +245,6 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             "action_ext_hand_interaction_right_aim_activate_ready",
             "Right Hand Aim Activate Ready");
 
-        // In order to be able to distinguish between left and right hand versions
-        // of these actions, we need to pass in subactionPaths
-        XrPath handsTopLevelPaths[]{leftHandPath_, rightHandPath_};
         actionControllerAimPose_ = CreateAction(
             actionSetWorld_,
             XR_ACTION_TYPE_POSE_INPUT,
@@ -341,21 +361,30 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             ActionSuggestedBinding(actionControllerGripPose_, "/user/hand/left/input/grip/pose"));
         suggestedBindings[touchInteractionProfile_].emplace_back(
             ActionSuggestedBinding(actionControllerGripPose_, "/user/hand/right/input/grip/pose"));
+        suggestedBindings[touchInteractionProfile_].emplace_back(
+            ActionSuggestedBinding(attachedHapticAction_, "/user/hand/left/output/haptic"));
+        suggestedBindings[touchInteractionProfile_].emplace_back(
+            ActionSuggestedBinding(attachedHapticAction_, "/user/hand/right/output/haptic"));
 
         if (isDetachedControllersExtensionAvailable_) {
             // Detached controllers aim and grip poses
-            suggestedBindings[touchProInteractionProfile_].emplace_back(ActionSuggestedBinding(
+            suggestedBindings[touchInteractionProfile_].emplace_back(ActionSuggestedBinding(
                 actionDetachedControllerAimPose_,
                 "/user/detached_controller_meta/left/input/aim/pose"));
-            suggestedBindings[touchProInteractionProfile_].emplace_back(ActionSuggestedBinding(
+            suggestedBindings[touchInteractionProfile_].emplace_back(ActionSuggestedBinding(
                 actionDetachedControllerAimPose_,
                 "/user/detached_controller_meta/right/input/aim/pose"));
-            suggestedBindings[touchProInteractionProfile_].emplace_back(ActionSuggestedBinding(
+            suggestedBindings[touchInteractionProfile_].emplace_back(ActionSuggestedBinding(
                 actionDetachedControllerGripPose_,
                 "/user/detached_controller_meta/right/input/grip/pose"));
-            suggestedBindings[touchProInteractionProfile_].emplace_back(ActionSuggestedBinding(
+            suggestedBindings[touchInteractionProfile_].emplace_back(ActionSuggestedBinding(
                 actionDetachedControllerGripPose_,
                 "/user/detached_controller_meta/left/input/grip/pose"));
+            // Detached controller haptic
+            suggestedBindings[touchInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                detachedHapticAction_, "/user/detached_controller_meta/left/output/haptic"));
+            suggestedBindings[touchInteractionProfile_].emplace_back(ActionSuggestedBinding(
+                detachedHapticAction_, "/user/detached_controller_meta/right/output/haptic"));
         }
 
         ///////////////////////////////////////////////////////////

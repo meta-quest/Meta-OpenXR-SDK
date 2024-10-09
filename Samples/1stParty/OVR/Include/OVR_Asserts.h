@@ -8,7 +8,6 @@
  * otherwise accompanies this software in either electronic or hard copy form.
  *
  * You may obtain a copy of the License at
- *
  * https://developer.oculus.com/licenses/oculussdk/
  *
  * Unless required by applicable law or agreed to in writing, the Oculus SDK
@@ -17,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /************************************************************************************
  * Filename    :   OVR_Asserts.h
  * Content     :   Capture Asserts for Release and Debug builds. Send Telemetry logs in

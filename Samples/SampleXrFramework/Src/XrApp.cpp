@@ -1,5 +1,21 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /*******************************************************************************
 
 Filename    :   XrApp.cpp
@@ -52,37 +68,6 @@ void OXR_CheckErrors(XrInstance instance, XrResult result, const char* function,
             ALOGV("OpenXR error: %s: %s\n", function, error.c_str());
         }
     }
-}
-
-inline OVR::Matrix4f XrMatrix4x4f_To_OVRMatrix4f(const XrMatrix4x4f& src) {
-    // col major to row major ==> transpose
-    return OVR::Matrix4f(
-        src.m[0],
-        src.m[4],
-        src.m[8],
-        src.m[12],
-        src.m[1],
-        src.m[5],
-        src.m[9],
-        src.m[13],
-        src.m[2],
-        src.m[6],
-        src.m[10],
-        src.m[14],
-        src.m[3],
-        src.m[7],
-        src.m[11],
-        src.m[15]);
-}
-
-inline OVR::Posef XrPosef_To_OVRPosef(const XrPosef& src) {
-    return OVR::Posef{
-        {src.orientation.x, src.orientation.y, src.orientation.z, src.orientation.w},
-        {src.position.x, src.position.y, src.position.z}};
-}
-
-inline OVR::Vector2f XrVector2f_To_OVRVector2f(const XrVector2f& src) {
-    return OVR::Vector2f{src.x, src.y};
 }
 
 namespace OVRFW {
@@ -685,7 +670,7 @@ bool XrApp::Init(const xrJava& context) {
     appInfo.applicationVersion = 0;
     strcpy(appInfo.engineName, "Oculus Mobile Sample");
     appInfo.engineVersion = 0;
-    appInfo.apiVersion = XR_MAKE_VERSION(1, 0, 34);
+    appInfo.apiVersion = XR_API_VERSION_1_0;
 
     const void* nextChain = GetInstanceCreateInfoNextChain();
 
@@ -829,21 +814,50 @@ bool XrApp::Init(const xrJava& context) {
 
         GripTriggerAction = CreateAction(
             BaseActionSet, XR_ACTION_TYPE_FLOAT_INPUT, "grip_trigger", NULL, 2, handSubactionPaths);
-        ButtonAAction = CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_a", NULL);
-        ButtonBAction = CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_b", NULL);
-        ButtonXAction = CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_x", NULL);
-        ButtonYAction = CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_y", NULL);
-        ButtonMenuAction =
-            CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_menu", NULL);
-        ThumbStickTouchAction =
-            CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "thumb_stick_touch", NULL);
-        ThumbRestTouchAction =
-            CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "thumb_rest_touch", NULL);
-        TriggerTouchAction =
-            CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "index_trigger_touch", NULL);
+        ButtonAAction = CreateAction(
+            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_a", NULL, 2, handSubactionPaths);
+        ButtonBAction = CreateAction(
+            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_b", NULL, 2, handSubactionPaths);
+        ButtonXAction = CreateAction(
+            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_x", NULL, 2, handSubactionPaths);
+        ButtonYAction = CreateAction(
+            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_y", NULL, 2, handSubactionPaths);
+        ButtonMenuAction = CreateAction(
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "button_menu",
+            NULL,
+            2,
+            handSubactionPaths);
+        ThumbStickTouchAction = CreateAction(
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "thumb_stick_touch",
+            NULL,
+            2,
+            handSubactionPaths);
+        ThumbRestTouchAction = CreateAction(
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "thumb_rest_touch",
+            NULL,
+            2,
+            handSubactionPaths);
+        TriggerTouchAction = CreateAction(
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "index_trigger_touch",
+            NULL,
+            2,
+            handSubactionPaths);
 
-        thumbstickClickAction =
-            CreateAction(BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "thumbstick_click", NULL);
+        thumbstickClickAction = CreateAction(
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "thumbstick_click",
+            NULL,
+            2,
+            handSubactionPaths);
     }
 
     /// Interaction profile can be overridden
@@ -1043,8 +1057,8 @@ bool XrApp::InitSession() {
             Session,
             &FrameBuffer[eye],
             GL_SRGB8_ALPHA8,
-            ViewConfigurationView[0].recommendedImageRectWidth,
-            ViewConfigurationView[0].recommendedImageRectHeight,
+            ViewConfigurationView[0].recommendedImageRectWidth * FramebufferResolutionScaleFactor,
+            ViewConfigurationView[0].recommendedImageRectHeight * FramebufferResolutionScaleFactor,
             NUM_MULTI_SAMPLES);
     }
 
@@ -1192,12 +1206,12 @@ void XrApp::SyncActionSets(ovrApplFrameIn& in) {
     /// Update pose
     XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
     OXR(xrLocateSpace(HeadSpace, CurrentSpace, ToXrTime(in.PredictedDisplayTime), &loc));
-    in.HeadPose = XrPosef_To_OVRPosef(loc.pose);
+    in.HeadPose = FromXrPosef(loc.pose);
     /// grip & point space
-    in.LeftRemotePointPose = XrPosef_To_OVRPosef(ControllerPose[0]);
-    in.LeftRemotePose = XrPosef_To_OVRPosef(ControllerPose[1]);
-    in.RightRemotePointPose = XrPosef_To_OVRPosef(ControllerPose[2]);
-    in.RightRemotePose = XrPosef_To_OVRPosef(ControllerPose[3]);
+    in.LeftRemotePointPose = FromXrPosef(ControllerPose[0]);
+    in.LeftRemotePose = FromXrPosef(ControllerPose[1]);
+    in.RightRemotePointPose = FromXrPosef(ControllerPose[2]);
+    in.RightRemotePose = FromXrPosef(ControllerPose[3]);
     in.LeftRemoteTracked = ControllerPoseActive[1];
     in.RightRemoteTracked = ControllerPoseActive[3];
 
@@ -1207,9 +1221,9 @@ void XrApp::SyncActionSets(ovrApplFrameIn& in) {
     in.LeftRemoteGripTrigger = GetActionStateFloat(GripTriggerAction, LeftHandPath).currentState;
     in.RightRemoteGripTrigger = GetActionStateFloat(GripTriggerAction, RightHandPath).currentState;
     in.LeftRemoteJoystick =
-        XrVector2f_To_OVRVector2f(GetActionStateVector2(JoystickAction, LeftHandPath).currentState);
-    in.RightRemoteJoystick = XrVector2f_To_OVRVector2f(
-        GetActionStateVector2(JoystickAction, RightHandPath).currentState);
+        FromXrVector2f(GetActionStateVector2(JoystickAction, LeftHandPath).currentState);
+    in.RightRemoteJoystick =
+        FromXrVector2f(GetActionStateVector2(JoystickAction, RightHandPath).currentState);
 
     bool aPressed = GetActionStateBoolean(ButtonAAction).currentState;
     bool bPressed = GetActionStateBoolean(ButtonBAction).currentState;
@@ -1514,6 +1528,7 @@ void XrApp::MainLoop(MainLoopContext& loopContext) {
         uint32_t projectionCapacityInput = MAX_NUM_EYES;
         uint32_t projectionCountOutput = projectionCapacityInput;
 
+        PreLocateViews(projectionInfo);
         OXR(xrLocateViews(
             Session,
             &projectionInfo,
@@ -1543,8 +1558,8 @@ void XrApp::MainLoop(MainLoopContext& loopContext) {
             const XrFovf fov = Projections[eye].fov;
             XrMatrix4x4f projMat;
             XrMatrix4x4f_CreateProjectionFov(&projMat, GRAPHICS_OPENGL_ES, fov, 0.1f, 0.0f);
-            out.FrameMatrices.EyeView[eye] = XrMatrix4x4f_To_OVRMatrix4f(viewMat);
-            out.FrameMatrices.EyeProjection[eye] = XrMatrix4x4f_To_OVRMatrix4f(projMat);
+            out.FrameMatrices.EyeView[eye] = FromXrMatrix4x4f(viewMat);
+            out.FrameMatrices.EyeProjection[eye] = FromXrMatrix4x4f(projMat);
             in.Eye[eye].ViewMatrix = out.FrameMatrices.EyeView[eye];
             in.Eye[eye].ProjectionMatrix = out.FrameMatrices.EyeProjection[eye];
         }
@@ -1553,7 +1568,7 @@ void XrApp::MainLoop(MainLoopContext& loopContext) {
         XrPosef_Invert(&centerView, &xfStageFromHead);
         XrMatrix4x4f viewMat{};
         XrMatrix4x4f_CreateFromRigidTransform(&viewMat, &centerView);
-        out.FrameMatrices.CenterView = XrMatrix4x4f_To_OVRMatrix4f(viewMat);
+        out.FrameMatrices.CenterView = FromXrMatrix4x4f(viewMat);
 
         // Input
         HandleInput(in);

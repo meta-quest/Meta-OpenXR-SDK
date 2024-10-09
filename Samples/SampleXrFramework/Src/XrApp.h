@@ -1,5 +1,21 @@
-// (c) Meta Platforms, Inc. and affiliates. Confidential and proprietary.
-
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /*******************************************************************************
 
 Filename    :   XrApp.h
@@ -184,6 +200,27 @@ static inline OVR::Posef FromXrPosef(const XrPosef& s) {
     r.Rotation = FromXrQuaternionf(s.orientation);
     r.Translation = FromXrVector3f(s.position);
     return r;
+}
+
+static inline OVR::Matrix4f FromXrMatrix4x4f(const XrMatrix4x4f& src) {
+    // col major to row major ==> transpose
+    return OVR::Matrix4f(
+        src.m[0],
+        src.m[4],
+        src.m[8],
+        src.m[12],
+        src.m[1],
+        src.m[5],
+        src.m[9],
+        src.m[13],
+        src.m[2],
+        src.m[6],
+        src.m[10],
+        src.m[14],
+        src.m[3],
+        src.m[7],
+        src.m[11],
+        src.m[15]);
 }
 
 namespace OVRFW {
@@ -413,6 +450,10 @@ class XrApp {
         // do nothing
     }
 
+    virtual void PreLocateViews(XrViewLocateInfo&) {
+        // do nothing
+    }
+
     // Returns a map from interaction profile paths to vectors of suggested bindings.
     // xrSuggestInteractionProfileBindings() is called once for each interaction profile path in the
     // returned map.
@@ -541,6 +582,10 @@ class XrApp {
     // wants control over xrSyncAction
     // Note: This means input in ovrApplFrameIn won't be set
     bool SkipInputHandling = false;
+
+    // An app can set this in AppInit() to change the resolution of the swapchain
+    // allocated by the framework.
+    float FramebufferResolutionScaleFactor{1.0f};
 
     XrInstance Instance = XR_NULL_HANDLE;
     XrSession Session = XR_NULL_HANDLE;

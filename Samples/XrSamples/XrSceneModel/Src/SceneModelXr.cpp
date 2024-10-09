@@ -1,11 +1,27 @@
+/*
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ * All rights reserved.
+ *
+ * Licensed under the Oculus SDK License Agreement (the "License");
+ * you may not use the Oculus SDK except in compliance with the License,
+ * which is provided at the time of installation or download, or which
+ * otherwise accompanies this software in either electronic or hard copy form.
+ *
+ * You may obtain a copy of the License at
+ * https://developer.oculus.com/licenses/oculussdk/
+ *
+ * Unless required by applicable law or agreed to in writing, the Oculus SDK
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 /************************************************************************************
 
 Filename  : SceneModelXr.cpp
 Content   : This sample uses the Android NativeActivity class.
 Created   :
 Authors   :
-
-Copyright : Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
 
 *************************************************************************************/
 
@@ -1460,7 +1476,7 @@ int main() {
         XR_FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME,
         XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME,
         XR_META_SPATIAL_ENTITY_MESH_EXTENSION_NAME,
-        XR_META_BOUNDARY_VISIBILITY_EXTENSION_NAME,
+                XR_META_BOUNDARY_VISIBILITY_EXTENSION_NAME,
                 XR_FB_SCENE_EXTENSION_NAME,
 #if defined(ANDROID)
         XR_FB_SCENE_CAPTURE_EXTENSION_NAME,
@@ -1506,7 +1522,7 @@ int main() {
     appInfo.applicationVersion = 0;
     strcpy(appInfo.engineName, "Oculus Mobile Sample");
     appInfo.engineVersion = 0;
-    appInfo.apiVersion = XR_MAKE_VERSION(1, 0, 34);
+    appInfo.apiVersion = XR_API_VERSION_1_0;
 
     XrInstanceCreateInfo instanceCreateInfo = {XR_TYPE_INSTANCE_CREATE_INFO};
     instanceCreateInfo.createFlags = 0;
@@ -1924,7 +1940,7 @@ int main() {
         instance,
         "xrRequestBoundaryVisibilityMETA",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrRequestBoundaryVisibilityMETA)));
-    
+        
     CreatePassthrough(app);
 
     // Two values for left and right controllers.

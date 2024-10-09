@@ -61,4 +61,4 @@ While the samples provided in this package are designed as Quest Native / Androi
 See the [CONTRIBUTING](CONTRIBUTING.md) file for how to help out.
 
 ## License
-Meta OpenXR SDK is subject to the Oculus SDK License Agreement, as found in the [LICENSE](LICENSE.txt) file.
+Meta OpenXR SDK is subject to the Oculus SDK License Agreement, as found in the LICENSE file.

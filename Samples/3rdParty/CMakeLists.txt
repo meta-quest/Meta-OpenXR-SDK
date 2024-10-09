@@ -1,5 +1,3 @@
-# Copyright (c) Facebook Technologies, LLC and its affiliates. All rights reserved.
-
 function(find_ktx)
     # use prebuild library for Android to avoid runtime crash, further
     # investigation needed on building from ktx source
