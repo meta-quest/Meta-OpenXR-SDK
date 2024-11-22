@@ -91,8 +91,15 @@ inline jint ovr_AttachCurrentThread(JavaVM* vm, JNIEnv** jni, void* args) {
         }
     }
 
+    // Propagate the thread name into the JVM, unless args are set explicitly.
+    JavaVMAttachArgs defaultArgs = {
+        .version = JNI_VERSION_1_2,
+        .name = threadName,
+        .group = nullptr,
+    };
+
     // Attach the thread to the JVM.
-    const jint rtn = attachCurrentThread(vm, jni, args);
+    const jint rtn = attachCurrentThread(vm, jni, args != nullptr ? args : &defaultArgs);
     if (rtn != JNI_OK) {
         OVR_FAIL("AttachCurrentThread returned %i", rtn);
     }

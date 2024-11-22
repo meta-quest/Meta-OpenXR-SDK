@@ -110,6 +110,7 @@ typedef void(GL_APIENTRY* PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXTPROC)(
 #define OVR_LOG_TAG "XrCompositor_NativeActivity"
 
 #define ALOGE(...) __android_log_print(ANDROID_LOG_ERROR, OVR_LOG_TAG, __VA_ARGS__)
+#define ALOGW(...) __android_log_print(ANDROID_LOG_WARN, OVR_LOG_TAG, __VA_ARGS__)
 #define ALOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, OVR_LOG_TAG, __VA_ARGS__)
 #define ALOGD(...) __android_log_print(ANDROID_LOG_DEBUG, OVR_LOG_TAG, __VA_ARGS__)
 
@@ -324,7 +325,8 @@ static void ovrEgl_CreateContext(ovrEgl* egl, const ovrEgl* shareEgl) {
         ALOGE("        eglGetConfigs() failed: %s", EglErrorString(eglGetError()));
         return;
     }
-    const EGLint configAttribs[] = {
+
+    const EGLint defaultConfigAttribs[] = {
         EGL_RED_SIZE,
         8,
         EGL_GREEN_SIZE,
@@ -339,39 +341,64 @@ static void ovrEgl_CreateContext(ovrEgl* egl, const ovrEgl* shareEgl) {
         0,
         EGL_SAMPLES,
         0,
-        EGL_NONE};
+        EGL_NONE
+    };
+
+    const EGLint fallbackConfigAttribs[] = {
+        EGL_RED_SIZE,
+        8,
+        EGL_GREEN_SIZE,
+        8,
+        EGL_BLUE_SIZE,
+        8,
+        EGL_ALPHA_SIZE,
+        8, // need alpha for the multi-pass timewarp compositor
+        EGL_NONE
+    };
+
+    const EGLint* configAttribs[2] = {
+        defaultConfigAttribs,
+        fallbackConfigAttribs,
+    };
+
     egl->Config = 0;
     ALOGD("        Queried %d EGL configs, evaluating ...", numConfigs);
-    for (int i = 0; i < numConfigs; i++) {
-        EGLint value = 0;
+    for (int attempt = 0 ; attempt < 2; attempt++) {
+        for (int i = 0; i < numConfigs; i++) {
+            EGLint value = 0;
 
-        ALOGD("        Evaluating EGL config %d.", i);
-        eglGetConfigAttrib(egl->Display, configs[i], EGL_RENDERABLE_TYPE, &value);
-        if (!checkFlagAndLog(value, EGL_OPENGL_ES3_BIT_KHR, "renderable type"))
-        {
-            continue;
-        }
+            ALOGD("        Evaluating EGL config %d.", i);
+            eglGetConfigAttrib(egl->Display, configs[i], EGL_RENDERABLE_TYPE, &value);
+            if (!checkFlagAndLog(value, EGL_OPENGL_ES3_BIT_KHR, "renderable type"))
+            {
+                continue;
+            }
 
-        // The pbuffer config also needs to be compatible with normal window rendering
-        // so it can share textures with the window context.
-        eglGetConfigAttrib(egl->Display, configs[i], EGL_SURFACE_TYPE, &value);
-        if (!checkFlagAndLog(value, EGL_WINDOW_BIT | EGL_PBUFFER_BIT, "surface type"))
-        {
-            continue;
-        }
+            // The pbuffer config also needs to be compatible with normal window rendering
+            // so it can share textures with the window context.
+            eglGetConfigAttrib(egl->Display, configs[i], EGL_SURFACE_TYPE, &value);
+            if (!checkFlagAndLog(value, EGL_WINDOW_BIT | EGL_PBUFFER_BIT, "surface type"))
+            {
+                continue;
+            }
 
-        int j = 0;
-        ALOGD("        Checking EGL config attributes to make sure they match what we want...");
-        for (; configAttribs[j] != EGL_NONE; j += 2) {
-            eglGetConfigAttrib(egl->Display, configs[i], configAttribs[j], &value);
-            if (value != configAttribs[j + 1]) {
-                ALOGD("        Skipping EGL config due to mismatch in config attribute %d: expected %d, got %d", j / 2, configAttribs[j + 1], value);
+            int j = 0;
+            ALOGD("        Checking EGL config attributes to make sure they match what we want...");
+            for (; configAttribs[attempt][j] != EGL_NONE; j += 2) {
+                eglGetConfigAttrib(egl->Display, configs[i], configAttribs[attempt][j], &value);
+                if (value != configAttribs[attempt][j + 1]) {
+                    ALOGD("        Skipping EGL config due to mismatch in config attribute %d: expected %d, got %d", j / 2, configAttribs[attempt][j + 1], value);
+                    break;
+                }
+            }
+            if (configAttribs[attempt][j] == EGL_NONE) {
+                ALOGD("        Successfully picked EGL config %d!", i);
+                egl->Config = configs[i];
                 break;
             }
         }
-        if (configAttribs[j] == EGL_NONE) {
-            ALOGD("        Successfully picked EGL config %d!", i);
-            egl->Config = configs[i];
+        if (egl->Config != 0) {
+            ALOGW("        Failed to pick EGL config! Fallback to simpler color config.");
             break;
         }
     }

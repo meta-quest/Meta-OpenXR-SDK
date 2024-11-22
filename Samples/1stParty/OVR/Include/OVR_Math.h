@@ -482,14 +482,14 @@ inline bool EssentiallyEqual(float a, float b) {
         ((fabs(a) > fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
 }
 
-inline bool DefinitelyGreaterThan(float a, float b)
-{
-    return (a - b) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
+inline bool DefinitelyGreaterThan(float a, float b) {
+    return (a - b) >
+        ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
 }
 
-inline bool DefinitelyLessThan(float a, float b)
-{
-    return (b - a) > ( (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
+inline bool DefinitelyLessThan(float a, float b) {
+    return (b - a) >
+        ((fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * std::numeric_limits<float>::epsilon());
 }
 
 // Conversion functions between degrees and radians
@@ -2106,11 +2106,11 @@ class Quat {
         return *this * s;
     }
 
-    inline void ChangeHemisphere(){
-            x = -x;
-            y = -y;
-            z = -z;
-            w = -w;
+    inline void ChangeHemisphere() {
+        x = -x;
+        y = -y;
+        z = -z;
+        w = -w;
     }
 
     inline void EnsureSameHemisphere(const Quat& o) {
@@ -2396,7 +2396,7 @@ class Quat {
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                        atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m]), ww + Q22 - Q11 - Qmm));
+                         atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m]), ww + Q22 - Q11 - Qmm));
         } else if (c2 > T(1) - singularityRadius) { // North pole singularity
             if (a)
                 *a = T(0);
@@ -2405,12 +2405,12 @@ class Quat {
             if (c)
                 *c = S * D *
                     static_cast<T>(
-                        atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m]), ww + Q22 - Q11 - Qmm));
+                         atan2(T(2) * (w * Q[A1] - psign * Q[A2] * Q[m]), ww + Q22 - Q11 - Qmm));
         } else {
             if (a)
                 *a = S * D *
                     static_cast<T>(
-                        atan2(psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] - psign * Q[A1] * Q[m]));
+                         atan2(psign * w * Q[m] + Q[A1] * Q[A2], w * Q[A2] - psign * Q[A1] * Q[m]));
             if (b)
                 *b = S * D * static_cast<T>(acos(c2));
             if (c)
@@ -2424,30 +2424,30 @@ class Quat {
         return isnan(x) || isnan(y) || isnan(z) || isnan(w);
     }
 
-    Quat GetTwistQuaternion(const Vector3<T>& twistAxis) const{
+    Quat GetTwistQuaternion(const Vector3<T>& twistAxis) const {
         Vector3<T> rotAxis(x, y, z);
         float dotProd = rotAxis.Dot(twistAxis);
         auto projected = twistAxis * dotProd;
         Quat<T> twist(projected.x, projected.y, projected.z, w);
         twist.Normalize();
-        if(dotProd < 0){
+        if (dotProd < 0) {
             twist.ChangeHemisphere();
         }
         return twist;
     }
 
-    float GetTwistAngle(const Vector3<T>& twistAxis) const{
+    float GetTwistAngle(const Vector3<T>& twistAxis) const {
         Vector3<T> rotAxis(x, y, z);
         float dotProd = rotAxis.Dot(twistAxis);
         auto projected = twistAxis * dotProd;
         Quat<T> twist(projected.x, projected.y, projected.z, w);
         twist.Normalize();
-        return dotProd < 0? -twist.Angle():twist.Angle();
+        return dotProd < 0 ? -twist.Angle() : twist.Angle();
     }
 
-    void GetSwingTwist(Quat* swing, Quat* twist, const Vector3<T>& twistAxis) const{
-       (*twist) = GetTwistQuaternion(twistAxis);
-       (*swing) = (*this) * twist->Inverse();
+    void GetSwingTwist(Quat* swing, Quat* twist, const Vector3<T>& twistAxis) const {
+        (*twist) = GetTwistQuaternion(twistAxis);
+        (*swing) = (*this) * twist->Inverse();
     }
 };
 
@@ -3177,9 +3177,15 @@ class Matrix4 {
         scale->y = Vector3<T>(M[0][1], M[1][1], M[2][1]).Length();
         scale->z = Vector3<T>(M[0][2], M[1][2], M[2][2]).Length();
         Matrix3<T> rotationM(
-            M[0][0]/scale->x, M[0][1]/scale->y, M[0][2]/scale->z,
-            M[1][0]/scale->x, M[1][1]/scale->y, M[1][2]/scale->z,
-            M[2][0]/scale->x, M[2][1]/scale->y, M[2][2]/scale->z);
+            M[0][0] / scale->x,
+            M[0][1] / scale->y,
+            M[0][2] / scale->z,
+            M[1][0] / scale->x,
+            M[1][1] / scale->y,
+            M[1][2] / scale->z,
+            M[2][0] / scale->x,
+            M[2][1] / scale->y,
+            M[2][2] / scale->z);
         // Because we may have flipY applied to modelMatrix, we may have a matrix which has both TRS
         // and reflection. If we found there are odd number of reflections (i.e. determinate is -1),
         // we arbitrarily flip one axis.
@@ -3207,7 +3213,6 @@ class Matrix4 {
         s_lerped = sa.Lerp(sb, s);
         return Matrix4(Pose(r_lerped, t_lerped)) * Matrix4::Scaling(s_lerped);
     }
-
 
     // Creates a matrix that converts the vertices from one coordinate system
     // to another.
@@ -4856,15 +4861,6 @@ typedef MapRange<float> MapRangef;
 typedef MapRange<double> MapRanged;
 
 } // Namespace OVR
-
-namespace std {
-    template <typename T>
-    struct hash<OVR::Vector2<T>> {
-        size_t operator()(const OVR::Vector2<T>& v) const {
-            return hash<T>()(v.x) ^ hash<T>()(v.y);
-        }
-    };
-}
 
 #if defined(_MSC_VER)
 #pragma warning(pop)

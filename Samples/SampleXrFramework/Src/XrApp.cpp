@@ -216,6 +216,10 @@ void XrApp::HandleSessionStateChanges(XrSessionState state) {
     }
 }
 
+XrResult XrApp::PollXrEvent(XrEventDataBuffer* eventDataBuffer) {
+    return xrPollEvent(Instance, eventDataBuffer);
+}
+
 void XrApp::HandleXrEvents() {
     XrEventDataBuffer eventDataBuffer = {};
 
@@ -225,7 +229,7 @@ void XrApp::HandleXrEvents() {
         baseEventHeader->type = XR_TYPE_EVENT_DATA_BUFFER;
         baseEventHeader->next = NULL;
         XrResult r;
-        OXR(r = xrPollEvent(Instance, &eventDataBuffer));
+        OXR(r = PollXrEvent(&eventDataBuffer));
         if (r != XR_SUCCESS) {
             break;
         }
@@ -567,9 +571,7 @@ void XrApp::GetInitialSceneUri(std::string& sceneUri) const {
     sceneUri = "apk:///assets/box.ovrscene";
 }
 
-// Called one time when the application process starts.
-// Returns true if the application initialized successfully.
-bool XrApp::Init(const xrJava& context) {
+XrInstance XrApp::CreateInstance(const xrJava& context) {
 #if defined(ANDROID)
     // Loader
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
@@ -683,16 +685,23 @@ bool XrApp::Init(const xrJava& context) {
     instanceCreateInfo.enabledExtensionCount = extensions.size();
     instanceCreateInfo.enabledExtensionNames = extensions.data();
 
+    XrInstance instance;
     XrResult initResult;
-    OXR(initResult = xrCreateInstance(&instanceCreateInfo, &Instance));
+    OXR(initResult = xrCreateInstance(&instanceCreateInfo, &instance));
     if (initResult != XR_SUCCESS) {
         ALOGE("Failed to create XR instance: %d.", initResult);
         exit(1);
     }
 
     FreeInstanceCreateInfoNextChain(nextChain);
-    ///
 
+    return instance;
+}
+
+// Called one time when the application process starts.
+// Returns true if the application initialized successfully.
+bool XrApp::Init(const xrJava& context) {
+    Instance = CreateInstance(context);
     XrInstanceProperties instanceInfo = {XR_TYPE_INSTANCE_PROPERTIES};
     OXR(xrGetInstanceProperties(Instance, &instanceInfo));
     ALOGV(
@@ -705,6 +714,7 @@ bool XrApp::Init(const xrJava& context) {
     XrSystemGetInfo systemGetInfo = {XR_TYPE_SYSTEM_GET_INFO};
     systemGetInfo.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 
+    XrResult initResult;
     XrSystemId systemId;
     OXR(initResult = xrGetSystem(Instance, &systemGetInfo, &systemId));
     if (initResult != XR_SUCCESS) {
@@ -1090,10 +1100,14 @@ void XrApp::EndSession() {
     ovrEgl_DestroyContext(&Egl);
 }
 
+void XrApp::DestroyInstance() {
+    OXR(xrDestroyInstance(Instance));
+}
+
 // Called one time when the applicatoin process exits
 void XrApp::Shutdown(const xrJava& context) {
     AppShutdown(&context);
-    OXR(xrDestroyInstance(Instance));
+    DestroyInstance();
     Clear();
 }
 

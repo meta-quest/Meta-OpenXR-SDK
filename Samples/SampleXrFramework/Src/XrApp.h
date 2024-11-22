@@ -491,8 +491,9 @@ class XrApp {
         return CurrentSpace;
     }
 
-    XrActionSet CreateActionSet(uint32_t priority, const char* name, const char* localizedName);
-    XrAction CreateAction(
+    virtual XrActionSet
+    CreateActionSet(uint32_t priority, const char* name, const char* localizedName);
+    virtual XrAction CreateAction(
         XrActionSet actionSet,
         XrActionType type,
         const char* actionName,
@@ -521,6 +522,11 @@ class XrApp {
 
     // Called to deal with lifetime
     void HandleSessionStateChanges(XrSessionState state);
+
+   protected:
+    virtual XrInstance CreateInstance(const xrJava& context);
+    virtual void DestroyInstance();
+    virtual XrResult PollXrEvent(XrEventDataBuffer* eventDataBuffer);
 
    private:
     // Called one time when the application process starts.

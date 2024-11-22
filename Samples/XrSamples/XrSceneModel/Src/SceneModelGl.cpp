@@ -961,7 +961,7 @@ void ovrScene::Clear() {
     }
     Meshes.clear();
 
-}
+    }
 
 bool ovrScene::IsCreated() {
     return CreatedScene;
@@ -1026,7 +1026,7 @@ void ovrScene::Create() {
         ALOGE("Failed to compile mesh program!");
     }
 
-
+    
     CreatedScene = true;
 
     CreateVAOs();
@@ -1405,6 +1405,6 @@ void ovrAppRenderer::RenderFrame(const FrameIn& frameIn) {
     GL(glDisable(GL_BLEND));
     GL(glUseProgram(0));
 
-
+    
     Framebuffer.Unbind();
 }

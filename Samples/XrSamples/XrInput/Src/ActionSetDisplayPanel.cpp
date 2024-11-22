@@ -202,7 +202,8 @@ std::string ActionSetDisplayPanel::ListBoundSources(XrAction action) {
         OXR(xrGetInputSourceLocalizedName(
             Session, &sni, sourceName.size(), &sourceNameLength, sourceName.data()));
 
-        bindingText << "\nBinding: " << pathString.data() << "\n(" << sourceName.data() << ")\n";
+        bindingText << "\nBinding: " << (pathString.empty() ? "UNKNOWN" : pathString.data())
+                    << "\n(" << (sourceName.empty() ? "UNKNOWN" : sourceName.data()) << ")\n";
     }
     return std::string(bindingText.str());
 }

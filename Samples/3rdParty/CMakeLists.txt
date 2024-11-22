@@ -114,7 +114,7 @@ function(find_openxr_loader)
         FetchContent_Declare(
             openxr
             GIT_REPOSITORY  https://github.com/KhronosGroup/OpenXR-SDK.git
-            GIT_TAG         release-1.1.38
+            GIT_TAG         release-1.1.40
             SOURCE_DIR      ${CMAKE_CURRENT_LIST_DIR}/openxr
         )
 

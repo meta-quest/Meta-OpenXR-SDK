@@ -1198,6 +1198,9 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         const float* buffer,
         const size_t bufferSize,
         float sampleRate) {
+        // stream and sleep on a separate thread,
+        // so that we don't lock up the entire app
+        std::thread t([action, subactionPath, buffer, bufferSize, sampleRate, this]() {
         /// fill in the amplitude buffer
         std::vector<float> pcmBuffer(bufferSize);
         for (size_t i = 0; i < bufferSize; ++i) {
@@ -1238,6 +1241,8 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             totalSamplesUsed += samplesUsed;
             ALOG("Haptics PCM Buffer Count Output: %d", *(v.samplesConsumed));
         }
+        });
+        t.detach();
     }
 
     void StopHapticEffect(const XrAction& action, const XrPath& subactionPath) {

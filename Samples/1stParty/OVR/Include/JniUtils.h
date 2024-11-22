@@ -225,10 +225,13 @@ class JavaString : public JavaObject {
    public:
     JavaString(JNIEnv* jni_, char const* string_) : JavaObject(jni_, NULL) {
 #if defined(OVR_OS_ANDROID)
+        OVR_ASSERT(string_);
         SetJObject(GetJNI()->NewStringUTF(string_));
         if (GetJNI()->ExceptionOccurred()) {
+            OVR_ASSERT(!(bool)"JNI exception occurred calling NewStringUTF!");
             OVR_LOG("JNI exception occurred calling NewStringUTF!");
         }
+        OVR_ASSERT(GetJObject());
 #else
         OVR_UNUSED(string_);
 #endif
@@ -239,6 +242,9 @@ class JavaString : public JavaObject {
     }
 
     jstring GetJString() const {
+#if defined(OVR_OS_ANDROID)
+        OVR_ASSERT(GetJObject());
+#endif
         return static_cast<jstring>(GetJObject());
     }
 };
@@ -255,11 +261,14 @@ class JavaString : public JavaObject {
 class JavaUTFChars : public JavaString {
    public:
     JavaUTFChars(JNIEnv* jni_, jstring const string_) : JavaString(jni_, string_), UTFString(NULL) {
+        OVR_ASSERT(string_);
 #if defined(OVR_OS_ANDROID)
         UTFString = GetJNI()->GetStringUTFChars(GetJString(), NULL);
         if (GetJNI()->ExceptionOccurred()) {
+            OVR_ASSERT(!(bool)"JNI exception occurred calling GetStringUTFChars!");
             OVR_LOG("JNI exception occurred calling GetStringUTFChars!");
         }
+        OVR_ASSERT(UTFString);
 #endif
     }
 
@@ -268,15 +277,18 @@ class JavaUTFChars : public JavaString {
         OVR_ASSERT(UTFString != NULL);
         GetJNI()->ReleaseStringUTFChars(GetJString(), UTFString);
         if (GetJNI()->ExceptionOccurred()) {
+            OVR_ASSERT(!(bool)"JNI exception occurred calling ReleaseStringUTFChars!");
             OVR_LOG("JNI exception occurred calling ReleaseStringUTFChars!");
         }
 #endif
     }
 
     char const* ToStr() const {
+        OVR_ASSERT(UTFString);
         return UTFString;
     }
     operator char const*() const {
+        OVR_ASSERT(UTFString);
         return UTFString;
     }
 

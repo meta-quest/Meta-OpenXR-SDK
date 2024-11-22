@@ -56,7 +56,6 @@ Authors   :
 #include <meta_openxr_preview/meta_boundary_visibility.h>
 
 
-
 #if defined(_WIN32)
 // Favor the high performance NVIDIA or AMD GPUs
 extern "C" {
@@ -211,7 +210,6 @@ std::string BoundaryVisibilityToString(const XrBoundaryVisibilityMETA boundaryVi
             return "Unknown";
     }
 }
-
 
 /*
 ================================================================================
@@ -500,7 +498,7 @@ struct ovrExtensionFunctionPointers {
     PFN_xrRequestSceneCaptureFB xrRequestSceneCaptureFB = nullptr;
 #endif
     PFN_xrRequestBoundaryVisibilityMETA xrRequestBoundaryVisibilityMETA = nullptr;
-    };
+};
 
 struct ovrApp {
     void Clear();
@@ -581,8 +579,7 @@ struct ovrApp {
     XrPassthroughLayerFB PassthroughLayer = XR_NULL_HANDLE;
 
     XrBoundaryVisibilityMETA CurrentBoundaryVisibility = XR_BOUNDARY_VISIBILITY_NOT_SUPPRESSED_META;
-
-    };
+};
 
 void ovrApp::Clear() {
 #if defined(XR_USE_PLATFORM_ANDROID)
@@ -1083,8 +1080,7 @@ void ovrApp::HandleXrEvents() {
                             CollectRoomLayoutUuids(result.space, UuidSet);
                         }
                     }
-
-                                    }
+                }
             } break;
             case XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB: {
                 ALOGV("xrPollEvent: received XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB");
@@ -1116,7 +1112,7 @@ void ovrApp::HandleXrEvents() {
                     "xrPollEvent: Boundary visibility changed to %s",
                     BoundaryVisibilityToString(CurrentBoundaryVisibility).c_str());
             } break;
-                            default:
+            default:
                 ALOGV("xrPollEvent: Unknown event");
                 break;
         }
@@ -1477,7 +1473,7 @@ int main() {
         XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME,
         XR_META_SPATIAL_ENTITY_MESH_EXTENSION_NAME,
                 XR_META_BOUNDARY_VISIBILITY_EXTENSION_NAME,
-                XR_FB_SCENE_EXTENSION_NAME,
+        XR_FB_SCENE_EXTENSION_NAME,
 #if defined(ANDROID)
         XR_FB_SCENE_CAPTURE_EXTENSION_NAME,
 #endif
@@ -1940,7 +1936,7 @@ int main() {
         instance,
         "xrRequestBoundaryVisibilityMETA",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrRequestBoundaryVisibilityMETA)));
-        
+    
     CreatePassthrough(app);
 
     // Two values for left and right controllers.
@@ -2032,7 +2028,6 @@ int main() {
 
             app.UuidSet.clear();
 
-            
             app.IsQueryComplete = true;
         }
 
@@ -2143,7 +2138,6 @@ int main() {
             CycleSceneVisualizationMode(app);
         }
 
-        
 #if defined(ANDROID)
         // Right Index Trigger: Request scene capture.
         if (input->IsTriggerPressed(SimpleXrInput::Side_Right)) {
