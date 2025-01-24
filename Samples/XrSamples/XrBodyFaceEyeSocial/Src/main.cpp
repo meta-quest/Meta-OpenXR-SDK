@@ -55,6 +55,7 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
 
     XrBodyFaceEyeSocialApp() : OVRFW::XrApp() {
         BackgroundColor = OVR::Vector4f(0.60f, 0.95f, 0.4f, 1.0f);
+        OpenXRVersion = XR_API_VERSION_1_1;
     }
 
     // Returns a list of OpenXr extensions needed for this app
@@ -190,15 +191,15 @@ class XrBodyFaceEyeSocialApp : public OVRFW::XrApp {
         beamRenderer_.Init(GetFileSys(), nullptr, OVR::Vector4f(1.0f), 1.0f);
 
         {
-            // We want to draw our body in front of us so that we can see what we look like
-            XrQuaternionf bodyOrientation{};
-            XrVector3f upAxis{0, 1, 0};
-            XrQuaternionf_CreateFromAxisAngle(&bodyOrientation, &upAxis, 120 * MATH_PI / 180);
-
             XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-            spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STAGE;
-            spaceCreateInfo.poseInReferenceSpace.position.z = 1.0f;
-            spaceCreateInfo.poseInReferenceSpace.orientation = bodyOrientation;
+            spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR;
+
+            // Make sure the sample framework is set to the local floor space
+            spaceCreateInfo.poseInReferenceSpace = {{0.f, 0.f, 0.f, 1.f}, {0.f, 0.f, 0.f}};
+            OXR(xrCreateReferenceSpace(Session, &spaceCreateInfo, &CurrentSpace));
+
+            // Set body skeleton to be 1 meter in front of the local floor origin
+            spaceCreateInfo.poseInReferenceSpace.position.z = 1.f;
             OXR(xrCreateReferenceSpace(Session, &spaceCreateInfo, &bodySpace));
         }
 

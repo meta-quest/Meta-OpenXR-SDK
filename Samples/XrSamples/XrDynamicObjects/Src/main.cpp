@@ -524,8 +524,8 @@ class XrDynamicObjectsApp : public OVRFW::XrApp {
 
         if (trackerState == XrDynamicObjectTrackerHelper::TrackerState::Created) {
             // Set object class that we want to track
-            const std::vector<XrDynamicObjectClassMETAX1> trackedClasses = {
-                XR_DYNAMIC_OBJECT_CLASS_KEYBOARD_METAX1};
+            const std::vector<XrDynamicObjectClassMETA> trackedClasses = {
+                XR_DYNAMIC_OBJECT_CLASS_KEYBOARD_META};
             if (DynamicObjectTracker->SetDynamicObjectTrackedClasses(trackedClasses)) {
                 StatusText += "Looking for: KEYBOARD\n";
                 StatusTextLabel->SetText(StatusText.c_str());
@@ -543,7 +543,7 @@ class XrDynamicObjectsApp : public OVRFW::XrApp {
             // Currently we update our anchor at interval to avoid the bounding box miscmatching
             if (SpatialAnchor && predictedDisplayTime > NextQueryAnchorTime) {
                 if (SpatialAnchor->RequestQueryAnchorsWithComponentEnabled(
-                        XR_SPACE_COMPONENT_TYPE_DYNAMIC_OBJECT_DATA_METAX1, QueryAnchorRequestId)) {
+                        XR_SPACE_COMPONENT_TYPE_DYNAMIC_OBJECT_DATA_META, QueryAnchorRequestId)) {
                     StatusText += NextQueryAnchorTime == 0 ? "Querying spatial anchors" : ".";
                     StatusTextLabel->SetText(StatusText.c_str());
                 } else {
@@ -627,6 +627,7 @@ class XrDynamicObjectsApp : public OVRFW::XrApp {
         KeyboardTracking = true;
         KeyboardPose = FromXrPosef(spaceLocation.pose);
         SpatialAnchor->GetBoundingBox3D(KeyboardSpace, KeyboardBoundingBox3D);
+        SpatialAnchor->GetBoundingBox2D(KeyboardSpace, KeyboardBoundingBox2D);
     }
 
     void UpdatePassthrough(XrSpace currentSpace, XrTime predictedDisplayTime) {
@@ -655,48 +656,55 @@ class XrDynamicObjectsApp : public OVRFW::XrApp {
 
         // Update cutoff transform
         if (PassthroughWindow != XR_NULL_HANDLE) {
+            const OVR::Vector3f kb3DExtent = OVR::Vector3f(
+                KeyboardBoundingBox3D.extent.width,
+                KeyboardBoundingBox3D.extent.height,
+                KeyboardBoundingBox3D.extent.depth);
+                
             // multiplying by 1.25 because when we generated the Tesselated Quad, we used a 4x4 grid
             // of verts. and BuildTesselatedQuadDescriptor will transition from opaque on the outer
             // ring of verts to transparent on the next inner ring of verts. i.e. 25% of each
             // dimension will be feathered, so we need to scale the quad by 1.25 so that the actual
             // keyboard part is unfeathered. Note: this is highly dependant on the implementation of
             // and the call to BuildTesselatedQuadDescriptor, so if that changes this will break.
-            constexpr float kPassThroughScaleFeatheringMultiplier = 1.25f;
-            const OVR::Vector3f passthroughScale = OVR::Vector3f(
-                                                       KeyboardBoundingBox3D.extent.width,
-                                                       KeyboardBoundingBox3D.extent.height,
-                                                       KeyboardBoundingBox3D.extent.depth) *
-                kPassThroughScaleFeatheringMultiplier;
+            constexpr float kPassThrough3DScaleFeatheringMultiplier = 1.25f;
+            const OVR::Vector3f passthrough3DScale = kb3DExtent * kPassThrough3DScaleFeatheringMultiplier;
 
             Passthrough->SetGeometryInstanceTransform(
                 PassthroughWindow,
                 predictedDisplayTime,
                 ToXrPosef(KeyboardPose),
-                ToXrVector3f(passthroughScale));
+                ToXrVector3f(passthrough3DScale));
 
-            const OVR::Vector3f halfSize = passthroughScale * 0.5f;
+            // update the feathered cutout shape
+            GeometryRenderer.SetPose(KeyboardPose);
+            GeometryRenderer.SetScale({passthrough3DScale.x / 2, passthrough3DScale.y / 2, 1.0f});
+            GeometryRenderer.Update();
+
+
+            // update rgb axis markers on keyboard corners using the 2d bounding box for demonstration 
+            // purposes, but we could use the 3d bounding box as well
+            const auto kb2DOffset = OVR::Vector3f{KeyboardBoundingBox2D.offset.x, KeyboardBoundingBox2D.offset.y, 0.0f};
+            const auto kbOffsetPose = KeyboardPose * OVR::Posef(OVR::Quatf(), kb2DOffset);
+
+            const auto& kb2DExtent = KeyboardBoundingBox2D.extent;
+
             std::vector<OVR::Posef> poses;
             // Center
             poses.push_back(KeyboardPose);
-            // XY plane corners
+            // XY plane corners on face of keyboard
             OVR::Posef point = OVR::Posef::Identity();
-            point.Translation.x = +halfSize.x;
-            point.Translation.y = +halfSize.y;
-            poses.push_back(KeyboardPose * point);
-            point.Translation.x = +halfSize.x;
-            point.Translation.y = -halfSize.y;
-            poses.push_back(KeyboardPose * point);
-            point.Translation.x = -halfSize.x;
-            point.Translation.y = +halfSize.y;
-            poses.push_back(KeyboardPose * point);
-            point.Translation.x = -halfSize.x;
-            point.Translation.y = -halfSize.y;
-            poses.push_back(KeyboardPose * point);
+            poses.push_back(kbOffsetPose * point);
+            point.Translation.x = kb2DExtent.width;
+            point.Translation.y = 0;
+            poses.push_back(kbOffsetPose * point);
+            point.Translation.x = 0;
+            point.Translation.y = kb2DExtent.height;
+            poses.push_back(kbOffsetPose * point);
+            point.Translation.x = kb2DExtent.width;
+            point.Translation.y = kb2DExtent.height;
+            poses.push_back(kbOffsetPose * point);
             AxisRenderer.Update(poses);
-
-            GeometryRenderer.SetPose(KeyboardPose);
-            GeometryRenderer.SetScale({halfSize.x, halfSize.y, 1.0f});
-            GeometryRenderer.Update();
         }
     }
 
@@ -714,10 +722,10 @@ class XrDynamicObjectsApp : public OVRFW::XrApp {
         // Filter by dynamic object class KEYBOARD
         const auto& results = SpatialAnchor->GetSpatialAnchors([&](XrSpace space) {
             if (SpatialAnchor->IsComponentSupported(
-                    space, XR_SPACE_COMPONENT_TYPE_DYNAMIC_OBJECT_DATA_METAX1)) {
-                XrDynamicObjectClassMETAX1 dynamicObjectClass;
+                    space, XR_SPACE_COMPONENT_TYPE_DYNAMIC_OBJECT_DATA_META)) {
+                XrDynamicObjectClassMETA dynamicObjectClass;
                 if (DynamicObjectTracker->GetDynamicObjectClass(space, dynamicObjectClass) &&
-                    dynamicObjectClass == XR_DYNAMIC_OBJECT_CLASS_KEYBOARD_METAX1) {
+                    dynamicObjectClass == XR_DYNAMIC_OBJECT_CLASS_KEYBOARD_META) {
                     return true;
                 }
             }
@@ -802,6 +810,7 @@ class XrDynamicObjectsApp : public OVRFW::XrApp {
     XrSpace KeyboardSpace = XR_NULL_HANDLE;
     OVR::Posef KeyboardPose = OVR::Posef::Identity();
     XrRect3DfFB KeyboardBoundingBox3D = {};
+    XrRect2Df KeyboardBoundingBox2D = {};
 
     XrPassthroughLayerFB PassthroughLayer = XR_NULL_HANDLE;
     XrGeometryInstanceFB PassthroughWindow = XR_NULL_HANDLE;

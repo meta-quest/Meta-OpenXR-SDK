@@ -24,16 +24,15 @@
 #ifndef OVR_Math_h
 #define OVR_Math_h
 
+#include <float.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <float.h>
 
-#include <algorithm> // for min, max
-#include <cstdint>
-#include <cmath>
+#include <limits>
+#include <type_traits>
 
 #if defined(_MSC_VER)
 #pragma warning(push)
@@ -344,7 +343,7 @@ struct CompatibleTypes<Vector4<double>> {
     typedef ovrVector4d Type;
 };
 template <>
-struct CompatibleTypes<Vector4<std::int16_t>> {
+struct CompatibleTypes<Vector4<int16_t>> {
     typedef ovrVector4s Type;
 };
 template <>
@@ -1035,7 +1034,7 @@ class Vector3 {
         const Vector3 lineVec = a1 - a0;
         const Vector3 fromP0 = *this - a0;
         const T normalizedProjection = fromP0.Dot(lineVec) / lineVec.Dot(lineVec);
-        const T closestT = std::clamp(normalizedProjection, 0.f, 1.f);
+        const T closestT = OVRMath_Clamp(normalizedProjection, 0.f, 1.f);
         const Vector3 closestPoint = a0 + closestT * lineVec;
         return (closestPoint - *this).Length();
     }
@@ -1061,6 +1060,13 @@ Vector3<T> operator*(T s, const Vector3<T>& v) {
 typedef Vector3<float> Vector3f;
 typedef Vector3<double> Vector3d;
 typedef Vector3<int32_t> Vector3i;
+
+static_assert(std::is_trivially_copyable_v<Vector3f>);
+static_assert(std::is_standard_layout_v<Vector3f>);
+static_assert(std::is_trivially_copyable_v<Vector3d>);
+static_assert(std::is_standard_layout_v<Vector3d>);
+static_assert(std::is_trivially_copyable_v<Vector3i>);
+static_assert(std::is_standard_layout_v<Vector3i>);
 
 OVR_MATH_STATIC_ASSERT((sizeof(Vector3f) == 3 * sizeof(float)), "sizeof(Vector3f) failure");
 OVR_MATH_STATIC_ASSERT((sizeof(Vector3d) == 3 * sizeof(double)), "sizeof(Vector3d) failure");
@@ -1301,7 +1307,14 @@ const Vector4<T> Vector4<T>::ZERO;
 typedef Vector4<float> Vector4f;
 typedef Vector4<double> Vector4d;
 typedef Vector4<int> Vector4i;
-typedef Vector4<std::int16_t> Vector4s;
+typedef Vector4<int16_t> Vector4s;
+
+static_assert(std::is_trivially_copyable_v<Vector4f>);
+static_assert(std::is_standard_layout_v<Vector4f>);
+static_assert(std::is_trivially_copyable_v<Vector4d>);
+static_assert(std::is_standard_layout_v<Vector4d>);
+static_assert(std::is_trivially_copyable_v<Vector4i>);
+static_assert(std::is_standard_layout_v<Vector4i>);
 
 //-------------------------------------------------------------------------------------
 // ***** Bounds3
@@ -2462,6 +2475,11 @@ Vector3<T> operator*(const Vector3<T>& v, const Quat<T>& q) {
 typedef Quat<float> Quatf;
 typedef Quat<double> Quatd;
 
+static_assert(std::is_trivially_copyable_v<Quatf>);
+static_assert(std::is_standard_layout_v<Quatf>);
+static_assert(std::is_trivially_copyable_v<Quatd>);
+static_assert(std::is_standard_layout_v<Quatd>);
+
 OVR_MATH_STATIC_ASSERT((sizeof(Quatf) == 4 * sizeof(float)), "sizeof(Quatf) failure");
 OVR_MATH_STATIC_ASSERT((sizeof(Quatd) == 4 * sizeof(double)), "sizeof(Quatd) failure");
 
@@ -2477,12 +2495,12 @@ class Pose {
    public:
     typedef typename CompatibleTypes<Pose<T>>::Type CompatibleType;
 
-    Pose() {}
+    Pose() = default;
 
     Pose(const Quat<T>& orientation, const Vector3<T>& pos)
         : Rotation(orientation), Translation(pos) {}
 
-    Pose(const Pose& s) : Rotation(s.Rotation), Translation(s.Translation) {}
+    Pose(const Pose& s) = default;
 
     Pose(const Matrix3<T>& R, const Vector3<T>& t) : Rotation((Quat<T>)R), Translation(t) {}
 
@@ -2497,13 +2515,7 @@ class Pose {
             Rotation.Normalize();
     }
 
-    Pose& operator=(Pose const& rhs) {
-        if (&rhs != this) {
-            this->Rotation = rhs.Rotation;
-            this->Translation = rhs.Translation;
-        }
-        return *this;
-    }
+    Pose& operator=(Pose const& rhs) = default;
 
     explicit Pose(const Matrix4<T>& m) : Rotation(m), Translation(m.GetTranslation()) {}
 
@@ -2637,6 +2649,11 @@ class Pose {
 
 typedef Pose<float> Posef;
 typedef Pose<double> Posed;
+
+static_assert(std::is_trivially_copyable_v<Posef>);
+static_assert(std::is_standard_layout_v<Posef>);
+static_assert(std::is_trivially_copyable_v<Posed>);
+static_assert(std::is_standard_layout_v<Posed>);
 
 OVR_MATH_STATIC_ASSERT(
     (sizeof(Posed) == sizeof(Quatd) + sizeof(Vector3d)),
@@ -3780,12 +3797,13 @@ class Matrix3 {
         return *this;
     }
 
-    void operator=(const Matrix3& b) {
+    Matrix3& operator=(const Matrix3& b) {
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 M[i][j] = b.M[i][j];
             }
         }
+        return *this;
     }
 
     Matrix3 operator-(const Matrix3& b) const {
@@ -4179,11 +4197,12 @@ class Matrix2 {
         return *this;
     }
 
-    void operator=(const Matrix2& b) {
+    Matrix2& operator=(const Matrix2& b) {
         M[0][0] = b.M[0][0];
         M[0][1] = b.M[0][1];
         M[1][0] = b.M[1][0];
         M[1][1] = b.M[1][1];
+        return *this;
     }
 
     Matrix2 operator-(const Matrix2& b) const {
@@ -4847,7 +4866,7 @@ struct MapRange {
 
         T in = (value - from.x) / fromRange;
         if (doClamp) {
-            in = std::clamp(in, T(0.0), T(1.0));
+            in = OVRMath_Clamp(in, T(0.0), T(1.0));
         }
         T out = in * toRange + to.x;
 

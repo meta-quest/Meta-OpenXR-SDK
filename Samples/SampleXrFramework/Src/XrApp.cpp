@@ -672,7 +672,7 @@ XrInstance XrApp::CreateInstance(const xrJava& context) {
     appInfo.applicationVersion = 0;
     strcpy(appInfo.engineName, "Oculus Mobile Sample");
     appInfo.engineVersion = 0;
-    appInfo.apiVersion = XR_API_VERSION_1_0;
+    appInfo.apiVersion = OpenXRVersion;
 
     const void* nextChain = GetInstanceCreateInfoNextChain();
 

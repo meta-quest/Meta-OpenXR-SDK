@@ -43,6 +43,10 @@ XrSpatialAnchorHelper::XrSpatialAnchorHelper(XrInstance instance) : XrHelper(ins
         instance,
         "xrGetSpaceBoundingBox3DFB",
         reinterpret_cast<PFN_xrVoidFunction*>(&XrGetSpaceBoundingBox3DFB)));
+        OXR(xrGetInstanceProcAddr(
+        instance,
+        "xrGetSpaceBoundingBox2DFB",
+        reinterpret_cast<PFN_xrVoidFunction*>(&XrGetSpaceBoundingBox2DFB)));
     OXR(xrGetInstanceProcAddr(
         instance,
         "xrGetSpaceSemanticLabelsFB",
@@ -350,6 +354,20 @@ bool XrSpatialAnchorHelper::GetBoundingBox3D(XrSpace space, XrRect3DfFB& boundin
     XrResult result = XrGetSpaceBoundingBox3DFB(Session, space, &boundingBox3D);
     if (XR_FAILED(result)) {
         ALOGE("xrGetSpaceBoundingBox3DFB failed, error %d", result);
+        return false;
+    }
+    return true;
+}
+
+bool XrSpatialAnchorHelper::GetBoundingBox2D(XrSpace space, XrRect2Df& boundingBox2D) const {
+    if (!IsComponentSupported(space, XR_SPACE_COMPONENT_TYPE_BOUNDED_2D_FB)) {
+        ALOGE("Anchor does not support bounded 2D component.");
+        return false;
+    }
+
+    XrResult result = XrGetSpaceBoundingBox2DFB(Session, space, &boundingBox2D);
+    if (XR_FAILED(result)) {
+        ALOGE("xrGetSpaceBoundingBox2DFB failed, error %d", result);
         return false;
     }
     return true;

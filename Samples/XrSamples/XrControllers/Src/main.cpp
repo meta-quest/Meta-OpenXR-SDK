@@ -31,6 +31,7 @@ Language    :   C++
 #include <algorithm>
 #include <openxr/openxr.h>
 
+
 #include <sstream>
 #include <iomanip>
 #include <thread>
@@ -58,6 +59,7 @@ class XrControllersApp : public OVRFW::XrApp {
    public:
     XrControllersApp() : OVRFW::XrApp() {
         BackgroundColor = OVR::Vector4f(0.60f, 0.95f, 0.4f, 1.0f);
+        OpenXRVersion = XR_API_VERSION_1_1;
     }
 
     /**
@@ -99,12 +101,9 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
     // Returns a list of OpenXr extensions needed for this app
     virtual std::vector<const char*> GetExtensions() override {
         std::vector<const char*> extensions = XrApp::GetExtensions();
-        extensions.push_back(XR_FB_TOUCH_CONTROLLER_PRO_EXTENSION_NAME);
-        extensions.push_back(XR_META_TOUCH_CONTROLLER_PLUS_EXTENSION_NAME);
         extensions.push_back(XR_FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME);
         extensions.push_back(XR_FB_HAPTIC_PCM_EXTENSION_NAME);
-        extensions.push_back(XR_FB_TOUCH_CONTROLLER_PROXIMITY_EXTENSION_NAME);
-        return extensions;
+                return extensions;
     }
 
     // Returns a map from interaction profile paths to vectors of suggested bindings.
@@ -236,41 +235,77 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
 
         XrPath touchInteractionProfile = XR_NULL_PATH;
         OXR(xrStringToPath(
-            instance, "/interaction_profiles/oculus/touch_controller", &touchInteractionProfile));
+            instance, "/interaction_profiles/meta/touch_controller_quest_2", &touchInteractionProfile));
 
         XrPath touchProInteractionProfile = XR_NULL_PATH;
         OXR(xrStringToPath(
             instance,
-            "/interaction_profiles/facebook/touch_controller_pro",
+            "/interaction_profiles/meta/touch_pro_controller",
             &touchProInteractionProfile));
         XrPath touchPlusInteractionProfile = XR_NULL_PATH;
         OXR(xrStringToPath(
             instance,
-            "/interaction_profiles/meta/touch_controller_plus",
+            "/interaction_profiles/meta/touch_plus_controller",
             &touchPlusInteractionProfile));
+        
+        std::vector<XrActionSuggestedBinding> baseTouchBindings{};
 
-        auto baseSuggestedBindings = XrApp::GetSuggestedBindings(instance);
-
-        if (baseSuggestedBindings.find(touchProInteractionProfile) != baseSuggestedBindings.end()) {
-            // Base app now has touch pro bindings, so we don't need to add custom ones
-            // If we start hitting this case it might be worth removing this whole override function
-            return baseSuggestedBindings;
-        }
-
-        // We know that the parent class generates bindings for oculus/touch_controller so this is a
-        // safe thing to do
-        std::vector<XrActionSuggestedBinding> baseTouchBindings =
-            baseSuggestedBindings[touchInteractionProfile];
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(AimPoseAction, "/user/hand/left/input/aim/pose"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(AimPoseAction, "/user/hand/right/input/aim/pose"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(GripPoseAction, "/user/hand/left/input/grip/pose"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(GripPoseAction, "/user/hand/right/input/grip/pose"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(JoystickAction, "/user/hand/left/input/thumbstick"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(JoystickAction, "/user/hand/right/input/thumbstick"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(thumbstickClickAction, "/user/hand/left/input/thumbstick/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(thumbstickClickAction, "/user/hand/right/input/thumbstick/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(IndexTriggerAction, "/user/hand/left/input/trigger/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(IndexTriggerAction, "/user/hand/right/input/trigger/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(GripTriggerAction, "/user/hand/left/input/squeeze/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(GripTriggerAction, "/user/hand/right/input/squeeze/value"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ButtonAAction, "/user/hand/right/input/a/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ButtonBAction, "/user/hand/right/input/b/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ButtonXAction, "/user/hand/left/input/x/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ButtonYAction, "/user/hand/left/input/y/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ButtonMenuAction, "/user/hand/left/input/menu/click"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ThumbStickTouchAction, "/user/hand/left/input/thumbstick/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ThumbStickTouchAction, "/user/hand/right/input/thumbstick/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ThumbRestTouchAction, "/user/hand/left/input/thumbrest/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(ThumbRestTouchAction, "/user/hand/right/input/thumbrest/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(TriggerTouchAction, "/user/hand/left/input/trigger/touch"));
+        baseTouchBindings.emplace_back(
+            ActionSuggestedBinding(TriggerTouchAction, "/user/hand/right/input/trigger/touch"));
         baseTouchBindings.emplace_back(
             ActionSuggestedBinding(mainHapticAction_, "/user/hand/left/output/haptic"));
         baseTouchBindings.emplace_back(
             ActionSuggestedBinding(mainHapticAction_, "/user/hand/right/output/haptic"));
 
-        // Proximity
+        // Thumb rest proximity
         baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            thumbFbProxAction_, "/user/hand/left/input/thumb_fb/proximity_fb"));
+            thumbFbProxAction_, "/user/hand/left/input/thumb_resting_surfaces/proximity"));
         baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            thumbFbProxAction_, "/user/hand/right/input/thumb_fb/proximity_fb"));
+            thumbFbProxAction_, "/user/hand/right/input/thumb_resting_surfaces/proximity"));
 
         // Trigger Value
         baseTouchBindings.emplace_back(
@@ -284,6 +319,12 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         baseTouchBindings.emplace_back(
             ActionSuggestedBinding(triggerTouchAction_, "/user/hand/right/input/trigger/touch"));
 
+        // Trigger Proximity
+        baseTouchBindings.emplace_back(ActionSuggestedBinding(
+            triggerProxAction_, "/user/hand/left/input/trigger/proximity"));
+        baseTouchBindings.emplace_back(ActionSuggestedBinding(
+            triggerProxAction_, "/user/hand/right/input/trigger/proximity"));
+
         // Squeeze Value
         baseTouchBindings.emplace_back(
             ActionSuggestedBinding(squeezeValueAction_, "/user/hand/left/input/squeeze/value"));
@@ -291,6 +332,8 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             ActionSuggestedBinding(squeezeValueAction_, "/user/hand/right/input/squeeze/value"));
 
         // Copy(construct) base paths since these interaction profiles are similar
+        // NOTE: Only bindings that are different from touch controller will be listed here. 
+        // Bindings that also exist on touch controller will be copied from baseTouchBindings
         std::vector<XrActionSuggestedBinding> touchProBindings(baseTouchBindings);
 
         // We are assuming that every touch binding exists for touch pro here
@@ -301,57 +344,42 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         touchProBindings.emplace_back(
             ActionSuggestedBinding(trackpadForceAction_, "/user/hand/right/input/thumbrest/force"));
         touchProBindings.emplace_back(
-            ActionSuggestedBinding(stylusForceAction_, "/user/hand/left/input/stylus_fb/force"));
+            ActionSuggestedBinding(stylusForceAction_, "/user/hand/left/input/stylus/force"));
         touchProBindings.emplace_back(
-            ActionSuggestedBinding(stylusForceAction_, "/user/hand/right/input/stylus_fb/force"));
+            ActionSuggestedBinding(stylusForceAction_, "/user/hand/right/input/stylus/force"));
+        touchProBindings.emplace_back(
+            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/left/input/trigger_curl/value"));
+        touchProBindings.emplace_back(
+            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/right/input/trigger_curl/value"));
+        touchProBindings.emplace_back(
+            ActionSuggestedBinding(triggerSlideAction_, "/user/hand/left/input/trigger_slide/value"));
+        touchProBindings.emplace_back(
+            ActionSuggestedBinding(triggerSlideAction_, "/user/hand/right/input/trigger_slide/value"));
         touchProBindings.emplace_back(ActionSuggestedBinding(
-            triggerProxAction_, "/user/hand/left/input/trigger/proximity_fb"));
+            triggerHapticAction_, "/user/hand/left/output/haptic_trigger"));
         touchProBindings.emplace_back(ActionSuggestedBinding(
-            triggerProxAction_, "/user/hand/right/input/trigger/proximity_fb"));
+            triggerHapticAction_, "/user/hand/right/output/haptic_trigger"));
         touchProBindings.emplace_back(
-            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/left/input/trigger/curl_fb"));
+            ActionSuggestedBinding(thumbHapticAction_, "/user/hand/left/output/haptic_thumb"));
         touchProBindings.emplace_back(
-            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/right/input/trigger/curl_fb"));
-        touchProBindings.emplace_back(
-            ActionSuggestedBinding(triggerSlideAction_, "/user/hand/left/input/trigger/slide_fb"));
-        touchProBindings.emplace_back(
-            ActionSuggestedBinding(triggerSlideAction_, "/user/hand/right/input/trigger/slide_fb"));
-        touchProBindings.emplace_back(ActionSuggestedBinding(
-            triggerHapticAction_, "/user/hand/left/output/trigger_haptic_fb"));
-        touchProBindings.emplace_back(ActionSuggestedBinding(
-            triggerHapticAction_, "/user/hand/right/output/trigger_haptic_fb"));
-        touchProBindings.emplace_back(
-            ActionSuggestedBinding(thumbHapticAction_, "/user/hand/left/output/thumb_haptic_fb"));
-        touchProBindings.emplace_back(
-            ActionSuggestedBinding(thumbHapticAction_, "/user/hand/right/output/thumb_haptic_fb"));
+            ActionSuggestedBinding(thumbHapticAction_, "/user/hand/right/output/haptic_thumb"));
 
+        // Copy(construct) base paths since these interaction profiles are similar
+        // NOTE: Only bindings that are different from touch controller will be listed here. 
+        // Bindings that also exist on touch controller will be copied from baseTouchBindings
         std::vector<XrActionSuggestedBinding> touchPlusBindings(baseTouchBindings);
-        touchPlusBindings.emplace_back(ActionSuggestedBinding(
-            triggerProxAction_, "/user/hand/left/input/trigger/proximity_meta"));
-        touchPlusBindings.emplace_back(ActionSuggestedBinding(
-            triggerProxAction_, "/user/hand/right/input/trigger/proximity_meta"));
-        touchPlusBindings.emplace_back(ActionSuggestedBinding(
-            thumbMetaProxAction_, "/user/hand/left/input/thumb_meta/proximity_meta"));
-        touchPlusBindings.emplace_back(ActionSuggestedBinding(
-            thumbMetaProxAction_, "/user/hand/right/input/thumb_meta/proximity_meta"));
         touchPlusBindings.emplace_back(
             ActionSuggestedBinding(triggerForceAction_, "/user/hand/left/input/trigger/force"));
         touchPlusBindings.emplace_back(
             ActionSuggestedBinding(triggerForceAction_, "/user/hand/right/input/trigger/force"));
         touchPlusBindings.emplace_back(
-            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/left/input/trigger/curl_meta"));
+            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/left/input/trigger_curl/value"));
         touchPlusBindings.emplace_back(
-            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/right/input/trigger/curl_meta"));
+            ActionSuggestedBinding(triggerCurlAction_, "/user/hand/right/input/trigger_curl/value"));
         touchPlusBindings.emplace_back(ActionSuggestedBinding(
-            triggerSlideAction_, "/user/hand/left/input/trigger/slide_meta"));
+            triggerSlideAction_, "/user/hand/left/input/trigger_slide/value"));
         touchPlusBindings.emplace_back(ActionSuggestedBinding(
-            triggerSlideAction_, "/user/hand/right/input/trigger/slide_meta"));
-
-        // Now that we are done using these for pro and plus, add these to the base touch as well
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            triggerProxAction_, "/user/hand/left/input/trigger/proximity_fb"));
-        baseTouchBindings.emplace_back(ActionSuggestedBinding(
-            triggerProxAction_, "/user/hand/right/input/trigger/proximity_fb"));
+            triggerSlideAction_, "/user/hand/right/input/trigger_slide/value"));
 
         std::unordered_map<XrPath, std::vector<XrActionSuggestedBinding>> allSuggestedBindings;
         allSuggestedBindings[touchInteractionProfile] = baseTouchBindings;
@@ -732,7 +760,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         ui_.AddButton("Stop BOTH Trigger", position, size, [this]() {
             StopHapticEffect(triggerHapticAction_, XR_NULL_PATH);
         });
-
+        
         position.x -= 0.4f;
         ui_.AddButton("Stop Left Trigger", position, size, [this]() {
             StopHapticEffect(triggerHapticAction_, LeftHandPath);
@@ -1071,7 +1099,6 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
     virtual void Render(const OVRFW::ovrApplFrameIn& in, OVRFW::ovrRendererOutput& out) override {
         /// Render UI
         ui_.Render(in, out);
-
         /// Render controllers
         if (in.LeftRemoteTracked) {
             controllerRenderL_.Render(out.Surfaces);

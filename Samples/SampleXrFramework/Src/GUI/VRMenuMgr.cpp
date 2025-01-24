@@ -27,6 +27,8 @@ Authors     :   Jonathan E. Wright
 
 #include "VRMenuMgr.h"
 
+#include <algorithm>
+
 #include "Render/DebugLines.h"
 #include "Render/BitmapFont.h"
 #include "Misc/Log.h"

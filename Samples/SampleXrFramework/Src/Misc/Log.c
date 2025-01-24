@@ -60,19 +60,7 @@ static void StripPath(const char* filePath, char* strippedTag, size_t const stri
     strippedTag[i] = 0;
 }
 
-void LogWithFilenameTag(const int priority, const char* filename, const char* fmt, ...) {
-    // we keep stack allocations to a minimum to keep logging side-effects to a minimum
-    char tag[32];
-    char msg[512 - sizeof(tag)];
-    StripPath(filename, tag, sizeof(tag));
-
-    // we use vsnprintf here rather than using __android_log_vprintf so we can control the size
-    // and method of allocations as much as possible.
-    va_list argPtr;
-    va_start(argPtr, fmt);
-    vsnprintf(msg, sizeof(msg), fmt, argPtr);
-    va_end(argPtr);
-
+void LogCommon(const int priority, const char* tag, const char* msg) {
 #if defined(ANDROID)
     __android_log_write(priority, tag, msg);
 #elif defined(WIN32)
@@ -99,6 +87,35 @@ void LogWithFilenameTag(const int priority, const char* filename, const char* fm
     (void)priority;
     printf("[%s] %s\n", tag, msg);
 #endif // defined(ANDROID)
+}
+
+void LogWithFilenameTag(const int priority, const char* filename, const char* fmt, ...) {
+    // we keep stack allocations to a minimum to keep logging side-effects to a minimum
+    char tag[32];
+    char msg[512 - sizeof(tag)];
+    StripPath(filename, tag, sizeof(tag));
+
+    // we use vsnprintf here rather than using __android_log_vprintf so we can control the size
+    // and method of allocations as much as possible.
+    va_list argPtr;
+    va_start(argPtr, fmt);
+    vsnprintf(msg, sizeof(msg), fmt, argPtr);
+    va_end(argPtr);
+
+    LogCommon(priority, tag, msg);
+}
+
+void VLogWithFilenameTag(const int priority, const char* filename, const char* fmt, va_list args) {
+    // we keep stack allocations to a minimum to keep logging side-effects to a minimum
+    char tag[32];
+    char msg[512 - sizeof(tag)];
+    StripPath(filename, tag, sizeof(tag));
+
+    // we use vsnprintf here rather than using __android_log_vprintf so we can control the size
+    // and method of allocations as much as possible.
+    vsnprintf(msg, sizeof(msg), fmt, args);
+
+    LogCommon(priority, tag, msg);
 }
 
 #if defined(__cplusplus)

@@ -27,6 +27,8 @@ Authors     :   Jonathan E. Wright
 
 #include "VRMenuObject.h"
 
+#include <algorithm>
+
 #include "Misc/Log.h"
 #include "Render/Egl.h"
 #include "Render/GlTexture.h"

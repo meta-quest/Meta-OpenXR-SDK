@@ -57,6 +57,7 @@ typedef enum SamplesLogPriority {
 #endif
 
 void LogWithFilenameTag(const int priority, const char* filename, const char* fmt, ...);
+void VLogWithFilenameTag(const int priority, const char* filename, const char* fmt, va_list args);
 
 #define ALOGE(...) \
     { LogWithFilenameTag(SAMPLES_LOG_ERROR, __FILE__, __VA_ARGS__); }

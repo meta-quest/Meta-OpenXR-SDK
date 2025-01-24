@@ -26,6 +26,9 @@ Authors     :   Jonathan E. Wright
 ************************************************************************************/
 
 #include "Ribbon.h"
+
+#include <algorithm>
+
 #include "OVR_Math.h"
 #include "Render/GlTexture.h"
 #include "Misc/Log.h"

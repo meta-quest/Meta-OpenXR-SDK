@@ -27,6 +27,8 @@ Copyright   :   Copyright (c) Meta Platforms, Inc. and affiliates. Confidential 
 
 #include "VirtualKeyboardModelRenderer.h"
 
+#include <algorithm>
+
 #include <Misc/Log.h>
 #include <Model/ModelAnimationUtils.h>
 #include <Model/ModelFileLoading.h>

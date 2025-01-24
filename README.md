@@ -19,7 +19,6 @@ As these API definitions reach their final stages, they will be incorporated int
 |[`XrHandsAndControllers`](Samples/XrSamples/XrHandsAndControllers/)         |`XR_META_detached_controllers`,`XR_META_simultaneous_hands_and_controllers`|Meta Quest 3 and later|
 |[`XrHandsFB`](Samples/XrSamples/XrHandsFB/)                     |`XR_FB_hand_tracking_mesh`, `XR_FB_hand_tracking_capsules`,`XR_FB_hand_tracking_aim`|All Meta Quest devices|
 |[`XrHandTrackingWideMotionMode`](Samples/XrSamples/XrHandTrackingWideMotionMode/)      |`XR_META_hand_tracking_wide_motion_mode`|Meta Quest 3 and later|
-|[`XrMicrogestures`](Samples/XrSamples/XrMicrogestures/)      |`XR_META_hand_tracking_microgestures`|Meta Quest 2 and later devices|
 |[`XrInput`](Samples/XrSamples/XrInput/)              |OpenXR Action System|All Meta Quest devices|
 |[`XrKeyboard`](Samples/XrSamples/XrKeyboard/) |`XR_FB_keyboard_tracking`,`XR_FB_passthrough_keyboard_hands`,`XR_FB_render_model`|Meta Quest 2 and later|
 |[`XrPassthrough`](Samples/XrSamples/XrPassthrough/)                |`XR_FB_passthrough`|All Meta Quest devices|Demonstrates the use of still and animated styles, selective and projected passthrough.

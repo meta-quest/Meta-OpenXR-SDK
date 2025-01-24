@@ -64,12 +64,14 @@ class XrSpatialAnchorHelper : public XrHelper {
     bool GetComponentStatus(XrSpace space, XrSpaceComponentTypeFB type, bool& enabled) const;
     bool GetSemanticLabels(XrSpace space, std::string& labels) const;
     bool GetBoundingBox3D(XrSpace space, XrRect3DfFB& boundingBox3D) const;
+    bool GetBoundingBox2D(XrSpace space, XrRect2Df& boundingBox2D) const;
 
    private:
     XrSession Session = XR_NULL_HANDLE;
 
     // XR_FB_scene
     PFN_xrGetSpaceBoundingBox3DFB XrGetSpaceBoundingBox3DFB = nullptr;
+    PFN_xrGetSpaceBoundingBox2DFB XrGetSpaceBoundingBox2DFB = nullptr;
     PFN_xrGetSpaceSemanticLabelsFB XrGetSpaceSemanticLabelsFB = nullptr;
 
     // XR_FB_spatial_entity

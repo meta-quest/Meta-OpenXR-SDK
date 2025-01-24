@@ -16,8 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef META_HAND_TRACKING_MICROGESTURES_H_
-#define META_HAND_TRACKING_MICROGESTURES_H_ 1
+#ifndef META_DYNAMIC_OBJECT_KEYBOARD_H_
+#define META_DYNAMIC_OBJECT_KEYBOARD_H_ 1
 
 /**********************
 This file is @generated from the OpenXR XML API registry.
@@ -32,20 +32,21 @@ extern "C" {
 #endif
 
 
-#ifndef XR_META_hand_tracking_microgestures
+#ifndef XR_META_dynamic_object_keyboard
 
-// XR_META_hand_tracking_microgestures is a preprocessor guard. Do not pass it to API calls.
-#define XR_META_hand_tracking_microgestures 1
-#define XR_META_hand_tracking_microgestures_SPEC_VERSION 1
-#define XR_META_HAND_TRACKING_MICROGESTURES_EXTENSION_NAME "XR_META_hand_tracking_microgestures"
-static const XrStructureType XR_TYPE_SYSTEM_MICROGESTURE_PROPERTIES_META = (XrStructureType) 1000252000;
-typedef struct XrSystemMicrogesturePropertiesMETA {
+// XR_META_dynamic_object_keyboard is a preprocessor guard. Do not pass it to API calls.
+#define XR_META_dynamic_object_keyboard 1
+#define XR_META_dynamic_object_keyboard_SPEC_VERSION 1
+#define XR_META_DYNAMIC_OBJECT_KEYBOARD_EXTENSION_NAME "XR_META_dynamic_object_keyboard"
+static const XrDynamicObjectClassMETA XR_DYNAMIC_OBJECT_CLASS_KEYBOARD_META = (XrDynamicObjectClassMETA) 1000587000;
+static const XrStructureType XR_TYPE_SYSTEM_DYNAMIC_OBJECT_KEYBOARD_PROPERTIES_META = (XrStructureType) 1000587001;
+typedef struct XrSystemDynamicObjectKeyboardPropertiesMETA {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
-    XrBool32              supportsMicrogestures;
-} XrSystemMicrogesturePropertiesMETA;
+    XrBool32              supportsDynamicObjectKeyboard;
+} XrSystemDynamicObjectKeyboardPropertiesMETA;
 
-#endif /* XR_META_hand_tracking_microgestures */
+#endif /* XR_META_dynamic_object_keyboard */
 
 #ifdef __cplusplus
 }

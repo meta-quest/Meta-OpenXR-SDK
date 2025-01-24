@@ -593,6 +593,7 @@ class XrApp {
     // allocated by the framework.
     float FramebufferResolutionScaleFactor{1.0f};
 
+    XrVersion OpenXRVersion = XR_API_VERSION_1_0;
     XrInstance Instance = XR_NULL_HANDLE;
     XrSession Session = XR_NULL_HANDLE;
     XrViewConfigurationProperties ViewportConfig{XR_TYPE_VIEW_CONFIGURATION_PROPERTIES};

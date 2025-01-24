@@ -31,27 +31,29 @@ Copyright   :   Copyright (c) Meta Platforms, Inc. and affiliates. Confidential 
 #include <openxr/openxr.h>
 
 std::vector<const char*> XrDynamicObjectTrackerHelper::RequiredExtensionNames() {
-    return {XR_METAX1_DYNAMIC_OBJECT_TRACKER_EXTENSION_NAME};
+    return {
+        XR_META_DYNAMIC_OBJECT_TRACKER_EXTENSION_NAME,
+        XR_META_DYNAMIC_OBJECT_KEYBOARD_EXTENSION_NAME};
 }
 
 XrDynamicObjectTrackerHelper::XrDynamicObjectTrackerHelper(XrInstance instance)
     : XrHelper(instance) {
     OXR(xrGetInstanceProcAddr(
         instance,
-        "xrCreateDynamicObjectTrackerMETAX1",
-        reinterpret_cast<PFN_xrVoidFunction*>(&XrCreateDynamicObjectTrackerMETAX1)));
+        "xrCreateDynamicObjectTrackerMETA",
+        reinterpret_cast<PFN_xrVoidFunction*>(&XrCreateDynamicObjectTrackerMETA)));
     OXR(xrGetInstanceProcAddr(
         instance,
-        "xrDestroyDynamicObjectTrackerMETAX1",
-        reinterpret_cast<PFN_xrVoidFunction*>(&XrDestroyDynamicObjectTrackerMETAX1)));
+        "xrDestroyDynamicObjectTrackerMETA",
+        reinterpret_cast<PFN_xrVoidFunction*>(&XrDestroyDynamicObjectTrackerMETA)));
     OXR(xrGetInstanceProcAddr(
         instance,
-        "xrSetDynamicObjectTrackedClassesMETAX1",
-        reinterpret_cast<PFN_xrVoidFunction*>(&XrSetDynamicObjectTrackedClassesMETAX1)));
+        "xrSetDynamicObjectTrackedClassesMETA",
+        reinterpret_cast<PFN_xrVoidFunction*>(&XrSetDynamicObjectTrackedClassesMETA)));
     OXR(xrGetInstanceProcAddr(
         instance,
-        "xrGetSpaceDynamicObjectDataMETAX1",
-        reinterpret_cast<PFN_xrVoidFunction*>(&XrGetSpaceDynamicObjectDataMETAX1)));
+        "xrGetSpaceDynamicObjectDataMETA",
+        reinterpret_cast<PFN_xrVoidFunction*>(&XrGetSpaceDynamicObjectDataMETA)));
 }
 
 void XrDynamicObjectTrackerHelper::SessionInit(XrSession session) {
@@ -67,9 +69,9 @@ void XrDynamicObjectTrackerHelper::Update(XrSpace currentSpace, XrTime predicted
 bool XrDynamicObjectTrackerHelper::HandleXrEvents(const XrEventDataBaseHeader* baseEventHeader) {
     bool handled = false;
     switch (baseEventHeader->type) {
-        case XR_TYPE_EVENT_DATA_DYNAMIC_OBJECT_TRACKER_CREATE_RESULT_METAX1: {
+        case XR_TYPE_EVENT_DATA_DYNAMIC_OBJECT_TRACKER_CREATE_RESULT_META: {
             const auto createResult =
-                reinterpret_cast<const XrEventDataDynamicObjectTrackerCreateResultMETAX1*>(
+                reinterpret_cast<const XrEventDataDynamicObjectTrackerCreateResultMETA*>(
                     baseEventHeader);
             // Make sure this belongs to our tracker
             if (createResult->handle == DynamicObjectTracker) {
@@ -83,9 +85,9 @@ bool XrDynamicObjectTrackerHelper::HandleXrEvents(const XrEventDataBaseHeader* b
                 handled = true;
             }
         } break;
-        case XR_TYPE_EVENT_DATA_DYNAMIC_OBJECT_SET_TRACKED_CLASSES_RESULT_METAX1: {
+        case XR_TYPE_EVENT_DATA_DYNAMIC_OBJECT_SET_TRACKED_CLASSES_RESULT_META: {
             const auto setTrackedClassesResult =
-                reinterpret_cast<const XrEventDataDynamicObjectSetTrackedClassesResultMETAX1*>(
+                reinterpret_cast<const XrEventDataDynamicObjectSetTrackedClassesResultMETA*>(
                     baseEventHeader);
             // Make sure this belongs to our tracker
             if (setTrackedClassesResult->handle == DynamicObjectTracker) {
@@ -117,12 +119,11 @@ bool XrDynamicObjectTrackerHelper::CreateDynamicObjectTracker() {
         return false;
     }
 
-    XrDynamicObjectTrackerCreateInfoMETAX1 createInfo{
-        XR_TYPE_DYNAMIC_OBJECT_TRACKER_CREATE_INFO_METAX1};
-    XrResult result =
-        XrCreateDynamicObjectTrackerMETAX1(Session, &createInfo, &DynamicObjectTracker);
+    XrDynamicObjectTrackerCreateInfoMETA createInfo{
+        XR_TYPE_DYNAMIC_OBJECT_TRACKER_CREATE_INFO_META};
+    XrResult result = XrCreateDynamicObjectTrackerMETA(Session, &createInfo, &DynamicObjectTracker);
     if (result != XR_SUCCESS) {
-        ALOGE("xrCreateDynamicObjectTrackerMETAX1 failed, error %d", result);
+        ALOGE("xrCreateDynamicObjectTrackerMETA failed, error %d", result);
         return false;
     }
 
@@ -136,9 +137,9 @@ bool XrDynamicObjectTrackerHelper::DestroyDynamicObjectTracker() {
         return false;
     }
 
-    XrResult result = XrDestroyDynamicObjectTrackerMETAX1(DynamicObjectTracker);
+    XrResult result = XrDestroyDynamicObjectTrackerMETA(DynamicObjectTracker);
     if (result != XR_SUCCESS) {
-        ALOGE("xrDestroyDynamicObjectTrackerMETAX1 failed, error %d", result);
+        ALOGE("xrDestroyDynamicObjectTrackerMETA failed, error %d", result);
         return false;
     }
 
@@ -148,19 +149,19 @@ bool XrDynamicObjectTrackerHelper::DestroyDynamicObjectTracker() {
 }
 
 bool XrDynamicObjectTrackerHelper::SetDynamicObjectTrackedClasses(
-    const std::vector<XrDynamicObjectClassMETAX1>& trackedClasses) {
+    const std::vector<XrDynamicObjectClassMETA>& trackedClasses) {
     if (State != TrackerState::Created) {
         ALOGE("No tracker available");
         return false;
     }
 
-    XrDynamicObjectTrackedClassesSetInfoMETAX1 setInfo{
-        XR_TYPE_DYNAMIC_OBJECT_TRACKED_CLASSES_SET_INFO_METAX1};
+    XrDynamicObjectTrackedClassesSetInfoMETA setInfo{
+        XR_TYPE_DYNAMIC_OBJECT_TRACKED_CLASSES_SET_INFO_META};
     setInfo.classCount = trackedClasses.size();
     setInfo.classes = trackedClasses.data();
-    XrResult result = XrSetDynamicObjectTrackedClassesMETAX1(DynamicObjectTracker, &setInfo);
+    XrResult result = XrSetDynamicObjectTrackedClassesMETA(DynamicObjectTracker, &setInfo);
     if (result != XR_SUCCESS) {
-        ALOGE("xrSetDynamicObjectTrackedClassesMETAX1 failed, error %d", result);
+        ALOGE("xrSetDynamicObjectTrackedClassesMETA failed, error %d", result);
         return false;
     }
 
@@ -170,11 +171,11 @@ bool XrDynamicObjectTrackerHelper::SetDynamicObjectTrackedClasses(
 
 bool XrDynamicObjectTrackerHelper::GetDynamicObjectClass(
     XrSpace space,
-    XrDynamicObjectClassMETAX1& classType) const {
-    XrDynamicObjectDataMETAX1 dynamicObjectData{XR_TYPE_DYNAMIC_OBJECT_DATA_METAX1};
-    XrResult result = XrGetSpaceDynamicObjectDataMETAX1(Session, space, &dynamicObjectData);
+    XrDynamicObjectClassMETA& classType) const {
+    XrDynamicObjectDataMETA dynamicObjectData{XR_TYPE_DYNAMIC_OBJECT_DATA_META};
+    XrResult result = XrGetSpaceDynamicObjectDataMETA(space, &dynamicObjectData);
     if (XR_FAILED(result)) {
-        ALOGE("xrGetSpaceDynamicObjectDataMETAX1 failed, error %d", result);
+        ALOGE("xrGetSpaceDynamicObjectDataMETA failed, error %d", result);
         return false;
     }
 
@@ -198,14 +199,22 @@ bool XrDynamicObjectTrackerHelper::IsSupported() const {
     }
 
     XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
-    XrSystemDynamicObjectTrackerPropertiesMETAX1 dynamicObjectTrackerProps{
-        XR_TYPE_SYSTEM_DYNAMIC_OBJECT_TRACKER_PROPERTIES_METAX1};
+    XrSystemDynamicObjectTrackerPropertiesMETA dynamicObjectTrackerProps{
+        XR_TYPE_SYSTEM_DYNAMIC_OBJECT_TRACKER_PROPERTIES_META};
     systemProperties.next = &dynamicObjectTrackerProps;
+
+    // specific to keyboard tracking, which we use in this sample
+    XrSystemDynamicObjectKeyboardPropertiesMETA dynamicObjectKeyboardProps{
+        XR_TYPE_SYSTEM_DYNAMIC_OBJECT_KEYBOARD_PROPERTIES_META};
+    dynamicObjectTrackerProps.next = &dynamicObjectKeyboardProps;
+
     result = xrGetSystemProperties(Instance, systemId, &systemProperties);
     if (result != XR_SUCCESS) {
         ALOGE("xrGetSystemProperties failed, error %d", result);
         return false;
     }
 
-    return (dynamicObjectTrackerProps.supportsDynamicObjectTracker == XR_TRUE);
+    return (
+        dynamicObjectTrackerProps.supportsDynamicObjectTracker == XR_TRUE &&
+        dynamicObjectKeyboardProps.supportsDynamicObjectKeyboard == XR_TRUE);
 }

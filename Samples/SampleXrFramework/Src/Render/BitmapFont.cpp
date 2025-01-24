@@ -33,6 +33,8 @@ Authors     :   Jonathan E. Wright
 
 #include "BitmapFont.h"
 
+#include <algorithm>
+
 #include <errno.h>
 #include <math.h>
 #include <sys/stat.h>

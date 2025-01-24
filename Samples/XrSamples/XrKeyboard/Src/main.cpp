@@ -28,6 +28,8 @@ Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All
 *******************************************************************************/
 
 #include <openxr/openxr.h>
+
+#include <algorithm>
 #include <cstdint>
 #include <cstdio>
 #include <iomanip>

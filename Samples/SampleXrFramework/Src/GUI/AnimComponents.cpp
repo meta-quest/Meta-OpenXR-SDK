@@ -27,6 +27,8 @@ Authors     :   Jonathan E. Wright
 
 #include "AnimComponents.h"
 
+#include <algorithm>
+
 #include "GuiSys.h"
 #include "VRMenuObject.h"
 #include "VRMenuMgr.h"

@@ -27,7 +27,8 @@ Copyright   :   Copyright (c) Meta Platforms, Inc. and affiliates. Confidential 
 
 #pragma once
 
-#include <meta_openxr_preview/metax1_dynamic_object_tracker.h>
+#include <meta_openxr_preview/meta_dynamic_object_tracker.h>
+#include <meta_openxr_preview/meta_dynamic_object_keyboard.h>
 
 #include "XrHelper.h"
 
@@ -58,19 +59,19 @@ class XrDynamicObjectTrackerHelper : public XrHelper {
     bool CreateDynamicObjectTracker();
     bool DestroyDynamicObjectTracker();
     bool SetDynamicObjectTrackedClasses(
-        const std::vector<XrDynamicObjectClassMETAX1>& trackedClasses);
-    bool GetDynamicObjectClass(XrSpace space, XrDynamicObjectClassMETAX1& classType) const;
+        const std::vector<XrDynamicObjectClassMETA>& trackedClasses);
+    bool GetDynamicObjectClass(XrSpace space, XrDynamicObjectClassMETA& classType) const;
 
     bool IsSupported() const;
 
    private:
     XrSession Session = XR_NULL_HANDLE;
-    XrDynamicObjectTrackerMETAX1 DynamicObjectTracker = XR_NULL_HANDLE;
+    XrDynamicObjectTrackerMETA DynamicObjectTracker = XR_NULL_HANDLE;
 
-    PFN_xrCreateDynamicObjectTrackerMETAX1 XrCreateDynamicObjectTrackerMETAX1 = nullptr;
-    PFN_xrDestroyDynamicObjectTrackerMETAX1 XrDestroyDynamicObjectTrackerMETAX1 = nullptr;
-    PFN_xrSetDynamicObjectTrackedClassesMETAX1 XrSetDynamicObjectTrackedClassesMETAX1 = nullptr;
-    PFN_xrGetSpaceDynamicObjectDataMETAX1 XrGetSpaceDynamicObjectDataMETAX1 = nullptr;
+    PFN_xrCreateDynamicObjectTrackerMETA XrCreateDynamicObjectTrackerMETA = nullptr;
+    PFN_xrDestroyDynamicObjectTrackerMETA XrDestroyDynamicObjectTrackerMETA = nullptr;
+    PFN_xrSetDynamicObjectTrackedClassesMETA XrSetDynamicObjectTrackedClassesMETA = nullptr;
+    PFN_xrGetSpaceDynamicObjectDataMETA XrGetSpaceDynamicObjectDataMETA = nullptr;
 
     TrackerState State = TrackerState::Empty;
 };
