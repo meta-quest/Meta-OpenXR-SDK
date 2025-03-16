@@ -523,10 +523,17 @@ class XrApp {
     // Called to deal with lifetime
     void HandleSessionStateChanges(XrSessionState state);
 
+    virtual void AppHandleEvent(XrEventDataBaseHeader* /*baseEventHeader*/) {
+        // do nothing
+    }
+
    protected:
     virtual XrInstance CreateInstance(const xrJava& context);
     virtual void DestroyInstance();
     virtual XrResult PollXrEvent(XrEventDataBuffer* eventDataBuffer);
+    XrTime GetPrevDisplayTime() const {
+        return PrevDisplayTime;
+    }
 
    private:
     // Called one time when the application process starts.

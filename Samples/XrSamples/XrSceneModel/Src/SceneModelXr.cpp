@@ -56,6 +56,7 @@ Authors   :
 #include <meta_openxr_preview/meta_boundary_visibility.h>
 
 
+
 #if defined(_WIN32)
 // Favor the high performance NVIDIA or AMD GPUs
 extern "C" {
@@ -1758,7 +1759,6 @@ int main() {
     for (uint32_t i = 0; i < numOutputSpaces; i++) {
         if (referenceSpaces[i] == XR_REFERENCE_SPACE_TYPE_STAGE) {
             stageSupported = true;
-            break;
         }
     }
 
@@ -1779,6 +1779,7 @@ int main() {
         OXR(xrCreateReferenceSpace(app.Session, &spaceCreateInfo, &app.StageSpace));
         ALOGV("Created stage space");
     }
+
 
     XrView projections[NUM_EYES];
     for (int eye = 0; eye < NUM_EYES; eye++) {
@@ -1936,9 +1937,10 @@ int main() {
         instance,
         "xrRequestBoundaryVisibilityMETA",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrRequestBoundaryVisibilityMETA)));
-    
+        
     CreatePassthrough(app);
 
+    
     // Two values for left and right controllers.
     std::array<XrTime, 2> lastInputTimes = {0, 0};
 #if defined(XR_USE_PLATFORM_ANDROID)
@@ -2211,6 +2213,7 @@ int main() {
         } else {
             frameIn.HasStage = false;
         }
+
 
         for (int controllerIndex = 0; controllerIndex < 2; ++controllerIndex) {
             // If there is an input signal from this controller, pause rendring this controller

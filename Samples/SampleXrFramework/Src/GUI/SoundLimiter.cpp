@@ -28,10 +28,6 @@ Authors     :   Jonathan E. Wright
 #include "SoundLimiter.h"
 #include "GuiSys.h"
 
-#include "OVR_Types.h"
-#include "OVR_TypesafeNumber.h"
-#include "OVR_BitFlags.h"
-#include "OVR_Math.h"
 #include "OVR_Std.h"
 
 #include "System.h"

@@ -1218,6 +1218,7 @@ void ovrAppRenderer::RenderFrame(const FrameIn& frameIn) {
         Framebuffer.Resolve();
     }
 
+
     // Render controllers, reusing axes shaders.
     for (int i = 0; i < 2; ++i) {
         if (frameIn.RenderController[i]) {

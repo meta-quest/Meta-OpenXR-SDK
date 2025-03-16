@@ -81,7 +81,6 @@ static inline void glGetFormatSize( const GLenum internalFormat, GlFormatSize * 
 
 ================================================================================================
 */
-// clang-format on
 
 #if !defined(GL_FORMAT_H)
 #define GL_FORMAT_H
@@ -2834,3 +2833,4 @@ static inline void glGetFormatSize(const GLenum internalFormat, GlFormatSize* pF
 }
 
 #endif // !GL_FORMAT_H
+// clang-format on

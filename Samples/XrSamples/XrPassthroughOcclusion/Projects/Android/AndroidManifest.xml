@@ -66,6 +66,10 @@
         android:exported="true"
         >
       <!-- Tell NativeActivity the name of the .so -->
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="com.oculus.intent.category.VR" />
+      </intent-filter>
       <meta-data
           android:name="android.app.lib_name"
           android:value="xrpassthroughocclusion"

@@ -92,5 +92,5 @@ android {
 dependencies {
   // Package/application AndroidManifest.xml properties, plus headers and libraries
   // exposed to CMake
-  implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.41'
+  implementation 'org.khronos.openxr:openxr_loader_for_android:1.1.42'
 }

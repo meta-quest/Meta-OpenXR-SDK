@@ -29,6 +29,7 @@ Authors     :   J.M.P. van Waveren
 
 #include "OVR_Types.h"
 #include "OVR_Std.h"
+#include "OVR_Math.h"
 
 #include <string>
 #include <vector>

@@ -234,6 +234,8 @@ void XrApp::HandleXrEvents() {
             break;
         }
 
+        AppHandleEvent(baseEventHeader);
+
         switch (baseEventHeader->type) {
             case XR_TYPE_EVENT_DATA_EVENTS_LOST:
                 ALOGV("xrPollEvent: received XR_TYPE_EVENT_DATA_EVENTS_LOST event");

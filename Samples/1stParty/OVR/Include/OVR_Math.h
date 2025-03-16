@@ -586,10 +586,10 @@ class Vector2 {
 
     T x, y;
 
-    Vector2() : x(0), y(0) {}
-    Vector2(T x_, T y_) : x(x_), y(y_) {}
-    explicit Vector2(T s) : x(s), y(s) {}
-    explicit Vector2(const Vector2<typename Math<T>::OtherFloatType>& src)
+    constexpr Vector2() : x(0), y(0) {}
+    constexpr Vector2(T x_, T y_) : x(x_), y(y_) {}
+    constexpr explicit Vector2(T s) : x(s), y(s) {}
+    constexpr explicit Vector2(const Vector2<typename Math<T>::OtherFloatType>& src)
         : x((T)src.x), y((T)src.y) {}
 
     static const Vector2 ZERO;
@@ -821,9 +821,7 @@ class Vector3 {
     constexpr explicit Vector3(T s) : x(s), y(s), z(s) {}
     constexpr explicit Vector3(const Vector3<typename Math<T>::OtherFloatType>& src)
         : x((T)src.x), y((T)src.y), z((T)src.z) {}
-    // MERGE_MOBILE_SDK
     constexpr Vector3(const Vector2<T>& xy, const T z_) : x(xy.x), y(xy.y), z(z_) {}
-    // MERGE_MOBILE_SDK
 
     static const Vector3 ZERO;
 
@@ -1010,6 +1008,41 @@ class Vector3 {
     // Factor should be between 0.0 and 1.0, with 0 giving full value to this.
     Vector3 Lerp(const Vector3& b, T f) const {
         return *this * (T(1) - f) + b * f;
+    }
+    
+    // Spherical linear interpolation from this vector to another.
+    // Factor should be between 0.0 and 1.0, with 0 giving full value to this.
+    Vector3 Slerp(const Vector3& b, T f) const {
+        const T aMag = this->Length();
+        const T bMag = b.Length();
+        if ((aMag < Math<T>::Tolerance()) || (bMag < Math<T>::Tolerance())) {
+            // When one vector is too small, we can't slerp, so fallback to lerp
+            return this->Lerp(b, f);
+        }
+
+        const Vector3 aNormalized = *this / aMag;
+        const Vector3 bNormalized = b / bMag;
+        const T aDotB = aNormalized.Dot(bNormalized);
+
+        // Build the rotation axis from a to b
+        Vector3 rotationAxis;
+        if (fabs(aDotB) > (1 - Math<T>::Tolerance())) {
+            // Vectors are collinear (same or opposite direction), so make a new axis for the cross product
+            const Vector3 right = Vector3(1, 0, 0);
+            const Vector3 up = Vector3(0, 1, 0);
+            const Vector3& referenceAxis = fabs(aNormalized.Dot(right)) > (1 - Math<T>::Tolerance()) ? up : right;
+            rotationAxis = aNormalized.Cross(referenceAxis);
+        }
+        else {
+            rotationAxis = aNormalized.Cross(bNormalized);
+        }
+
+        // Compute the interpolated values by factor f
+        const T interpolatedMag = OVRMath_Lerp(aMag, bMag, f);
+        const T interpolatedAngle = Acos(aDotB) * f;
+        
+        // Compute the slerped vector by rotating a towards b and rescaling the magnitude
+        return Quat(rotationAxis, interpolatedAngle) * aNormalized * interpolatedMag;
     }
 
     // Projects this vector onto the argument; in other words,

@@ -108,7 +108,7 @@ struct OVR_LogTimer {
 };
 
 template <typename T1, typename T2>
-bool OVR_shouldLogNow(T1 nanoseconds, T2 dummyLambda) {
+bool OVR_shouldLogNow(T1 nanoseconds, [[maybe_unused]] T2 dummyLambda) {
     static OVR_LogTimer timer{std::chrono::steady_clock::duration(nanoseconds)};
     return timer.OVR_shouldLogNow();
 }

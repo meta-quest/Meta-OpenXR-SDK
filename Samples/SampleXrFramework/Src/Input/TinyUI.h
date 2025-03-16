@@ -87,6 +87,12 @@ class TinyUI {
         const OVR::Vector3f& position,
         const OVR::Vector2f& size = {100.0f, 50.0f},
         const std::function<void(void)>& postHandler = {});
+    OVRFW::VRMenuObject* AddMultiStateToggleButton(
+        const std::vector<std::string>& labels,
+        int* value,
+        const OVR::Vector3f& position,
+        const OVR::Vector2f& size = {100.0f, 50.0f},
+        const std::function<void(void)>& postHandler = {});
     void SetUnhandledClickHandler(const std::function<void(void)>& postHandler = {});
 
     void RemoveParentMenu(OVRFW::VRMenuObject* menuObject);

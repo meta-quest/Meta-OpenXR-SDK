@@ -256,6 +256,8 @@ typedef int64_t jlong;
 typedef OVR::SInt32 jint;
 typedef OVR::UByte jboolean;
 typedef float jfloat;
+typedef jboolean* jbooleanArray;
+typedef jfloat* jfloatArray;
 #else
 typedef const struct JNINativeInterface* JNIEnv;
 typedef const struct JNIInvokeInterface* JavaVM;
@@ -268,6 +270,8 @@ typedef int64_t jlong;
 typedef int32_t jint;
 typedef unsigned char jboolean;
 typedef float jfloat;
+typedef jboolean* jbooleanArray;
+typedef jfloat* jfloatArray;
 #endif
 #endif
 // MERGE_MOBILE_SDK

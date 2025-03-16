@@ -1416,9 +1416,9 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
 
                 for (int i = 0; i < (int)locations.jointCount; ++i) {
                     if ((handJointLocations[i].locationFlags &
-                         XR_SPACE_LOCATION_POSITION_VALID_BIT) &&
+                         XR_SPACE_LOCATION_POSITION_TRACKED_BIT) &&
                         (handJointLocations[i].locationFlags &
-                         XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)) {
+                         XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT)) {
                         handInFrame = true;
                         const auto p = FromXrPosef(handJointLocations[i].pose);
                         handJoints.push_back(p);
@@ -1431,10 +1431,15 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
                     axisRenderer.Update(handJoints);
                 }
 
-                const bool didPinch =
-                    (aimState.status & XR_HAND_TRACKING_AIM_INDEX_PINCHING_BIT_FB) != 0;
-                ui_.AddHitTestRay(FromXrPosef(aimState.aimPose), didPinch && !lastFrameClicked);
-                lastFrameClicked = didPinch;
+                if ((aimState.status &XR_HAND_TRACKING_AIM_VALID_BIT_FB) != 0)
+                {
+                    const bool didPinch =
+                        (aimState.status & XR_HAND_TRACKING_AIM_INDEX_PINCHING_BIT_FB) != 0;
+                        ui_.AddHitTestRay(FromXrPosef(aimState.aimPose), didPinch && !lastFrameClicked);
+                        lastFrameClicked = didPinch;
+                } else {
+                    lastFrameClicked = false;
+                }
             }
         }
     }

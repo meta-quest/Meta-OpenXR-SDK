@@ -79,7 +79,6 @@ static inline void vkGetFormatSize( const VkFormat format, VkFormatSize * pForma
 
 ================================================================================================
 */
-// clang-format on
 
 #if !defined(VK_FORMAT_H)
 #define VK_FORMAT_H
@@ -1792,3 +1791,4 @@ static inline void vkGetFormatSize(const VkFormat format, VkFormatSize* pFormatS
 }
 
 #endif // !VK_FORMAT_H
+// clang-format on

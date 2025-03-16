@@ -66,6 +66,9 @@ class XrColocationDiscoveryApp : public OVRFW::XrApp {
    public:
     XrColocationDiscoveryApp() : OVRFW::XrApp() {
         BackgroundColor = OVR::Vector4f(0.0f, 0.0f, 0.0f, 0.0f);
+        // Seed the random number generator with the current time, rand() is called in GenerateRandomGroupUUID()
+        // and GenerateRandomColor()
+        srand((unsigned int)time(nullptr));
     }
 
     // Must return true if the application initializes successfully.

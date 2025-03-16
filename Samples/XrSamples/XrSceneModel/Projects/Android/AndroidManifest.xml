@@ -40,7 +40,7 @@
     <!-- Theme.Black.NoTitleBar.Fullscreen gives solid black instead of a (bad stereoscopic)
             gradient on app transition -->
     <activity
-        android:name="com.oculus.NativeActivity"
+        android:name="com.oculus.MainActivity"
         android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
         android:launchMode="singleTask"
         android:screenOrientation="landscape"
@@ -48,17 +48,31 @@
         android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode"
         android:exported="true"
         >
-      <!-- Tell NativeActivity the name of the .so -->
-      <meta-data
-          android:name="android.app.lib_name"
-          android:value="scenemodel"
-          />
       <!-- This filter lets the apk show up as a launchable icon. -->
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
         <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
+    </activity>
+    <activity
+        android:name="com.oculus.MainNativeActivity"
+        android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
+        android:launchMode="singleTask"
+        android:screenOrientation="landscape"
+        android:excludeFromRecents="false"
+        android:configChanges="screenSize|screenLayout|orientation|keyboardHidden|keyboard|navigation|uiMode"
+        android:exported="true"
+        >
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="org.khronos.openxr.intent.category.IMMERSIVE_HMD" />
+      </intent-filter>
+      <!-- Tell MainNativeActivity the name of the .so -->
+      <meta-data
+          android:name="android.app.lib_name"
+          android:value="scenemodel"
+          />
     </activity>
   </application>
 </manifest>

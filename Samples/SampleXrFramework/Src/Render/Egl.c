@@ -42,6 +42,7 @@ PFNEGLDESTROYSYNCKHRPROC eglDestroySyncKHR_;
 PFNEGLCLIENTWAITSYNCKHRPROC eglClientWaitSyncKHR_;
 PFNEGLSIGNALSYNCKHRPROC eglSignalSyncKHR_;
 PFNEGLGETSYNCATTRIBKHRPROC eglGetSyncAttribKHR_;
+PFNEGLDUPNATIVEFENCEFDANDROIDPROC eglDupNativeFenceFDANDROID_;
 #endif // defined(ANDROID)
 
 PFNGLINVALIDATEFRAMEBUFFER_ glInvalidateFramebuffer_;
@@ -89,6 +90,8 @@ void EglInitExtensions() {
         (PFNEGLCLIENTWAITSYNCKHRPROC)EglGetExtensionProc("eglClientWaitSyncKHR");
     eglSignalSyncKHR_ = (PFNEGLSIGNALSYNCKHRPROC)EglGetExtensionProc("eglSignalSyncKHR");
     eglGetSyncAttribKHR_ = (PFNEGLGETSYNCATTRIBKHRPROC)EglGetExtensionProc("eglGetSyncAttribKHR");
+    eglDupNativeFenceFDANDROID_ =
+        (PFNEGLDUPNATIVEFENCEFDANDROIDPROC)EglGetExtensionProc("eglDupNativeFenceFDANDROID");
 #endif // defined(ANDROID)
     glInvalidateFramebuffer_ =
         (PFNGLINVALIDATEFRAMEBUFFER_)EglGetExtensionProc("glInvalidateFramebuffer");

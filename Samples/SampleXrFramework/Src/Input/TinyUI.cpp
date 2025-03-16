@@ -366,6 +366,35 @@ OVRFW::VRMenuObject* TinyUI::AddToggleButton(
     return b;
 }
 
+OVRFW::VRMenuObject* TinyUI::AddMultiStateToggleButton(
+    const std::vector<std::string>& labels,
+    int* value,
+    const OVR::Vector3f& position,
+    const OVR::Vector2f& size,
+    const std::function<void(void)>& postHandler) {
+    auto b = CreateMenu("", position, size);
+    const std::function<void(void)>& handler = [=]() {
+        if (b) {
+            *value = *value + 1;
+            if (*value >= static_cast<int>(labels.size())) {
+                *value = 0;
+            }
+            b->SetText(labels[*value].c_str());
+            if (postHandler) {
+                postHandler();
+            }
+        }
+    };
+    if (b && handler && value) {
+        if (*value >= static_cast<int>(labels.size()) || *value < 0) {
+            *value = 0;
+        }
+        b->SetText(labels[*value].c_str());
+        ButtonHandlers[b] = handler;
+    }
+    return b;
+}
+
 void TinyUI::SetUnhandledClickHandler(const std::function<void(void)>& postHandler) {
     UnhandledClickHandler = postHandler;
 }

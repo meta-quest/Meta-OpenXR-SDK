@@ -1,7 +1,7 @@
 # OpenXR Simultaneous Hands and Controllers Sample
 
 ## Overview
-Meta Quest devices have the ability to track both hands and controllers simultaneously (commonly referred to as multimodal hands and controllers input). However, this may consume additional power and system resources. The extensions `XR_META_detached_controllers` and `XR_META_simultaneous_hands_controllers_management` work together in this sample to allow hands and controllers to be tracked simultaneously.
+Meta Quest devices have the ability to track both hands and controllers simultaneously (commonly referred to as multimodal hands and controllers input). However, this may consume additional power and system resources. The extensions `XR_META_detached_controllers` and `XR_META_simultaneous_hands_and_controllers` work together in this sample to allow hands and controllers to be tracked simultaneously.
 
 The `XR_META_simultaneous_hands_and_controllers` extension enables concurrent hand and controller tracking at the same time. It exposes two APIs that allow app developers to enable and disable this functionality at will. Enabling the feature will give developers a new input model to build experiences with; hands and controller data will now flow concurrently into the appropriate top-level paths depending on whether controllers are held or not. Disabling the feature returns to the traditional world of hands-only and controllers-only experiences, and can also save on compute.
 
