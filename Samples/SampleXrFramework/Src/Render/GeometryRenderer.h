@@ -45,6 +45,7 @@ class GeometryRenderer {
     virtual void Shutdown();
     virtual void Update();
     virtual void Render(std::vector<ovrDrawSurface>& surfaceList);
+    virtual void UpdateGeometry(const GlGeometry::Descriptor& d);
 
     void SetPose(const OVR::Posef& pose) {
         ModelPose_ = pose;

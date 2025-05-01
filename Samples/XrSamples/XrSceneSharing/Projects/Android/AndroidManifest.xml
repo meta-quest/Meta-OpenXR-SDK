@@ -43,10 +43,6 @@
       android:allowBackup="false"
       android:label="scenesharing"
       >
-    <meta-data
-        android:name="com.samsung.android.vr.application.mode"
-        android:value="vr_only"
-        />
     <meta-data android:name="com.oculus.supportedDevices" android:value="all" />
     <!-- launchMode is set to singleTask because there should never be multiple copies of the app running -->
     <!-- Theme.Black.NoTitleBar.Fullscreen gives solid black instead of a (bad stereoscopic) gradient on app transition -->

@@ -237,7 +237,7 @@ typedef unsigned long pid_t;
 } // namespace OVR
 
 // MERGE_MOBILE_SDK
-#if defined(OVR_OS_ANDROID)
+#if defined(OVR_OS_ANDROID) || defined(NDKLECTRIC_TEST_MODE)
 #include <jni.h>
 #elif !defined(OVR_NO_JNI)
 #if defined(__cplusplus)
@@ -258,6 +258,9 @@ typedef OVR::UByte jboolean;
 typedef float jfloat;
 typedef jboolean* jbooleanArray;
 typedef jfloat* jfloatArray;
+typedef jint* jintArray;
+typedef jlong* jlongArray;
+typedef jobject* jobjectArray;
 #else
 typedef const struct JNINativeInterface* JNIEnv;
 typedef const struct JNIInvokeInterface* JavaVM;
@@ -272,6 +275,9 @@ typedef unsigned char jboolean;
 typedef float jfloat;
 typedef jboolean* jbooleanArray;
 typedef jfloat* jfloatArray;
+typedef jint* jintArray;
+typedef jlong* jlongArray;
+typedef jobject* jobjectArray;
 #endif
 #endif
 // MERGE_MOBILE_SDK

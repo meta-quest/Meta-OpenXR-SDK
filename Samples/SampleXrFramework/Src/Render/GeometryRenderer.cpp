@@ -185,6 +185,10 @@ void GeometryRenderer::Update() {
     ModelMatrix_ = OVR::Matrix4f(ModelPose_) * OVR::Matrix4f::Scaling(ModelScale_);
 }
 
+void GeometryRenderer::UpdateGeometry(const GlGeometry::Descriptor& d) {
+    SurfaceDef_.geo.Update(d.attribs);
+}
+
 void GeometryRenderer::Render(std::vector<ovrDrawSurface>& surfaceList) {
     ovrGraphicsCommand& gc = SurfaceDef_.graphicsCommand;
     gc.GpuState.blendMode = BlendMode;

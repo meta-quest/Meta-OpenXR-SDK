@@ -25,9 +25,6 @@ Authors     :   John Carmack
 
 *************************************************************************************/
 
-// Make sure we get PRIu64
-#define __STDC_FORMAT_MACROS 1
-
 #include "GlTexture.h"
 
 #include "Egl.h"

@@ -33,3 +33,4 @@ Language    :   C99
 #define XR_REFSPACE_ENUM(enm, constant) XR_ENUM(XrReferenceSpaceType, enm, constant)
 #define XR_RESULT_ENUM(enm, constant) XR_ENUM(XrResult, enm, constant)
 #define XR_COMPONENT_ENUM(enm, constant) XR_ENUM(XrComponentTypeFB, enm, constant)
+#define XR_OBJECT_TYPE_ENUM(enm, constant) XR_ENUM(XrObjectType, enm, constant)

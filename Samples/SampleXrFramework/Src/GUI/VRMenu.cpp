@@ -29,9 +29,6 @@ Authors     :   Jonathan E. Wright
 
 // includes required for VRMenu.h
 
-// Make sure we get PRIu64
-#define __STDC_FORMAT_MACROS 1
-
 #include "VRMenu.h"
 
 #include "VRMenuMgr.h"

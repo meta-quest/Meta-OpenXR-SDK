@@ -129,7 +129,8 @@ inline TempJniEnv::TempJniEnv(JavaVM* vm, const char*, int)
     }
 
     if (JNI_OK != getEnv(vm_, reinterpret_cast<void**>(&jni_), JNI_VERSION_1_6)) {
-        OVR_LOG(
+        OVR_LOG_EVERY_N_SEC(
+            10,
             "Creating temporary JNIEnv. This is a heavy operation and should be infrequent. To optimize, use JNI AttachCurrentThread on calling thread");
         // OVR_LOG( "Temporary JNIEnv created at %s:%d", file, line );
         ovr_AttachCurrentThread(vm_, &jni_, nullptr);

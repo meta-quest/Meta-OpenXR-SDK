@@ -1009,7 +1009,7 @@ class Vector3 {
     Vector3 Lerp(const Vector3& b, T f) const {
         return *this * (T(1) - f) + b * f;
     }
-    
+
     // Spherical linear interpolation from this vector to another.
     // Factor should be between 0.0 and 1.0, with 0 giving full value to this.
     Vector3 Slerp(const Vector3& b, T f) const {
@@ -1040,7 +1040,7 @@ class Vector3 {
         // Compute the interpolated values by factor f
         const T interpolatedMag = OVRMath_Lerp(aMag, bMag, f);
         const T interpolatedAngle = Acos(aDotB) * f;
-        
+
         // Compute the slerped vector by rotating a towards b and rescaling the magnitude
         return Quat(rotationAxis, interpolatedAngle) * aNormalized * interpolatedMag;
     }
@@ -2813,6 +2813,26 @@ class Matrix4 {
         M[2][1] = m.M[2][1];
         M[2][2] = m.M[2][2];
         M[2][3] = T(0);
+        M[3][0] = T(0);
+        M[3][1] = T(0);
+        M[3][2] = T(0);
+        M[3][3] = T(1);
+    }
+
+    // Creates a matrix representing the translation passed in.
+    explicit Matrix4(const Vector3<T>& v) {
+        M[0][0] = T(1);
+        M[0][1] = T(0);
+        M[0][2] = T(0);
+        M[0][3] = v.x;
+        M[1][0] = T(0);
+        M[1][1] = T(1);
+        M[1][2] = T(0);
+        M[1][3] = v.y;
+        M[2][0] = T(0);
+        M[2][1] = T(0);
+        M[2][2] = T(1);
+        M[2][3] = v.z;
         M[3][0] = T(0);
         M[3][1] = T(0);
         M[3][2] = T(0);

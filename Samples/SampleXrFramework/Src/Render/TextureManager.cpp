@@ -25,9 +25,6 @@ Authors     :   Jonathan E. Wright
 
 *************************************************************************************/
 
-// Make sure we get PRIu64
-#define __STDC_FORMAT_MACROS 1
-
 #include "TextureManager.h"
 
 #include "Misc/Log.h"
