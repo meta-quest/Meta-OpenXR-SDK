@@ -26,15 +26,14 @@ Authors     :   John Carmack, J.M.P. van Waveren
 *************************************************************************************/
 
 #include "GlGeometry.h"
+#include "GlProgram.h"
+#include "Misc/Log.h"
+#include "Egl.h"
 
-#include "OVR_Math.h"
 using OVR::Bounds3f;
 using OVR::Vector2f;
 using OVR::Vector3f;
 using OVR::Vector4f;
-
-// #include "OVR_GlUtils.h"
-#include "Misc/Log.h"
 
 /*
  * These are all built inside VertexArrayObjects, so no GL state other
@@ -101,14 +100,13 @@ void GlGeometry::Create(const VertexAttribs& attribs, const std::vector<Triangle
         tangent.resize(attribs.position.size());
         binormal.resize(attribs.binormal.size());
 
-        /// poor man's 3x3
-        OVR::Matrix4f nt = geometryTransfom.Transposed();
-
         /// Positions use 4x4
         for (size_t i = 0; i < attribs.position.size(); ++i) {
             position[i] = geometryTransfom.Transform(attribs.position[i]);
         }
+
         /// TBN use 3x3
+        const OVR::Matrix3f nt = OVR::Matrix3f(geometryTransfom).Inverse().Transposed();
         for (size_t i = 0; i < attribs.normal.size(); ++i) {
             normal[i] = nt.Transform(attribs.normal[i]).Normalized();
         }
@@ -346,6 +344,82 @@ GlGeometry::Descriptor BuildTesselatedCylinderDescriptor(
     }
 
     return GlGeometry::Descriptor(attribs, indices, geometryTransfom);
+}
+
+GlGeometry::Descriptor BuildTesselatedCylinderPatchDescriptor(
+    float radius,
+    float height,
+    size_t horizontal,
+    size_t vertical,
+    float uScale,
+    float vScale,
+    float patchFovAngle,
+    bool faceOutward) {
+
+    assert(patchFovAngle > 0.0f);
+    patchFovAngle = OVR::OVRMath_Min(patchFovAngle, MATH_FLOAT_TWOPI);
+    const int vertexCount = (horizontal + 1) * (vertical + 1);
+
+    float halfHeight = height * 0.5f;
+
+    VertexAttribs attribs;
+    attribs.position.resize(vertexCount);
+    attribs.normal.resize(vertexCount);
+    attribs.uv0.resize(vertexCount);
+    attribs.color.resize(vertexCount);
+
+    for (size_t y = 0; y <= vertical; ++y) {
+        const float yf = static_cast<float>(y) / static_cast<float>(vertical);
+        for (size_t x = 0; x <= horizontal; ++x) {
+            const float xf = static_cast<float>(x) / static_cast<float>(horizontal) -0.5f;
+            const size_t index = y * (horizontal + 1) + x;
+            const float xfFov = xf * patchFovAngle;
+            attribs.position[index].x = sinf(xfFov) * radius;
+            attribs.position[index].y = -halfHeight + yf * height;
+            attribs.position[index].z = cosf(xfFov) * -1.0f * radius;
+            attribs.normal[index] =
+                Vector3f(attribs.position[index].x, attribs.position[index].y, 0).Normalized();
+            attribs.uv0[index].x = xf * uScale;
+            attribs.uv0[index].y = (1.0f - yf) * vScale;
+            for (size_t i = 0; i < 4; ++i) {
+                attribs.color[index][i] = 1.0f;
+            }
+        }
+    }
+
+    std::vector<TriangleIndex> indices;
+    indices.resize(horizontal * vertical * 6);
+
+    // If this is to be used to draw a linear format texture, like
+    // a surface texture, it is better for cache performance that
+    // the triangles be drawn to follow the side to side linear order.
+    size_t index = 0;
+    for (size_t y = 0; y < vertical; y++) {
+        for (size_t x = 0; x < horizontal; x++) {
+            indices[index + 0] = static_cast<TriangleIndex>(y * (horizontal + 1) + x);
+            indices[index + 1] = static_cast<TriangleIndex>(y * (horizontal + 1) + x + 1);
+            indices[index + 2] = static_cast<TriangleIndex>((y + 1) * (horizontal + 1) + x);
+            indices[index + 3] = static_cast<TriangleIndex>((y + 1) * (horizontal + 1) + x);
+            indices[index + 4] = static_cast<TriangleIndex>(y * (horizontal + 1) + x + 1);
+            indices[index + 5] = static_cast<TriangleIndex>((y + 1) * (horizontal + 1) + x + 1);
+            index += 6;
+        }
+    }
+
+    if (faceOutward) {
+        for (auto& normal : attribs.normal) {
+            normal = normal * -1.0f;
+        }
+        for (auto& uv : attribs.uv0) {
+            uv.x *= -1.0f;
+        }
+        const auto indexCount = indices.size();
+        for (size_t idx = 0; idx < indexCount; idx += 3) {
+            std::swap(indices[idx], indices[idx+1]);
+        }
+    }
+
+    return {attribs, indices, geometryTransfom};
 }
 
 GlGeometry::Descriptor BuildTesselatedConeDescriptor(

@@ -150,13 +150,13 @@ void ovrBillBoardRenderer::Init(const int maxBillBoards, const bool depthTest) {
 
     Surf.surfaceName = "billboards";
     Surf.geo.Create(attr, indices);
-    Surf.geo.primitiveType = GL_TRIANGLES;
+    Surf.geo.primitiveType = GlGeometry::kPrimitiveTypeTriangles;
     Surf.geo.indexCount = 0;
 
     ovrGraphicsCommand& gc = Surf.graphicsCommand;
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = depthTest;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_DISABLE;
-    gc.GpuState.blendSrc = GL_ONE;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_ONE;
     gc.Program = TextureProgram;
     gc.GpuState.lineWidth = 2.0f;
 }

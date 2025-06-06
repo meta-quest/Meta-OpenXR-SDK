@@ -37,18 +37,8 @@ Copyright   :   Copyright (c) Facebook Technologies, LLC and its affiliates. All
 #include "OVR_FileSys.h"
 #include "OVR_Math.h"
 
-#if defined(ANDROID)
-#define XR_USE_GRAPHICS_API_OPENGL_ES 1
-#define XR_USE_PLATFORM_ANDROID 1
-#else
-#include "unknwn.h"
-#define XR_USE_GRAPHICS_API_OPENGL 1
-#define XR_USE_PLATFORM_WIN32 1
-#endif
-
 #include <openxr/openxr.h>
 #include <meta_openxr_preview/openxr_oculus_helpers.h>
-#include <openxr/openxr_platform.h>
 
 namespace OVRFW {
 

@@ -124,8 +124,8 @@ void ovrPanelRenderer::Init() {
     /// gpu state needs alpha blending
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
-    gc.GpuState.blendSrc = GL_SRC_ALPHA;
-    gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
 }
 
 void ovrPanelRenderer::Shutdown() {}

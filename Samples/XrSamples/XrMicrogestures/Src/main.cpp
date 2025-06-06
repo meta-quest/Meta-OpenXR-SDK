@@ -27,8 +27,6 @@
 #include "Render/SimpleBeamRenderer.h"
 #include "Input/HandRenderer.h"
 
-#include <meta_openxr_preview/meta_hand_tracking_microgestures.h>
-
 // For expressiveness; use _m rather than f literals when we mean meters
 constexpr float operator"" _m(long double meters) {
     return static_cast<float>(meters);

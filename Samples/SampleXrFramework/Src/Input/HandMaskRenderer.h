@@ -33,24 +33,10 @@ Authors     :   Federico Schliemann
 
 /// Sample Framework
 #include "Misc/Log.h"
-#include "Model/SceneView.h"
 #include "Render/GlProgram.h"
 #include "Render/SurfaceRender.h"
 
 #include "OVR_Math.h"
-
-#if defined(ANDROID)
-#define XR_USE_GRAPHICS_API_OPENGL_ES 1
-#define XR_USE_PLATFORM_ANDROID 1
-#elif defined(WIN32)
-#include <unknwn.h>
-#define XR_USE_GRAPHICS_API_OPENGL 1
-#define XR_USE_PLATFORM_WIN32 1
-#endif // defined(ANDROID)
-
-#include <openxr/openxr.h>
-#include <meta_openxr_preview/openxr_oculus_helpers.h>
-#include <openxr/openxr_platform.h>
 
 namespace OVRFW {
 

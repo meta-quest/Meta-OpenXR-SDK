@@ -33,6 +33,8 @@ using OVR::Quatf;
 using OVR::Vector3f;
 using OVR::Vector4f;
 
+#include <openxr/openxr.h>
+
 namespace OVRFW {
 
 static_assert(MAX_JOINTS == 64, "MAX_JOINTS != 64");
@@ -320,9 +322,9 @@ void HandMaskRenderer::Init(bool leftHand) {
     gc.UniformData[4].Data = &Intensity;
     gc.UniformData[5].Data = &FadeIntensity;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
-    gc.GpuState.blendMode = GL_FUNC_REVERSE_SUBTRACT;
-    gc.GpuState.blendSrc = GL_SRC_ALPHA;
-    gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+    gc.GpuState.blendMode = ovrGpuState::kGL_FUNC_REVERSE_SUBTRACT;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     gc.GpuState.depthEnable = false;
     gc.GpuState.depthMaskEnable = false;
     /// Add surface
@@ -370,13 +372,13 @@ void HandMaskRenderer::Update(
     auto& gc = HandMaskSurfaceDef.graphicsCommand;
     gc.Program = UseBorderFade ? ProgHandMaskBorderFade : ProgHandMaskAlphaGradient;
     if (RenderInverseSubtract) {
-        gc.GpuState.blendMode = GL_FUNC_REVERSE_SUBTRACT;
-        gc.GpuState.blendSrc = GL_SRC_ALPHA;
-        gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+        gc.GpuState.blendMode = ovrGpuState::kGL_FUNC_REVERSE_SUBTRACT;
+        gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+        gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     } else {
-        gc.GpuState.blendMode = GL_FUNC_ADD;
-        gc.GpuState.blendSrc = GL_SRC_ALPHA;
-        gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+        gc.GpuState.blendMode = ovrGpuState::kGL_FUNC_ADD;
+        gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+        gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     }
 
     const OVR::Quatf q = (IsLeftHand ? cellAdjustL : cellAdjustR).Inverted();

@@ -181,10 +181,7 @@ void ovrTextureManagerImpl::SetTextureWrapping(GlTexture& tex, ovrTextureWrap co
             MakeTextureClamped(tex);
             break;
         case WRAP_REPEAT:
-            glBindTexture(tex.target, tex.texture);
-            glTexParameteri(tex.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(tex.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            glBindTexture(tex.target, 0);
+            MakeTextureRepeat(tex);
             break;
         default:
             assert(false);

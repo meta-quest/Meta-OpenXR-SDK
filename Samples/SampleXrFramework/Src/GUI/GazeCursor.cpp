@@ -28,6 +28,7 @@ Authors     :   Jonathan E. Wright
 #include "GazeCursor.h"
 
 #include "Misc/Log.h"
+#include "Render/Egl.h"
 #include "Render/GlTexture.h"
 #include "Render/GlProgram.h"
 #include "Render/GlGeometry.h"
@@ -248,15 +249,16 @@ void OvrGazeCursorLocal::Init(ovrFileSys& fileSys) {
 
         ZPassCursorSurface.graphicsCommand.GpuState.blendEnable =
             ovrGpuState::BLEND_ENABLE_SEPARATE;
-        ZPassCursorSurface.graphicsCommand.GpuState.blendMode = GL_FUNC_ADD;
-        ZPassCursorSurface.graphicsCommand.GpuState.blendSrc = GL_SRC_ALPHA;
-        ZPassCursorSurface.graphicsCommand.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
-        ZPassCursorSurface.graphicsCommand.GpuState.blendSrcAlpha = GL_ONE;
-        ZPassCursorSurface.graphicsCommand.GpuState.blendDstAlpha = GL_ONE_MINUS_SRC_ALPHA;
-        ZPassCursorSurface.graphicsCommand.GpuState.blendModeAlpha = GL_FUNC_ADD;
-        ZPassCursorSurface.graphicsCommand.GpuState.depthFunc = GL_LEQUAL;
+        ZPassCursorSurface.graphicsCommand.GpuState.blendMode = ovrGpuState::kGL_FUNC_ADD;
+        ZPassCursorSurface.graphicsCommand.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+        ZPassCursorSurface.graphicsCommand.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+        ZPassCursorSurface.graphicsCommand.GpuState.blendSrcAlpha = ovrGpuState::kGL_ONE;
+        ZPassCursorSurface.graphicsCommand.GpuState.blendDstAlpha =
+            ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+        ZPassCursorSurface.graphicsCommand.GpuState.blendModeAlpha = ovrGpuState::kGL_FUNC_ADD;
+        ZPassCursorSurface.graphicsCommand.GpuState.depthFunc = ovrGpuState::kGL_LEQUAL;
 
-        ZPassCursorSurface.graphicsCommand.GpuState.frontFace = GL_CCW;
+        ZPassCursorSurface.graphicsCommand.GpuState.frontFace = ovrGpuState::kGL_CCW;
         ZPassCursorSurface.graphicsCommand.GpuState.depthEnable = true;
         ZPassCursorSurface.graphicsCommand.GpuState.depthMaskEnable = false;
         ZPassCursorSurface.graphicsCommand.GpuState.polygonOffsetEnable = false;
@@ -272,15 +274,16 @@ void OvrGazeCursorLocal::Init(ovrFileSys& fileSys) {
 
         ZFailCursorSurface.graphicsCommand.GpuState.blendEnable =
             ovrGpuState::BLEND_ENABLE_SEPARATE;
-        ZFailCursorSurface.graphicsCommand.GpuState.blendMode = GL_FUNC_ADD;
-        ZFailCursorSurface.graphicsCommand.GpuState.blendSrc = GL_SRC_ALPHA;
-        ZFailCursorSurface.graphicsCommand.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
-        ZFailCursorSurface.graphicsCommand.GpuState.blendSrcAlpha = GL_ONE;
-        ZFailCursorSurface.graphicsCommand.GpuState.blendDstAlpha = GL_ONE_MINUS_SRC_ALPHA;
-        ZFailCursorSurface.graphicsCommand.GpuState.blendModeAlpha = GL_FUNC_ADD;
-        ZFailCursorSurface.graphicsCommand.GpuState.depthFunc = GL_GREATER;
+        ZFailCursorSurface.graphicsCommand.GpuState.blendMode = ovrGpuState::kGL_FUNC_ADD;
+        ZFailCursorSurface.graphicsCommand.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+        ZFailCursorSurface.graphicsCommand.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+        ZFailCursorSurface.graphicsCommand.GpuState.blendSrcAlpha = ovrGpuState::kGL_ONE;
+        ZFailCursorSurface.graphicsCommand.GpuState.blendDstAlpha =
+            ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+        ZFailCursorSurface.graphicsCommand.GpuState.blendModeAlpha = ovrGpuState::kGL_FUNC_ADD;
+        ZFailCursorSurface.graphicsCommand.GpuState.depthFunc = ovrGpuState::kGL_GREATER;
 
-        ZFailCursorSurface.graphicsCommand.GpuState.frontFace = GL_CCW;
+        ZFailCursorSurface.graphicsCommand.GpuState.frontFace = ovrGpuState::kGL_CCW;
         ZFailCursorSurface.graphicsCommand.GpuState.depthEnable = true;
         ZFailCursorSurface.graphicsCommand.GpuState.depthMaskEnable = false;
         ZFailCursorSurface.graphicsCommand.GpuState.polygonOffsetEnable = false;

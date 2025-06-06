@@ -37,6 +37,33 @@ Authors     :   John Carmack, J.M.P. van Waveren
 
 #include <unordered_map>
 
+// #include "Render/Egl.h"
+
+/// Aliasing some GL constant for defaults and commonly used behavior
+/// without needing the explicit GL include
+
+#ifndef GL_BYTE
+#define GL_BYTE 0x1400
+#endif
+#ifndef GL_UNSIGNED_BYTE
+#define GL_UNSIGNED_BYTE 0x1401
+#endif
+#ifndef GL_SHORT
+#define GL_SHORT 0x1402
+#endif
+#ifndef GL_UNSIGNED_SHORT
+#define GL_UNSIGNED_SHORT 0x1403
+#endif
+#ifndef GL_INT
+#define GL_INT 0x1404
+#endif
+#ifndef GL_UNSIGNED_INT
+#define GL_UNSIGNED_INT 0x1405
+#endif
+#ifndef GL_FLOAT
+#define GL_FLOAT 0x1406
+#endif
+
 using OVR::Bounds3f;
 using OVR::Matrix4f;
 using OVR::Quatf;
@@ -702,34 +729,39 @@ bool LoadModelFile_glTF_Json(
 
                             newGltfSampler.name = sampler.GetChildStringByName("name");
                             newGltfSampler.magFilter =
-                                sampler.GetChildInt32ByName("magFilter", GL_LINEAR);
-                            newGltfSampler.minFilter =
-                                sampler.GetChildInt32ByName("minFilter", GL_NEAREST_MIPMAP_LINEAR);
-                            newGltfSampler.wrapS = sampler.GetChildInt32ByName("wrapS", GL_REPEAT);
-                            newGltfSampler.wrapT = sampler.GetChildInt32ByName("wrapT", GL_REPEAT);
+                                sampler.GetChildInt32ByName("magFilter", ModelSampler::kGL_LINEAR);
+                            newGltfSampler.minFilter = sampler.GetChildInt32ByName(
+                                "minFilter", ModelSampler::kGL_NEAREST_MIPMAP_LINEAR);
+                            newGltfSampler.wrapS =
+                                sampler.GetChildInt32ByName("wrapS", ModelSampler::kGL_REPEAT);
+                            newGltfSampler.wrapT =
+                                sampler.GetChildInt32ByName("wrapT", ModelSampler::kGL_REPEAT);
 
-                            if (newGltfSampler.magFilter != GL_NEAREST &&
-                                newGltfSampler.magFilter != GL_LINEAR) {
+                            if (newGltfSampler.magFilter != ModelSampler::kGL_NEAREST &&
+                                newGltfSampler.magFilter != ModelSampler::kGL_LINEAR) {
                                 ALOGW("Error: Invalid magFilter in gltfSampler");
                                 loaded = false;
                             }
-                            if (newGltfSampler.minFilter != GL_NEAREST &&
-                                newGltfSampler.minFilter != GL_LINEAR &&
-                                newGltfSampler.minFilter != GL_LINEAR_MIPMAP_NEAREST &&
-                                newGltfSampler.minFilter != GL_NEAREST_MIPMAP_LINEAR &&
-                                newGltfSampler.minFilter != GL_LINEAR_MIPMAP_LINEAR) {
+                            if (newGltfSampler.minFilter != ModelSampler::kGL_NEAREST &&
+                                newGltfSampler.minFilter != ModelSampler::kGL_LINEAR &&
+                                newGltfSampler.minFilter !=
+                                    ModelSampler::kGL_LINEAR_MIPMAP_NEAREST &&
+                                newGltfSampler.minFilter !=
+                                    ModelSampler::kGL_NEAREST_MIPMAP_LINEAR &&
+                                newGltfSampler.minFilter !=
+                                    ModelSampler::kGL_LINEAR_MIPMAP_LINEAR) {
                                 ALOGW("Error: Invalid minFilter in gltfSampler");
                                 loaded = false;
                             }
-                            if (newGltfSampler.wrapS != GL_CLAMP_TO_EDGE &&
-                                newGltfSampler.wrapS != GL_MIRRORED_REPEAT &&
-                                newGltfSampler.wrapS != GL_REPEAT) {
+                            if (newGltfSampler.wrapS != ModelSampler::kGL_CLAMP_TO_EDGE &&
+                                newGltfSampler.wrapS != ModelSampler::kGL_MIRRORED_REPEAT &&
+                                newGltfSampler.wrapS != ModelSampler::kGL_REPEAT) {
                                 ALOGW("Error: Invalid wrapS in gltfSampler");
                                 loaded = false;
                             }
-                            if (newGltfSampler.wrapT != GL_CLAMP_TO_EDGE &&
-                                newGltfSampler.wrapT != GL_MIRRORED_REPEAT &&
-                                newGltfSampler.wrapT != GL_REPEAT) {
+                            if (newGltfSampler.wrapT != ModelSampler::kGL_CLAMP_TO_EDGE &&
+                                newGltfSampler.wrapT != ModelSampler::kGL_MIRRORED_REPEAT &&
+                                newGltfSampler.wrapT != ModelSampler::kGL_REPEAT) {
                                 ALOGW("Error: Invalid wrapT in gltfSampler");
                                 loaded = false;
                             }
@@ -1023,11 +1055,14 @@ bool LoadModelFile_glTF_Json(
                                     }
 
                                     const int mode = primitive.GetChildInt32ByName("mode", 4);
-                                    if (mode < GL_POINTS || mode > GL_TRIANGLE_FAN) {
+                                    if (mode < static_cast<const int>(
+                                                   GlGeometry::kPrimitiveTypePoints) ||
+                                        mode > static_cast<const int>(
+                                                   GlGeometry::kPrimitiveTypeTriangleFan)) {
                                         ALOGW("Error: Invalid mode on gltfPrimitive");
                                         loaded = false;
                                     }
-                                    if (mode != GL_TRIANGLES) {
+                                    if (mode != GlGeometry::kPrimitiveTypeTriangles) {
                                         // #TODO: support modes other than triangle?
                                         ALOGW(
                                             "Error: Mode other then TRIANGLE (4) not currently supported on gltfPrimitive");
@@ -1146,9 +1181,9 @@ bool LoadModelFile_glTF_Json(
                                         newGltfSurface.surfaceDef.graphicsCommand.GpuState
                                             .depthMaskEnable = false;
                                         newGltfSurface.surfaceDef.graphicsCommand.GpuState
-                                            .blendSrc = GL_SRC_ALPHA;
+                                            .blendSrc = ovrGpuState::kGL_SRC_ALPHA;
                                         newGltfSurface.surfaceDef.graphicsCommand.GpuState
-                                            .blendDst = GL_ONE_MINUS_SRC_ALPHA;
+                                            .blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
                                     } else if (
                                         newGltfSurface.material->alphaMode == ALPHA_MODE_BLEND ||
                                         materialParms.Transparent) {
@@ -1164,9 +1199,9 @@ bool LoadModelFile_glTF_Json(
                                         newGltfSurface.surfaceDef.graphicsCommand.GpuState
                                             .depthMaskEnable = false;
                                         newGltfSurface.surfaceDef.graphicsCommand.GpuState
-                                            .blendSrc = GL_SRC_ALPHA;
+                                            .blendSrc = ovrGpuState::kGL_SRC_ALPHA;
                                         newGltfSurface.surfaceDef.graphicsCommand.GpuState
-                                            .blendDst = GL_ONE_MINUS_SRC_ALPHA;
+                                            .blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
                                     }
                                     // #TODO: GLTF doesn't have a concept of an ADDITIVE mode. maybe
                                     // it should?

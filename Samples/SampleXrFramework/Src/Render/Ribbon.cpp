@@ -117,7 +117,7 @@ ovrRibbon::ovrRibbon(const ovrPointList& pointList, const float width, const Vec
     }
 
     Surface.geo.Create(attr, indices);
-    Surface.geo.primitiveType = GL_TRIANGLES;
+    Surface.geo.primitiveType = GlGeometry::kPrimitiveTypeTriangles;
     Surface.geo.indexCount = 0;
 
     // initialize the rest of the surface
@@ -151,10 +151,10 @@ ovrRibbon::ovrRibbon(const ovrPointList& pointList, const float width, const Vec
     gpu.depthEnable = true;
     gpu.depthMaskEnable = false;
     gpu.blendEnable = ovrGpuState::BLEND_ENABLE;
-    gpu.blendSrc = GL_SRC_ALPHA;
-    gpu.blendDst = GL_ONE_MINUS_SRC_ALPHA;
-    gpu.blendSrcAlpha = GL_SRC_ALPHA;
-    gpu.blendDstAlpha = GL_ONE_MINUS_SRC_ALPHA;
+    gpu.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    gpu.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+    gpu.blendSrcAlpha = ovrGpuState::kGL_SRC_ALPHA;
+    gpu.blendDstAlpha = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     gpu.cullEnable = true;
 }
 

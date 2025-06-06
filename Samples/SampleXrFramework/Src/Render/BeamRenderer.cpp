@@ -149,14 +149,14 @@ void ovrBeamRenderer::Init(const int maxBeams, const bool depthTest) {
 
     Surf.surfaceName = "beams";
     Surf.geo.Create(attr, indices);
-    Surf.geo.primitiveType = GL_TRIANGLES;
+    Surf.geo.primitiveType = GlGeometry::kPrimitiveTypeTriangles;
     Surf.geo.indexCount = 0;
 
     ovrGraphicsCommand& gc = Surf.graphicsCommand;
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = depthTest;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
-    gc.GpuState.blendSrc = GL_SRC_ALPHA;
-    gc.GpuState.blendDst = GL_ONE;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    gc.GpuState.blendDst = ovrGpuState::kGL_ONE;
     gc.Program = TextureProgram;
     gc.GpuState.lineWidth = 1.0f;
 }

@@ -30,7 +30,6 @@ Authors     :   John Carmack
 #include <cstdint>
 #include <inttypes.h>
 #include "OVR_BitFlags.h"
-#include "Egl.h"
 #include "OVR_FileSys.h"
 
 #include <vector>
@@ -149,12 +148,12 @@ class GlTexture {
 bool TextureFormatToGlFormat(
     const eTextureFormat format,
     const bool useSrgbFormat,
-    GLenum& glFormat,
-    GLenum& glInternalFormat);
+    uint32_t& glFormat,
+    uint32_t& glInternalFormat);
 bool GlFormatToTextureFormat(
     eTextureFormat& format,
-    const GLenum glFormat,
-    const GLenum glInternalFormat);
+    const uint32_t glFormat,
+    const uint32_t glInternalFormat);
 
 // Calculate the full mip chain levels based on width and height.
 int ComputeFullMipChainNumLevels(const int width, const int height);
@@ -180,6 +179,7 @@ GlTexture LoadASTCTextureFromMemory(
     const bool useSrgbFormat);
 
 void MakeTextureClamped(GlTexture texid);
+void MakeTextureRepeat(GlTexture texid);
 void MakeTextureLodClamped(GlTexture texId, int maxLod);
 void MakeTextureTrilinear(GlTexture texid);
 void MakeTextureLinear(GlTexture texId);

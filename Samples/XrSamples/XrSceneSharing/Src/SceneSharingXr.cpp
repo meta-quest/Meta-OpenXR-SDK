@@ -55,9 +55,6 @@ Authors   :
 #include "SceneSharingXr.h"
 #include "SimpleXrInput.h"
 
-#include <meta_openxr_preview/meta_spatial_entity_sharing.h>
-#include <meta_openxr_preview/meta_spatial_entity_group_sharing.h>
-
 #if defined(_WIN32)
 // Favor the high performance NVIDIA or AMD GPUs
 extern "C" {

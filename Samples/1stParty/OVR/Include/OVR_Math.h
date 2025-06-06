@@ -4118,6 +4118,34 @@ class Matrix3 {
         local3x3 = local3x3.Inverse();
         return local3x3;
     }
+
+    // Creates a matrix for translation by vector (x, y)
+    static Matrix3<T> Translation(T x, T y) {
+        Matrix3 t;
+        t.M[0][2] = x;
+        t.M[1][2] = y;
+        return t;
+    }
+
+    // Creates a matrix for scaling by factors (sx, sy)
+    static Matrix3<T> Scale(T sx, T sy) {
+        Matrix3 t;
+        t.M[0][0] = sx;
+        t.M[1][1] = sy;
+        return t;
+    }
+
+    // Creates a matrix for rotation by angle (in radians)
+    static Matrix3<T> Rotation(T angle) {
+        Matrix3 t;
+        T cosA = cos(angle);
+        T sinA = sin(angle);
+        t.M[0][0] = cosA;
+        t.M[0][1] = -sinA;
+        t.M[1][0] = sinA;
+        t.M[1][1] = cosA;
+        return t;
+    }
 };
 
 // Implicit instantiation

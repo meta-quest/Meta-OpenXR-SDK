@@ -238,9 +238,9 @@ bool SimpleGlbRenderer::Init(std::vector<uint8_t>& modelBuffer) {
         gc.UniformData[6].Data = jointsBuffer.get();
         gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
         gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
-        gc.GpuState.blendMode = GL_FUNC_ADD;
-        gc.GpuState.blendSrc = GL_ONE;
-        gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+        gc.GpuState.blendMode = ovrGpuState::kGL_FUNC_ADD;
+        gc.GpuState.blendSrc = ovrGpuState::kGL_ONE;
+        gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     }
 
     /// Set defaults

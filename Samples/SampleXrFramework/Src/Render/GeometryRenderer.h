@@ -28,10 +28,10 @@ Language    :   C++
 
 #pragma once
 #include <vector>
+#include <cstdint>
 
 #include "OVR_Math.h"
 #include "SurfaceRender.h"
-#include "GlProgram.h"
 #include "GeometryBuilder.h"
 
 namespace OVRFW {
@@ -66,9 +66,9 @@ class GeometryRenderer {
     OVR::Vector3f SpecularLightDirection = OVR::Vector3f{1, 1, 1}.Normalized();
     OVR::Vector3f SpecularLightColor = {1, 1, 1};
     OVR::Vector3f AmbientLightColor = {.1, .1, .1};
-    GLenum BlendSrc = GL_SRC_ALPHA;
-    GLenum BlendDst = GL_ONE_MINUS_SRC_ALPHA;
-    GLenum BlendMode = GL_FUNC_ADD;
+    uint32_t BlendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    uint32_t BlendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+    uint32_t BlendMode = ovrGpuState::kGL_FUNC_ADD;
 
    private:
     ovrSurfaceDef SurfaceDef_;

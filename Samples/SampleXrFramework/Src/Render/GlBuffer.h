@@ -27,7 +27,7 @@ Authors     :
 
 #pragma once
 
-#include "Egl.h"
+#include <cstdint>
 
 namespace OVRFW {
 
@@ -41,9 +41,7 @@ class GlBuffer {
 
     bool Create(const GlBufferType_t type, const size_t dataSize, const void* data);
     void Destroy();
-
     void Update(const size_t updateDataSize, const void* data) const;
-
     void* MapBuffer() const;
     void UnmapBuffer() const;
 
@@ -55,8 +53,8 @@ class GlBuffer {
     }
 
    private:
-    unsigned int target;
-    unsigned int buffer;
+    uint32_t target;
+    uint32_t buffer;
     size_t size;
 };
 

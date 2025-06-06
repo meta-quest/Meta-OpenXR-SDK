@@ -27,14 +27,13 @@ Authors     :   John Carmack
 
 #pragma once
 
-#include "Egl.h"
-
 #include "GpuState.h"
-#include "GlTexture.h"
 #include "GlBuffer.h"
+#include "GlTexture.h"
 
 #include "OVR_Math.h"
 
+#include <cstdint>
 #include <string>
 
 namespace OVRFW {

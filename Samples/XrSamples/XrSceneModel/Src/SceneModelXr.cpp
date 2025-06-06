@@ -56,6 +56,7 @@ Authors   :
 #include <meta_openxr_preview/meta_boundary_visibility.h>
 
 
+#include <meta_openxr_preview/extx2_stationary_reference_space.h>
 
 #if defined(_WIN32)
 // Favor the high performance NVIDIA or AMD GPUs
@@ -209,6 +210,21 @@ std::string BoundaryVisibilityToString(const XrBoundaryVisibilityMETA boundaryVi
             return "Suppressed";
         default:
             return "Unknown";
+    }
+}
+
+std::string ReferenceSpaceTypeToString(const XrReferenceSpaceType referenceSpaceType) {
+    switch (referenceSpaceType) {
+        case XR_REFERENCE_SPACE_TYPE_LOCAL:
+            return "LOCAL";
+        case XR_REFERENCE_SPACE_TYPE_STAGE:
+            return "STAGE";
+        case XR_REFERENCE_SPACE_TYPE_LOCAL_FLOOR:
+            return "LOCAL_FLOOR";
+        case XR_REFERENCE_SPACE_TYPE_STATIONARY_EXTX2:
+            return "STATIONARY";
+        default:
+            return "UNKNOWN";
     }
 }
 
@@ -499,6 +515,7 @@ struct ovrExtensionFunctionPointers {
     PFN_xrRequestSceneCaptureFB xrRequestSceneCaptureFB = nullptr;
 #endif
     PFN_xrRequestBoundaryVisibilityMETA xrRequestBoundaryVisibilityMETA = nullptr;
+    PFN_xrGetStationaryReferenceSpaceIdEXTX2 xrGetStationaryReferenceSpaceIdEXTX2 = nullptr;
 };
 
 struct ovrApp {
@@ -525,6 +542,8 @@ struct ovrApp {
     XrSpace HeadSpace;
     XrSpace LocalSpace;
     XrSpace StageSpace;
+    XrSpace StationarySpace;
+    XrUuid StationarySpaceUuid;
     bool SessionActive;
 
     ovrExtensionFunctionPointers FunPtrs;
@@ -599,6 +618,7 @@ void ovrApp::Clear() {
     HeadSpace = XR_NULL_HANDLE;
     LocalSpace = XR_NULL_HANDLE;
     StageSpace = XR_NULL_HANDLE;
+    StationarySpace = XR_NULL_HANDLE;
     SessionActive = false;
     SwapInterval = 1;
     for (int i = 0; i < ovrMaxLayerCount; i++) {
@@ -934,10 +954,27 @@ void ovrApp::HandleXrEvents() {
                     perf_settings_event->fromLevel,
                     perf_settings_event->toLevel);
             } break;
-            case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
+            case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING: {
+                const XrEventDataReferenceSpaceChangePending* referenceSpaceChangePending =
+                    (XrEventDataReferenceSpaceChangePending*)(baseEventHeader);
                 ALOGV(
-                    "xrPollEvent: received XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING event");
-                break;
+                    "xrPollEvent: received XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING event: "
+                    "referenceSpaceType %s, changeTime %f, poseValid %s",
+                    ReferenceSpaceTypeToString(referenceSpaceChangePending->referenceSpaceType).c_str(),
+                    FromXrTime(referenceSpaceChangePending->changeTime),
+                    referenceSpaceChangePending->poseValid ? "true" : "false");
+                if (referenceSpaceChangePending->referenceSpaceType == XR_REFERENCE_SPACE_TYPE_STATIONARY_EXTX2) {
+                    XrStationaryReferenceSpaceIdResultEXTX2 stationaryReferenceSpaceIdResult =
+                        {XR_TYPE_STATIONARY_REFERENCE_SPACE_ID_RESULT_EXTX2};
+                    OXR(FunPtrs.xrGetStationaryReferenceSpaceIdEXTX2(
+                        Session, nullptr, &stationaryReferenceSpaceIdResult));
+                    ALOGV("Stationary reference space UUID changed from: %s to: %s",
+                        uuidToHexString(StationarySpaceUuid).c_str(),
+                        uuidToHexString(stationaryReferenceSpaceIdResult.generationId).c_str());
+                    std::memcpy(
+                        StationarySpaceUuid.data, stationaryReferenceSpaceIdResult.generationId.data, XR_UUID_SIZE);
+                }
+            } break;
             case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
                 const XrEventDataSessionStateChanged* session_state_changed_event =
                     (XrEventDataSessionStateChanged*)(baseEventHeader);
@@ -1456,7 +1493,7 @@ int main() {
         }
     }
 
-    // Check that the extensions required are present.
+    // Check that the required and optional extensions are present.
     const char* const requiredExtensionNames[] = {
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
         XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
@@ -1479,10 +1516,16 @@ int main() {
         XR_FB_SCENE_CAPTURE_EXTENSION_NAME,
 #endif
     };
+    const char* const optionalExtensionNames[] = {
+        XR_EXTX2_STATIONARY_REFERENCE_SPACE_EXTENSION_NAME,
+    };
     const uint32_t numRequiredExtensions =
         sizeof(requiredExtensionNames) / sizeof(requiredExtensionNames[0]);
+    const uint32_t numOptionalExtensions =
+        sizeof(optionalExtensionNames) / sizeof(optionalExtensionNames[0]);
 
-    // Check the list of required extensions against what is supported by the runtime.
+    // Check the list of required and optional extensions against what is supported by the runtime.
+    std::vector<const char*> enabledExtensionNames;
     {
         uint32_t numOutputExtensions = 0;
         OXR(xrEnumerateInstanceExtensionProperties(nullptr, 0, &numOutputExtensions, nullptr));
@@ -1502,6 +1545,7 @@ int main() {
             for (uint32_t j = 0; j < numOutputExtensions; j++) {
                 if (!strcmp(requiredExtensionNames[i], extensionProperties[j].extensionName)) {
                     ALOGV("Found required extension %s", requiredExtensionNames[i]);
+                    enabledExtensionNames.push_back(requiredExtensionNames[i]);
                     found = true;
                     break;
                 }
@@ -1509,6 +1553,21 @@ int main() {
             if (!found) {
                 ALOGE("Failed to find required extension %s", requiredExtensionNames[i]);
                 exit(1);
+            }
+        }
+
+        for (uint32_t i = 0; i < numOptionalExtensions; i++) {
+            bool found = false;
+            for (uint32_t j = 0; j < numOutputExtensions; j++) {
+                if (!strcmp(optionalExtensionNames[i], extensionProperties[j].extensionName)) {
+                    ALOGV("Found optional extension %s", optionalExtensionNames[i]);
+                    enabledExtensionNames.push_back(optionalExtensionNames[i]);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                ALOGV("Failed to find optional extension %s", optionalExtensionNames[i]);
             }
         }
     }
@@ -1526,8 +1585,8 @@ int main() {
     instanceCreateInfo.applicationInfo = appInfo;
     instanceCreateInfo.enabledApiLayerCount = 0;
     instanceCreateInfo.enabledApiLayerNames = NULL;
-    instanceCreateInfo.enabledExtensionCount = numRequiredExtensions;
-    instanceCreateInfo.enabledExtensionNames = requiredExtensionNames;
+    instanceCreateInfo.enabledExtensionCount = static_cast<uint32_t>(enabledExtensionNames.size());
+    instanceCreateInfo.enabledExtensionNames = enabledExtensionNames.data();
 
     XrResult initResult;
     OXR(initResult = xrCreateInstance(&instanceCreateInfo, &instance));
@@ -1747,6 +1806,7 @@ int main() {
         instance, app.SystemId, supportedViewConfigType, &app.ViewportConfig));
 
     bool stageSupported = false;
+    bool stationarySupported = false;
 
     uint32_t numOutputSpaces = 0;
     OXR(xrEnumerateReferenceSpaces(app.Session, 0, &numOutputSpaces, NULL));
@@ -1759,6 +1819,9 @@ int main() {
     for (uint32_t i = 0; i < numOutputSpaces; i++) {
         if (referenceSpaces[i] == XR_REFERENCE_SPACE_TYPE_STAGE) {
             stageSupported = true;
+        }
+        if (referenceSpaces[i] == XR_REFERENCE_SPACE_TYPE_STATIONARY_EXTX2) {
+            stationarySupported = true;
         }
     }
 
@@ -1780,6 +1843,12 @@ int main() {
         ALOGV("Created stage space");
     }
 
+    if (stationarySupported) {
+        spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_STATIONARY_EXTX2;
+        spaceCreateInfo.poseInReferenceSpace.position.y = 0.0f;
+        OXR(xrCreateReferenceSpace(app.Session, &spaceCreateInfo, &app.StationarySpace));
+        ALOGV("Created stationary space");
+    }
 
     XrView projections[NUM_EYES];
     for (int eye = 0; eye < NUM_EYES; eye++) {
@@ -1937,10 +2006,26 @@ int main() {
         instance,
         "xrRequestBoundaryVisibilityMETA",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrRequestBoundaryVisibilityMETA)));
-        
+        if (stationarySupported) {
+        OXR(xrGetInstanceProcAddr(
+            instance,
+            "xrGetStationaryReferenceSpaceIdEXTX2",
+            (PFN_xrVoidFunction*)(&app.FunPtrs.xrGetStationaryReferenceSpaceIdEXTX2)));
+    }
+
     CreatePassthrough(app);
 
-    
+    if (stationarySupported) {
+        XrStationaryReferenceSpaceIdResultEXTX2 stationaryReferenceSpaceIdResult =
+            {XR_TYPE_STATIONARY_REFERENCE_SPACE_ID_RESULT_EXTX2};
+        OXR(app.FunPtrs.xrGetStationaryReferenceSpaceIdEXTX2(
+            app.Session, nullptr, &stationaryReferenceSpaceIdResult));
+        std::memcpy(
+            app.StationarySpaceUuid.data, stationaryReferenceSpaceIdResult.generationId.data, XR_UUID_SIZE);
+        ALOGV("Stationary reference space UUID: %s",
+            uuidToHexString(app.StationarySpaceUuid).c_str());
+    }
+
     // Two values for left and right controllers.
     std::array<XrTime, 2> lastInputTimes = {0, 0};
 #if defined(XR_USE_PLATFORM_ANDROID)
@@ -2214,6 +2299,17 @@ int main() {
             frameIn.HasStage = false;
         }
 
+        if (app.StationarySpace != XR_NULL_HANDLE) {
+            loc = {XR_TYPE_SPACE_LOCATION};
+            OXR(xrLocateSpace(
+                app.StationarySpace, app.LocalSpace, frameState.predictedDisplayTime, &loc));
+            XrPosef xfLocalFromStationary = loc.pose;
+
+            frameIn.HasStationary = true;
+            frameIn.StationaryPose = OvrFromXr(xfLocalFromStationary);
+        } else {
+            frameIn.HasStationary = false;
+        }
 
         for (int controllerIndex = 0; controllerIndex < 2; ++controllerIndex) {
             // If there is an input signal from this controller, pause rendring this controller
@@ -2317,6 +2413,10 @@ int main() {
     // StageSpace is optional.
     if (app.StageSpace != XR_NULL_HANDLE) {
         OXR(xrDestroySpace(app.StageSpace));
+    }
+    // StationarySpace is optional.
+    if (app.StationarySpace != XR_NULL_HANDLE) {
+        OXR(xrDestroySpace(app.StationarySpace));
     }
     OXR(xrDestroySession(app.Session));
 

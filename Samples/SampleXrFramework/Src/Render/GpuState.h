@@ -27,27 +27,47 @@ Authors     :   John Carmack
 
 #pragma once
 
-#include "Egl.h"
-
-#if !defined(GL_FILL)
-#define GL_FILL 0x00 // just a placeholder -- this define doesn't exist in GL ES
-#endif
+#include <cstdint>
 
 namespace OVRFW {
 
 struct ovrGpuState {
     enum ovrBlendEnable { BLEND_DISABLE, BLEND_ENABLE, BLEND_ENABLE_SEPARATE };
 
+    /// Aliasing some GL constant for defaults and commonly used behavior
+    /// without needing the explicit GL include
+
+    static constexpr uint32_t kGL_ONE = 0x0001;
+    static constexpr uint32_t kGL_ZERO = 0x0000;
+    static constexpr uint32_t kGL_SRC_ALPHA = 0x0302;
+    static constexpr uint32_t kGL_ONE_MINUS_SRC_ALPHA = 0x0303;
+    static constexpr uint32_t kGL_DST_ALPHA = 0x0304;
+    static constexpr uint32_t kGL_ONE_MINUS_DST_ALPHA = 0x0305;
+
+    static constexpr uint32_t kGL_FUNC_ADD = 0x8006;
+    static constexpr uint32_t kGL_FUNC_SUBTRACT = 0x800A;
+    static constexpr uint32_t kGL_FUNC_REVERSE_SUBTRACT = 0x800B;
+    static constexpr uint32_t kGL_MIN = 0x8007;
+    static constexpr uint32_t kGL_MAX = 0x8008;
+
+    static constexpr uint32_t kGL_LEQUAL = 0x0203;
+    static constexpr uint32_t kGL_GREATER = 0x0204;
+
+    static constexpr uint32_t kGL_CW = 0x0900;
+    static constexpr uint32_t kGL_CCW = 0x0901;
+
+    static constexpr uint32_t kGL_FILL = 0x1B02;
+
     ovrGpuState()
-        : blendMode(GL_FUNC_ADD),
-          blendSrc(GL_ONE),
-          blendDst(GL_ZERO),
-          blendSrcAlpha(GL_ONE),
-          blendDstAlpha(GL_ZERO),
-          blendModeAlpha(GL_FUNC_ADD),
-          depthFunc(GL_LEQUAL),
-          frontFace(GL_CCW),
-          polygonMode(GL_FILL),
+        : blendMode(kGL_FUNC_ADD),
+          blendSrc(kGL_ONE),
+          blendDst(kGL_ZERO),
+          blendSrcAlpha(kGL_ONE),
+          blendDstAlpha(kGL_ZERO),
+          blendModeAlpha(kGL_FUNC_ADD),
+          depthFunc(kGL_LEQUAL),
+          frontFace(kGL_CCW),
+          polygonMode(kGL_FILL),
           blendEnable(BLEND_DISABLE),
           depthEnable(true),
           depthMaskEnable(true),
@@ -59,15 +79,15 @@ struct ovrGpuState {
         depthRange[1] = 1.0f;
     }
 
-    GLenum blendMode; // GL_FUNC_ADD, GL_FUNC_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT, GL_MIN, GL_MAX
-    GLenum blendSrc;
-    GLenum blendDst;
-    GLenum blendSrcAlpha;
-    GLenum blendDstAlpha;
-    GLenum blendModeAlpha;
-    GLenum depthFunc;
-    GLenum frontFace; // GL_CW, GL_CCW
-    GLenum polygonMode;
+    uint32_t blendMode; // GL_FUNC_ADD, GL_FUNC_SUBTRACT, GL_FUNC_REVERSE_SUBTRACT, GL_MIN, GL_MAX
+    uint32_t blendSrc;
+    uint32_t blendDst;
+    uint32_t blendSrcAlpha;
+    uint32_t blendDstAlpha;
+    uint32_t blendModeAlpha;
+    uint32_t depthFunc;
+    uint32_t frontFace; // GL_CW, GL_CCW
+    uint32_t polygonMode;
 
     ovrBlendEnable blendEnable; // off, normal, separate
 
@@ -76,8 +96,8 @@ struct ovrGpuState {
     bool colorMaskEnable[4];
     bool polygonOffsetEnable;
     bool cullEnable;
-    GLfloat lineWidth;
-    GLfloat depthRange[2]; // nearVal, farVal
+    float lineWidth;
+    float depthRange[2]; // nearVal, farVal
 };
 
 } // namespace OVRFW

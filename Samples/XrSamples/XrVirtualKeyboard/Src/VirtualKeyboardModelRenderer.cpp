@@ -33,6 +33,7 @@ Copyright   :   Copyright (c) Meta Platforms, Inc. and affiliates. Confidential 
 #include <Model/ModelAnimationUtils.h>
 #include <Model/ModelFileLoading.h>
 #include <Model/ModelDef.h>
+#include <Render/Egl.h>
 #include <OVR_Math.h>
 
 namespace {

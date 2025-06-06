@@ -448,9 +448,9 @@ bool LoadModelFile_OvrScene_Json(
                             modelSurface.surfaceDef.graphicsCommand.GpuState.depthMaskEnable =
                                 false;
                             modelSurface.surfaceDef.graphicsCommand.GpuState.blendSrc =
-                                GL_SRC_ALPHA;
+                                ovrGpuState::kGL_SRC_ALPHA;
                             modelSurface.surfaceDef.graphicsCommand.GpuState.blendDst =
-                                GL_ONE_MINUS_SRC_ALPHA;
+                                ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
                             materialTypeString = "perforated";
                         } else if (
                             materialType == MATERIAL_TYPE_TRANSPARENT ||
@@ -460,17 +460,19 @@ bool LoadModelFile_OvrScene_Json(
                             modelSurface.surfaceDef.graphicsCommand.GpuState.depthMaskEnable =
                                 false;
                             modelSurface.surfaceDef.graphicsCommand.GpuState.blendSrc =
-                                GL_SRC_ALPHA;
+                                ovrGpuState::kGL_SRC_ALPHA;
                             modelSurface.surfaceDef.graphicsCommand.GpuState.blendDst =
-                                GL_ONE_MINUS_SRC_ALPHA;
+                                ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
                             materialTypeString = "transparent";
                         } else if (materialType == MATERIAL_TYPE_ADDITIVE) {
                             modelSurface.surfaceDef.graphicsCommand.GpuState.blendEnable =
                                 ovrGpuState::BLEND_ENABLE;
                             modelSurface.surfaceDef.graphicsCommand.GpuState.depthMaskEnable =
                                 false;
-                            modelSurface.surfaceDef.graphicsCommand.GpuState.blendSrc = GL_ONE;
-                            modelSurface.surfaceDef.graphicsCommand.GpuState.blendDst = GL_ONE;
+                            modelSurface.surfaceDef.graphicsCommand.GpuState.blendSrc =
+                                ovrGpuState::kGL_ONE;
+                            modelSurface.surfaceDef.graphicsCommand.GpuState.blendDst =
+                                ovrGpuState::kGL_ONE;
                             materialTypeString = "additive";
                         }
 

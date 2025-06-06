@@ -273,6 +273,8 @@ struct ovrAppRenderer {
         bool HasStage;
         OVR::Posef StagePose;
         OVR::Vector3f StageScale;
+        bool HasStationary;
+        OVR::Posef StationaryPose;
         std::array<bool, 2> RenderController;
         std::array<OVR::Posef, 2> ControllerPoses;
     };

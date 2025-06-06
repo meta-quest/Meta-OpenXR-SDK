@@ -30,8 +30,9 @@ Authors     :   John Carmack, J.M.P. van Waveren
 #include <functional>
 #include <string>
 #include <vector>
+#include <cstdint>
 
-#include "Render/GlProgram.h" // GlProgram
+#include "Render/GlProgram.h"
 #include "Render/GlTexture.h"
 #include "Render/SurfaceRender.h"
 #include "ModelCollision.h"
@@ -166,13 +167,25 @@ struct ModelTexture {
     GlTexture texid; // texture id. will need to be freed when the object destroys itself.
 };
 
-// #TODO: currently we don't set any sampling parms on textures.
 struct ModelSampler {
+    /// Aliasing some GL constant for defaults and commonly used behavior
+    /// without needing the explicit GL include
+    static constexpr uint32_t kGL_NEAREST = 0x2600;
+    static constexpr uint32_t kGL_LINEAR = 0x2601;
+    static constexpr uint32_t kGL_NEAREST_MIPMAP_NEAREST = 0x2700;
+    static constexpr uint32_t kGL_LINEAR_MIPMAP_NEAREST = 0x2701;
+    static constexpr uint32_t kGL_NEAREST_MIPMAP_LINEAR = 0x2702;
+    static constexpr uint32_t kGL_LINEAR_MIPMAP_LINEAR = 0x2703;
+    static constexpr uint32_t kGL_CLAMP = 0x2900;
+    static constexpr uint32_t kGL_REPEAT = 0x2901;
+    static constexpr uint32_t kGL_CLAMP_TO_EDGE = 0x812F;
+    static constexpr uint32_t kGL_MIRRORED_REPEAT = 0x8370;
+
     ModelSampler()
-        : magFilter(GL_LINEAR),
-          minFilter(GL_NEAREST_MIPMAP_LINEAR),
-          wrapS(GL_REPEAT),
-          wrapT(GL_REPEAT) {}
+        : magFilter(kGL_LINEAR),
+          minFilter(kGL_NEAREST_MIPMAP_LINEAR),
+          wrapS(kGL_REPEAT),
+          wrapT(kGL_REPEAT) {}
 
     std::string name;
     int magFilter;

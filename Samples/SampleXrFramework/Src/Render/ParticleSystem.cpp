@@ -31,6 +31,8 @@ Authors     :   Jonathan E. Wright
 #include "Render/GeometryBuilder.h"
 #include "Render/GlGeometry.h"
 
+#include <cassert>
+
 using OVR::Matrix4f;
 using OVR::Posef;
 using OVR::Quatf;
@@ -89,26 +91,26 @@ static Vector3f quadVertPos[4] = {
 
 static Vector2f quadUVs[4] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 
-ovrParticleSystem::ovrParticleSystem() : MaxParticles(0) {}
+ovrParticleSystem::ovrParticleSystem() : maxParticles_(0) {}
 
 ovrParticleSystem::~ovrParticleSystem() {
     Shutdown();
 }
 
 void ovrParticleSystem::Init(
-    const int maxParticles,
+    const size_t maxParticles,
     const ovrTextureAtlas* atlas,
     const ovrGpuState& gpuState,
     bool const sortParticles) {
     // this can be called multiple times
     Shutdown();
 
-    MaxParticles = maxParticles;
+    maxParticles_ = maxParticles;
 
     // free any existing particles
-    Particles.Reserve(maxParticles);
-    FreeParticles.Reserve(maxParticles);
-    ActiveParticles.Reserve(maxParticles);
+    particles_.reserve(maxParticles);
+    freeParticles_.reserve(maxParticles);
+    activeParticles_.reserve(maxParticles);
 
     // create the geometry
     CreateGeometry(maxParticles);
@@ -138,19 +140,19 @@ void ovrParticleSystem::Init(
 
     SortParticles = sortParticles;
 
-    Derived.Reserve(maxParticles);
-    SortIndices.Reserve(maxParticles);
-    Attr.position.Reserve(maxParticles * 4);
-    Attr.color.Reserve(maxParticles * 4);
-    Attr.uv0.Reserve(maxParticles * 4);
-    PackedAttr.Reserve(maxParticles * 12 * 16 * 8);
+    derived_.reserve(maxParticles);
+    sortIndices_.reserve(maxParticles);
+    attr_.position.reserve(maxParticles * 4);
+    attr_.color.reserve(maxParticles * 4);
+    attr_.uv0.reserve(maxParticles * 4);
+    packedAttr_.reserve(maxParticles * 12 * 16 * 8);
 }
 
 ovrGpuState ovrParticleSystem::GetDefaultGpuState() {
     ovrGpuState s;
     s.blendEnable = ovrGpuState::BLEND_ENABLE;
-    s.blendSrc = GL_SRC_ALPHA;
-    s.blendDst = GL_ONE;
+    s.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    s.blendDst = ovrGpuState::kGL_ONE;
     s.depthEnable = true;
     s.depthMaskEnable = false;
     s.cullEnable = true;
@@ -165,66 +167,13 @@ int ParticleSortFn(void const* a, void const* b) {
     return 1;
 }
 
-template <typename _attrib_type_>
-void PackVertexAttribute2(
-    ovrSimpleArray<uint8_t>& packed,
-    const ovrSimpleArray<_attrib_type_>& attrib,
-    const int glLocation,
-    const int glType,
-    const int glComponents) {
-    if (attrib.GetSize() > 0) {
-        const int offset = packed.GetSizeI();
-        const int size = attrib.GetSizeI() * sizeof(attrib[0]);
-
-        packed.Resize(offset + size);
-        memcpy(&packed[offset], attrib.GetDataPtr(), size);
-
-        glEnableVertexAttribArray(glLocation);
-        glVertexAttribPointer(
-            glLocation, glComponents, glType, false, sizeof(attrib[0]), (void*)((size_t)offset));
-    } else {
-        glDisableVertexAttribArray(glLocation);
-    }
-}
-
-void UpdateGeometry(
-    GlGeometry& geo,
-    ovrSimpleArray<uint8_t>& packed,
-    const ovrVertexAttribs& attribs) {
-    geo.vertexCount = attribs.position.GetSizeI();
-
-    glBindVertexArray(geo.vertexArrayObject);
-
-    glBindBuffer(GL_ARRAY_BUFFER, geo.vertexBuffer);
-
-    PackVertexAttribute2(packed, attribs.position, VERTEX_ATTRIBUTE_LOCATION_POSITION, GL_FLOAT, 3);
-    PackVertexAttribute2(packed, attribs.normal, VERTEX_ATTRIBUTE_LOCATION_NORMAL, GL_FLOAT, 3);
-    PackVertexAttribute2(packed, attribs.tangent, VERTEX_ATTRIBUTE_LOCATION_TANGENT, GL_FLOAT, 3);
-    PackVertexAttribute2(packed, attribs.binormal, VERTEX_ATTRIBUTE_LOCATION_BINORMAL, GL_FLOAT, 3);
-    PackVertexAttribute2(packed, attribs.color, VERTEX_ATTRIBUTE_LOCATION_COLOR, GL_FLOAT, 4);
-    PackVertexAttribute2(packed, attribs.uv0, VERTEX_ATTRIBUTE_LOCATION_UV0, GL_FLOAT, 2);
-    PackVertexAttribute2(packed, attribs.uv1, VERTEX_ATTRIBUTE_LOCATION_UV1, GL_FLOAT, 2);
-    PackVertexAttribute2(
-        packed, attribs.jointIndices, VERTEX_ATTRIBUTE_LOCATION_JOINT_INDICES, GL_INT, 4);
-    PackVertexAttribute2(
-        packed, attribs.jointWeights, VERTEX_ATTRIBUTE_LOCATION_JOINT_WEIGHTS, GL_FLOAT, 4);
-
-    size_t s = packed.GetSize() * sizeof(packed[0]);
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        s,
-        packed.GetDataPtr(),
-        GL_STATIC_DRAW); // shouldn't this be GL_DYNAMIC_DRAW?
-}
-
 void ovrParticleSystem::Frame(
     const OVRFW::ovrApplFrameIn& frame,
     const ovrTextureAtlas* atlas,
     const Matrix4f& centerEyeViewMatrix) {
     // OVR_PERF_TIMER( ovrParticleSystem_Frame );
 
-    SurfaceDef.geo.indexCount = 0;
-    if (ActiveParticles.GetSizeI() <= 0) {
+    if (activeParticles_.empty()) {
         return;
     }
 
@@ -240,20 +189,22 @@ void ovrParticleSystem::Frame(
     // This array will be sorted by distance and then used to index into the derived array the
     // vertices are transformed.
 
-    ovrSimpleArray<particleDerived_t>& derived = Derived;
-    ovrSimpleArray<particleSort_t>& sortIndices = SortIndices;
-    derived.Resize(ActiveParticles.GetSizeI());
-    sortIndices.Resize(ActiveParticles.GetSizeI());
+    std::vector<particleDerived_t>& derived = derived_;
+    std::vector<particleSort_t>& sortIndices = sortIndices_;
+    derived.resize(activeParticles_.size());
+    sortIndices.resize(activeParticles_.size());
 
-    for (int i = 0; i < ActiveParticles.GetSizeI(); ++i) {
-        const handle_t handle = ActiveParticles[i];
-        ovrParticle& p = Particles[handle.Get()];
+    for (size_t i = 0; i < activeParticles_.size(); ++i) {
+        const handle_t handle = activeParticles_[i];
+        ovrParticle& p = particles_[handle.Get()];
 
         if (frame.PredictedDisplayTime - p.StartTime > p.LifeTime) {
             // free expired particle
             p.StartTime = -1.0; // mark as unused
-            FreeParticles.PushBack(handle);
-            ActiveParticles.RemoveAtUnordered(i);
+            freeParticles_.push_back(handle);
+            // Swap this slot with the last item, order doesn't matter
+            activeParticles_.at(i) = activeParticles_.back();
+            activeParticles_.pop_back();
             i--; // last particle was moved into current slot, so don't skip it
             continue;
         }
@@ -279,7 +230,7 @@ void ovrParticleSystem::Frame(
         activeCount++;
     }
 
-    assert(ActiveParticles.GetSizeI() == activeCount);
+    assert(activeParticles_.size() == (size_t)activeCount);
 
     if (activeCount > 0) {
         // sort by distance to view pos
@@ -287,9 +238,9 @@ void ovrParticleSystem::Frame(
             qsort(&sortIndices[0], activeCount, sizeof(sortIndices[0]), ParticleSortFn);
         }
 
-        Attr.position.Resize(activeCount * 4);
-        Attr.color.Resize(activeCount * 4);
-        Attr.uv0.Resize(activeCount * 4);
+        attr_.position.resize(activeCount * 4);
+        attr_.color.resize(activeCount * 4);
+        attr_.uv0.resize(activeCount * 4);
 
         // transform vertices for each particle quad
         for (int i = 0; i < activeCount; ++i) {
@@ -310,31 +261,29 @@ void ovrParticleSystem::Frame(
             particleTransform.SetTranslation(p.Pos);
 
             for (int v = 0; v < 4; ++v) {
-                Attr.position[i * 4 + v] =
+                attr_.position[i * 4 + v] =
                     particleTransform.Transform(rotMatrix.Transform(quadVertPos[v] * p.Scale));
-                Attr.color[i * 4 + v] = p.Color;
+                attr_.color[i * 4 + v] = p.Color;
             }
 
             if (atlas != nullptr) {
                 // set UVs of this sprite in the atlas
                 const ovrTextureAtlas::ovrSpriteDef& sd = atlas->GetSpriteDef(p.SpriteIndex);
-                Attr.uv0[i * 4 + 0] = Vector2f(sd.uvMins.x, sd.uvMins.y);
-                Attr.uv0[i * 4 + 1] = Vector2f(sd.uvMaxs.x, sd.uvMins.y);
-                Attr.uv0[i * 4 + 2] = Vector2f(sd.uvMaxs.x, sd.uvMaxs.y);
-                Attr.uv0[i * 4 + 3] = Vector2f(sd.uvMins.x, sd.uvMaxs.y);
+                attr_.uv0[i * 4 + 0] = Vector2f(sd.uvMins.x, sd.uvMins.y);
+                attr_.uv0[i * 4 + 1] = Vector2f(sd.uvMaxs.x, sd.uvMins.y);
+                attr_.uv0[i * 4 + 2] = Vector2f(sd.uvMaxs.x, sd.uvMaxs.y);
+                attr_.uv0[i * 4 + 3] = Vector2f(sd.uvMins.x, sd.uvMaxs.y);
             } else {
-                Attr.uv0[i * 4 + 0] = Vector2f(-1, -1);
-                Attr.uv0[i * 4 + 1] = Vector2f(1, -1);
-                Attr.uv0[i * 4 + 2] = Vector2f(1, 1);
-                Attr.uv0[i * 4 + 3] = Vector2f(-1, 1);
+                attr_.uv0[i * 4 + 0] = Vector2f(-1, -1);
+                attr_.uv0[i * 4 + 1] = Vector2f(1, -1);
+                attr_.uv0[i * 4 + 2] = Vector2f(1, 1);
+                attr_.uv0[i * 4 + 3] = Vector2f(-1, 1);
             }
         }
     }
 
     // update the geometry with new vertex attributes
-    SurfaceDef.geo.indexCount = activeCount * 6;
-    PackedAttr.Resize(0);
-    UpdateGeometry(SurfaceDef.geo, PackedAttr, Attr);
+    SurfaceDef.geo.Update(attr_);
 }
 
 void ovrParticleSystem::Shutdown() {
@@ -348,6 +297,11 @@ void ovrParticleSystem::RenderEyeView(
     std::vector<ovrDrawSurface>& surfaceList) const {
     // OVR_UNUSED( viewMatrix );
     // OVR_UNUSED( projectionMatrix );
+
+    // Don't even add a surface if not needed
+    if (activeParticles_.empty()) {
+        return;
+    }
 
     // add a surface
     ovrDrawSurface surf;
@@ -371,21 +325,21 @@ ovrParticleSystem::handle_t ovrParticleSystem::AddParticle(
     ovrParticle* p;
 
     handle_t particleHandle;
-    if (FreeParticles.GetSizeI() > 0) {
-        particleHandle = handle_t(FreeParticles[FreeParticles.GetSizeI() - 1]);
-        FreeParticles.PopBack();
-        ActiveParticles.PushBack(particleHandle);
+    if (!freeParticles_.empty()) {
+        particleHandle = handle_t(freeParticles_[freeParticles_.size() - 1]);
+        freeParticles_.pop_back();
+        activeParticles_.push_back(particleHandle);
         assert(particleHandle.IsValid());
-        assert(particleHandle.Get() < Particles.GetSizeI());
-        p = &Particles[particleHandle.Get()];
+        assert((size_t)particleHandle.Get() < particles_.size());
+        p = &particles_[particleHandle.Get()];
     } else {
-        if (Particles.GetSizeI() >= MaxParticles) {
+        if (particles_.size() >= maxParticles_) {
             return handle_t(); // adding more would overflow the VAO
         }
-        particleHandle = handle_t(Particles.GetSizeI());
-        Particles.PushBack(ovrParticle());
-        ActiveParticles.PushBack(particleHandle);
-        p = &Particles[Particles.GetSizeI() - 1];
+        particleHandle = handle_t(particles_.size());
+        particles_.emplace_back();
+        activeParticles_.push_back(particleHandle);
+        p = &particles_[particles_.size() - 1];
     }
 
     p->StartTime = frame.PredictedDisplayTime;
@@ -416,11 +370,11 @@ void ovrParticleSystem::UpdateParticle(
     const float scale,
     const float lifeTime,
     const uint16_t spriteIndex) {
-    if (!handle.IsValid() || handle.Get() >= Particles.GetSizeI()) {
-        assert(handle.IsValid() && handle.Get() < Particles.GetSizeI());
+    if (!handle.IsValid() || (size_t)handle.Get() >= particles_.size()) {
+        assert(handle.IsValid() && (size_t)handle.Get() < particles_.size());
         return;
     }
-    ovrParticle& p = Particles[handle.Get()];
+    ovrParticle& p = particles_[handle.Get()];
     p.InitialPosition = position;
     p.InitialOrientation = orientation;
     p.InitialVelocity = velocity;
@@ -435,12 +389,12 @@ void ovrParticleSystem::UpdateParticle(
 }
 
 void ovrParticleSystem::RemoveParticle(const handle_t handle) {
-    if (!handle.IsValid() || handle.Get() >= Particles.GetSizeI()) {
+    if (!handle.IsValid() || (size_t)handle.Get() >= particles_.size()) {
         return;
     }
     // particle will get removed in the next update
-    Particles[handle.Get()].StartTime = -1.0; // mark as unused
-    Particles[handle.Get()].LifeTime = 0.0;
+    particles_[handle.Get()].StartTime = -1.0; // mark as unused
+    particles_[handle.Get()].LifeTime = 0.0;
 }
 
 void ovrParticleSystem::CreateGeometry(const int maxParticles) {
@@ -475,7 +429,6 @@ void ovrParticleSystem::CreateGeometry(const int maxParticles) {
     }
 
     SurfaceDef.geo.Create(attr, indices);
-    SurfaceDef.geo.indexCount = 0; // nothing to render until particles are added
 }
 
 } // namespace OVRFW

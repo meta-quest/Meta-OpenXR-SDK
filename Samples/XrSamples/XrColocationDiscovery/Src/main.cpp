@@ -46,9 +46,6 @@ Copyright:  Copyright (c) Facebook Technologies, LLC and its affiliates. All rig
 #include "Misc/Log.h"
 #include "Render/SimpleBeamRenderer.h"
 
-#include <meta_openxr_preview/meta_spatial_entity_sharing.h>
-#include <meta_openxr_preview/meta_colocation_discovery.h>
-#include <meta_openxr_preview/meta_spatial_entity_group_sharing.h>
 #include <meta_openxr_preview/openxr_oculus_helpers.h>
 #include <openxr/openxr.h>
 

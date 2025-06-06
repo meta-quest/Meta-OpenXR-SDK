@@ -29,6 +29,8 @@ Authors     :   John Carmack
 #include "Misc/Log.h"
 #include "CompilerUtils.h"
 
+#include "Egl.h"
+
 namespace OVRFW {
 
 GlBuffer::GlBuffer() : target(0), buffer(0), size(0) {}

@@ -91,7 +91,7 @@ bool ovrAxisRenderer::Init(size_t count, float size) {
     gc.UniformData[0].Data = &InstancedBoneUniformBuffer;
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_DISABLE;
-    gc.GpuState.blendSrc = GL_ONE;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_ONE;
     /// Add surface
     AxisSurface.surface = &(AxisSurfaceDef);
 

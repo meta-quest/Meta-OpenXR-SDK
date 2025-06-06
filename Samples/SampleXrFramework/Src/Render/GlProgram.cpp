@@ -34,6 +34,7 @@ Authors     :   John Carmack
 #include "Misc/Log.h"
 
 #include "OVR_Std.h"
+#include "Egl.h"
 
 #include <string>
 

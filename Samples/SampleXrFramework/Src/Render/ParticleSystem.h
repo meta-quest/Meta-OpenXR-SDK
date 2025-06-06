@@ -27,88 +27,22 @@ Authors     :   Jonathan E. Wright
 
 #pragma once
 
-#include <vector>
-
 #include "OVR_Math.h"
 #include "OVR_TypesafeNumber.h"
 
 #include "FrameParams.h"
-#include "Render/SurfaceRender.h"
+#include "Render/GlGeometry.h"
 #include "Render/GlProgram.h"
+#include "Render/SurfaceRender.h"
 #include "OVR_FileSys.h"
 
 #include "EaseFunctions.h"
 
+#include <cstdint>
 #include <vector>
 #include <string>
 
 namespace OVRFW {
-
-template <typename T>
-class ovrSimpleArray {
-   public:
-    ovrSimpleArray() {}
-
-    void PushBack(T const& item) {
-        Vector.push_back(item);
-    }
-
-    void PopBack() {
-        Vector.pop_back();
-    }
-
-    void Reserve(int const newCapacity) {
-        Vector.reserve(newCapacity);
-    }
-
-    void Resize(int const newCount) {
-        Vector.resize(newCount);
-    }
-
-    void RemoveAtUnordered(int const index) {
-        Vector[index] = Vector[Vector.size() - 1];
-        Vector.pop_back();
-    }
-
-    int GetSizeI() const {
-        return static_cast<int>(Vector.size());
-    }
-    size_t GetSize() const {
-        return Vector.size();
-    }
-    int GetCapacity() const {
-        return Vector.capacity();
-    }
-
-    T const* GetDataPtr() const {
-        return &Vector[0];
-    }
-    T* GetDataPtr() {
-        return &Vector[0];
-    }
-
-    T const& operator[](int const index) const {
-        return Vector[index];
-    }
-    T& operator[](int const index) {
-        return Vector[index];
-    }
-
-   private:
-    std::vector<T> Vector;
-};
-
-struct ovrVertexAttribs {
-    ovrSimpleArray<OVR::Vector3f> position;
-    ovrSimpleArray<OVR::Vector3f> normal;
-    ovrSimpleArray<OVR::Vector3f> tangent;
-    ovrSimpleArray<OVR::Vector3f> binormal;
-    ovrSimpleArray<OVR::Vector4f> color;
-    ovrSimpleArray<OVR::Vector2f> uv0;
-    ovrSimpleArray<OVR::Vector2f> uv1;
-    ovrSimpleArray<OVR::Vector4i> jointIndices;
-    ovrSimpleArray<OVR::Vector4f> jointWeights;
-};
 
 class ovrTextureAtlas;
 
@@ -138,7 +72,7 @@ class ovrParticleSystem {
 
     // specify sprite locations as a regular grid
     void Init(
-        const int maxParticles,
+        size_t maxParticles,
         const ovrTextureAtlas* atlas,
         const ovrGpuState& gpuState,
         bool const sortParticles);
@@ -211,14 +145,14 @@ class ovrParticleSystem {
         ovrEaseFunc EaseFunc; // parametric function used to compute alpha
     };
 
-    int MaxParticles; // maximum allowd particles
-    ovrSimpleArray<ovrParticle> Particles; // all active particles
-    ovrSimpleArray<handle_t> FreeParticles; // indices of free particles
-    ovrSimpleArray<handle_t> ActiveParticles; // indices of active particles
-    ovrSimpleArray<particleDerived_t> Derived;
-    ovrSimpleArray<particleSort_t> SortIndices;
-    ovrSimpleArray<uint8_t> PackedAttr;
-    ovrVertexAttribs Attr;
+    size_t maxParticles_; // maximum allowd particles
+    std::vector<ovrParticle> particles_; // all active particles
+    std::vector<handle_t> freeParticles_; // indices of free particles
+    std::vector<handle_t> activeParticles_; // indices of active particles
+    std::vector<particleDerived_t> derived_;
+    std::vector<particleSort_t> sortIndices_;
+    std::vector<uint8_t> packedAttr_;
+    OVRFW::VertexAttribs attr_;
     GlProgram Program;
     ovrSurfaceDef SurfaceDef;
     OVR::Matrix4f ModelMatrix;

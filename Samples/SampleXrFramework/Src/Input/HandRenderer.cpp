@@ -26,7 +26,6 @@ Authors     :   Federico Schliemann
 ************************************************************************************/
 
 #include "HandRenderer.h"
-#include "XrApp.h"
 
 using OVR::Matrix4f;
 using OVR::Posef;
@@ -234,7 +233,7 @@ bool HandRenderer::Init(const XrHandTrackingMeshFB* mesh, bool leftHand) {
 
     /// Skeleton/Bind pose
     for (int i = 0; i < XR_HAND_JOINT_COUNT_EXT; ++i) {
-        const OVR::Posef pose = FromXrPosef(mesh->jointBindPoses[i]);
+        const OVR::Posef pose = *reinterpret_cast<const OVR::Posef*>(&mesh->jointBindPoses[i]);
         TransformMatrices[i] = Matrix4f(pose);
         BindMatrices[i] = TransformMatrices[i].Inverted();
     }
@@ -260,8 +259,8 @@ bool HandRenderer::Init(const XrHandTrackingMeshFB* mesh, bool leftHand) {
     /// gpu state needs alpha blending
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
-    gc.GpuState.blendSrc = GL_SRC_ALPHA;
-    gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
 
     /// Add surface
     HandSurface.surface = &(HandSurfaceDef);
@@ -289,7 +288,8 @@ void HandRenderer::Shutdown() {
 
 void HandRenderer::Update(const XrHandJointLocationEXT* joints, const float scale) {
     /// Compute transform for the root
-    const OVR::Posef root = FromXrPosef(joints[XR_HAND_JOINT_WRIST_EXT].pose);
+    const OVR::Posef root =
+        *reinterpret_cast<const OVR::Posef*>(&joints[XR_HAND_JOINT_WRIST_EXT].pose);
     const OVR::Matrix4f rootMatrix = OVR::Matrix4f(root);
     HandSurface.modelMatrix = rootMatrix * OVR::Matrix4f::Scaling(scale);
     const OVR::Matrix4f rootMatrixInv = rootMatrix.Inverted();
@@ -297,7 +297,7 @@ void HandRenderer::Update(const XrHandJointLocationEXT* joints, const float scal
     /// update transforms
     for (int i = 0; i < XR_HAND_JOINT_COUNT_EXT; ++i) {
         /// Compute transform
-        const OVR::Posef pose = FromXrPosef(joints[i].pose);
+        const OVR::Posef pose = *reinterpret_cast<const OVR::Posef*>(&joints[i].pose);
         TransformMatrices[i] = rootMatrixInv * Matrix4f(pose);
         Matrix4f m = TransformMatrices[i] * BindMatrices[i];
         SkinMatrices[i] = m.Transposed();

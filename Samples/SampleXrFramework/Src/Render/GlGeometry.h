@@ -30,8 +30,6 @@ Authors     :   John Carmack
 #include <vector>
 #include "OVR_Math.h"
 
-#include "GlProgram.h"
-
 namespace OVRFW {
 
 struct VertexAttribs {
@@ -50,11 +48,17 @@ typedef uint16_t TriangleIndex;
 
 class GlGeometry {
    public:
+    static constexpr uint32_t kPrimitiveTypePoints = 0x0000; /* GL_POINTS */
+    static constexpr uint32_t kPrimitiveTypeLines = 0x0001; /* GL_LINES */
+    static constexpr uint32_t kPrimitiveTypeTriangles = 0x0004; /* GL_TRIANGLES */
+    static constexpr uint32_t kPrimitiveTypeTriangleFan = 0x0006; /* GL_TRIANGLE_FAN */
+
+   public:
     GlGeometry()
         : vertexBuffer(0),
           indexBuffer(0),
           vertexArrayObject(0),
-          primitiveType(0x0004 /* GL_TRIANGLES */),
+          primitiveType(kPrimitiveTypeTriangles),
           vertexCount(0),
           indexCount(0),
           localBounds(OVR::Bounds3f::Init) {}
@@ -63,7 +67,7 @@ class GlGeometry {
         : vertexBuffer(0),
           indexBuffer(0),
           vertexArrayObject(0),
-          primitiveType(0x0004 /* GL_TRIANGLES */),
+          primitiveType(kPrimitiveTypeTriangles),
           vertexCount(0),
           indexCount(0),
           localBounds(OVR::Bounds3f::Init) {
@@ -117,12 +121,12 @@ class GlGeometry {
     };
 
    public:
-    unsigned vertexBuffer;
-    unsigned indexBuffer;
-    unsigned vertexArrayObject;
-    unsigned primitiveType; // GL_TRIANGLES / GL_LINES / GL_POINTS / etc
-    int vertexCount;
-    int indexCount;
+    uint32_t vertexBuffer;
+    uint32_t indexBuffer;
+    uint32_t vertexArrayObject;
+    uint32_t primitiveType; // GL_TRIANGLES / GL_LINES / GL_POINTS / etc
+    int32_t vertexCount;
+    int32_t indexCount;
     OVR::Bounds3f localBounds;
 };
 
@@ -177,6 +181,29 @@ inline GlGeometry BuildTesselatedCylinder(
     const GlGeometry::Descriptor d =
         BuildTesselatedCylinderDescriptor(radius, height, horizontal, vertical, uScale, vScale);
     return GlGeometry(d.attribs, d.indices);
+}
+
+GlGeometry::Descriptor BuildTesselatedCylinderPatchDescriptor(
+    float radius,
+    float height,
+    size_t horizontal,
+    size_t vertical,
+    float uScale,
+    float vScale,
+    float patchFovAngle,
+    bool faceOutward = true);
+inline GlGeometry BuildTesselatedCylinderPatch(
+    float radius,
+    float height,
+    size_t horizontal,
+    size_t vertical,
+    float uScale,
+    float vScale,
+    float patchFovAngle,
+    bool faceOutward = true) {
+    const GlGeometry::Descriptor d = BuildTesselatedCylinderPatchDescriptor(
+        radius, height, horizontal, vertical, uScale, vScale, patchFovAngle, faceOutward);
+    return {d.attribs, d.indices};
 }
 
 // Build it in a -1 to 1 range, which will be scaled to the appropriate
@@ -247,7 +274,7 @@ GlGeometry::Descriptor BuildUnitCubeLinesDescriptor();
 inline GlGeometry BuildUnitCubeLines() {
     const GlGeometry::Descriptor d = BuildUnitCubeLinesDescriptor();
     GlGeometry g(d.attribs, d.indices);
-    g.primitiveType = GL_LINES;
+    g.primitiveType = GlGeometry::kPrimitiveTypeLines;
     return g;
 }
 

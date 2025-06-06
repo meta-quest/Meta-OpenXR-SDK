@@ -1218,6 +1218,33 @@ void ovrAppRenderer::RenderFrame(const FrameIn& frameIn) {
         Framebuffer.Resolve();
     }
 
+    if (frameIn.HasStationary) {
+        // stationary axes
+        GL(glUseProgram(Scene.AxesProgram.Program));
+        GL(glBindBufferBase(
+            GL_UNIFORM_BUFFER,
+            Scene.AxesProgram.UniformBinding[ovrUniform::Index::SCENE_MATRICES],
+            Scene.SceneMatrices));
+        if (Scene.AxesProgram.UniformLocation[ovrUniform::Index::VIEW_ID] >=
+            0) // NOTE: will not be present when multiview path is enabled.
+        {
+            GL(glUniform1i(Scene.AxesProgram.UniformLocation[ovrUniform::Index::VIEW_ID], 0));
+        }
+        if (Scene.AxesProgram.UniformLocation[ovrUniform::Index::MODEL_MATRIX] >= 0) {
+            const Matrix4f scale = Matrix4f::Scaling(0.3, 0.3, 0.3);
+            const Matrix4f stationaryPoseMat = Matrix4f(frameIn.StationaryPose);
+            const Matrix4f m1 = stationaryPoseMat * scale;
+            GL(glUniformMatrix4fv(
+                Scene.AxesProgram.UniformLocation[ovrUniform::Index::MODEL_MATRIX],
+                1,
+                GL_TRUE,
+                &m1.M[0][0]));
+        }
+        Scene.Axes.BindVAO();
+        GL(glDrawElements(GL_LINES, Scene.Axes.IndexCount(), GL_UNSIGNED_SHORT, nullptr));
+        GL(glBindVertexArray(0));
+        GL(glUseProgram(0));
+    }
 
     // Render controllers, reusing axes shaders.
     for (int i = 0; i < 2; ++i) {

@@ -92,7 +92,7 @@ OVRFW::GlGeometry::Descriptor GeometryBuilder::ToGeometryDescriptor(
     for (const auto& node : nodes_) {
         /// Matrices
         const OVR::Matrix4f t = rootTransform * node.transform;
-        const OVR::Matrix4f nt = t.Inverted().Transposed();
+        const OVR::Matrix3f nt = OVR::Matrix3f(t).Inverse().Transposed();
 
         /// Vertices
         for (size_t i = 0; i < node.geometry.attribs.position.size(); ++i) {

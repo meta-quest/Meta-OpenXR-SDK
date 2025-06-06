@@ -29,8 +29,6 @@ Authors     :   Federico Schliemann
 
 #include <vector>
 #include "OVR_Math.h"
-
-#include "GlProgram.h"
 #include "GlGeometry.h"
 
 namespace OVRFW {

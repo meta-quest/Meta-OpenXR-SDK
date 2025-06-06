@@ -40,6 +40,8 @@ Language    :   c++
 #include "FrameParams.h"
 #include "OVR_FileSys.h"
 
+#include "Render/Egl.h"
+
 #if defined(ANDROID)
 #include <android/window.h>
 #include <android/native_window_jni.h>
@@ -102,7 +104,6 @@ typedef void(GL_APIENTRY* PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEEXTPROC)(
 #include <openxr/openxr_platform.h>
 
 #include "Model/SceneView.h"
-#include "Render/Egl.h"
 #include "Render/Framebuffer.h"
 #include "Render/SurfaceRender.h"
 

@@ -1738,6 +1738,13 @@ void MakeTextureClamped(GlTexture texId) {
     glBindTexture(texId.target, 0);
 }
 
+void MakeTextureRepeat(GlTexture texid) {
+    glBindTexture(texid.target, texid.texture);
+    glTexParameteri(texid.target, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(texid.target, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glBindTexture(texid.target, 0);
+}
+
 void MakeTextureLodClamped(GlTexture texId, int maxLod) {
     glBindTexture(texId.target, texId.texture);
     glTexParameteri(texId.target, GL_TEXTURE_MAX_LEVEL, maxLod);

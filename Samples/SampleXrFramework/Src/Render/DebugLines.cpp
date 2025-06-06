@@ -26,14 +26,11 @@ Authors     :   Jonathan E. Wright
 *************************************************************************************/
 
 #include "DebugLines.h"
-
-#include <stdlib.h>
-
-#include "Egl.h"
 #include "Misc/Log.h"
-
 #include "GlGeometry.h"
 #include "GlProgram.h"
+
+#include <cstdlib>
 
 using OVR::Bounds3f;
 using OVR::Matrix4f;
@@ -172,9 +169,9 @@ void OvrDebugLinesLocal::Init(float lineWidth) {
     for (int i = 0; i < 2; i++) {
         DebugLines_t& dl = i == 0 ? NonDepthTested : DepthTested;
         dl.Surf.geo.Create(dl.Attr, indices);
-        dl.Surf.geo.primitiveType = GL_LINES;
+        dl.Surf.geo.primitiveType = GlGeometry::kPrimitiveTypeLines;
         ovrGraphicsCommand& gc = dl.Surf.graphicsCommand;
-        gc.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
+        gc.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
         gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = i == 1;
         gc.GpuState.lineWidth = lineWidth;
         gc.Program = LineProgram;
