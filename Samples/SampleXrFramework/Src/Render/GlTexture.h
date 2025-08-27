@@ -184,6 +184,7 @@ void MakeTextureLodClamped(GlTexture texId, int maxLod);
 void MakeTextureTrilinear(GlTexture texid);
 void MakeTextureLinear(GlTexture texId);
 void MakeTextureLinearNearest(GlTexture texId);
+void MakeTextureNearest(GlTexture texId);
 void MakeTextureAniso(GlTexture texId, float maxAniso);
 void BuildTextureMipmaps(GlTexture texid);
 

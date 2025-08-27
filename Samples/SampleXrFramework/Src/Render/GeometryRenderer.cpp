@@ -139,7 +139,7 @@ void GeometryRenderer::Init(const GlGeometry::Descriptor& d) {
         {"AmbientLightColor", ovrProgramParmType::FLOAT_VECTOR3},
     };
 
-    std::string programDefs = "";
+    std::string programDefs;
 
     /// Do we support vertex color in the goemetyr
     const bool hasVertexColors = (d.attribs.color.size() > 0);

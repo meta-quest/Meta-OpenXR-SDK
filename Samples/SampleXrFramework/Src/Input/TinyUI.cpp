@@ -129,7 +129,7 @@ class SimpleTargetMenu : public OVRFW::VRMenu {
         }
 
         /// Hijack params
-        for (auto* ip : itemParms) {
+        for (const auto* ip : itemParms) {
             // Find the one panel
             if ((int)ip->Id.Get() == 0) {
                 const_cast<OVRFW::VRMenuObjectParms*>(ip)->Text = text;
@@ -157,12 +157,12 @@ bool TinyUI::Init(
     UpdateColors = updateColors;
 
     /// Leftovers that aren't used
-    auto SoundEffectPlayer = new OvrGuiSys::ovrDummySoundEffectPlayer();
+    auto* SoundEffectPlayer = new OvrGuiSys::ovrDummySoundEffectPlayer();
     if (nullptr == SoundEffectPlayer) {
         ALOGE("Couldn't create SoundEffectPlayer");
         return false;
     }
-    auto DebugLines = OvrDebugLines::Create();
+    auto* DebugLines = OvrDebugLines::Create();
     if (nullptr == DebugLines) {
         ALOGE("Couldn't create DebugLines");
         return false;
@@ -300,6 +300,7 @@ OVRFW::VRMenuObject* TinyUI::CreateMenu(
     std::stringstream ss;
     ss << std::setprecision(4) << std::fixed;
     ss << "tinyui_menu_" << menuIndex << "_";
+    ss << labelText;
     std::string menuName = ss.str();
     VRMenu* m = SimpleTargetMenu::Create(*GuiSys, *Locale, menuName, labelText);
     if (m != nullptr) {
@@ -314,6 +315,7 @@ OVRFW::VRMenuObject* TinyUI::CreateMenu(
             mo = menuMgr.ToObject(mo->GetChildHandleForIndex(0));
             mo->SetSurfaceDims(0, size);
             mo->RegenerateSurfaceGeometry(0, false);
+            mo->GetSurface(0).SetName(menuName);
             /// remember everything
             AllElements.push_back(mo);
             Menus[mo] = m;
@@ -335,7 +337,7 @@ OVRFW::VRMenuObject* TinyUI::AddButton(
     const OVR::Vector3f& position,
     const OVR::Vector2f& size,
     const std::function<void(void)>& handler) {
-    auto b = CreateMenu(label, position, size);
+    auto* b = CreateMenu(label, position, size);
     if (b && handler) {
         ButtonHandlers[b] = handler;
     }
@@ -349,7 +351,7 @@ OVRFW::VRMenuObject* TinyUI::AddToggleButton(
     const OVR::Vector3f& position,
     const OVR::Vector2f& size,
     const std::function<void(void)>& postHandler) {
-    auto b = CreateMenu("", position, size);
+    auto* b = CreateMenu("", position, size);
     const std::function<void(void)>& handler = [=]() {
         if (b) {
             *value = !(*value);
@@ -372,7 +374,7 @@ OVRFW::VRMenuObject* TinyUI::AddMultiStateToggleButton(
     const OVR::Vector3f& position,
     const OVR::Vector2f& size,
     const std::function<void(void)>& postHandler) {
-    auto b = CreateMenu("", position, size);
+    auto* b = CreateMenu("", position, size);
     const std::function<void(void)>& handler = [=]() {
         if (b) {
             *value = *value + 1;

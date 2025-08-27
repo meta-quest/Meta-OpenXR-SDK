@@ -50,7 +50,7 @@ namespace OVRFW {
 template <typename Type>
 bool EnumForName(ovrEnumInfo const* enumInfos, char const* const name, Type& out) {
     int enumMax = INT_MIN;
-    for (int i = 0; enumInfos[i].Name != NULL; ++i) {
+    for (int i = 0; enumInfos[i].Name != nullptr; ++i) {
         if (OVR::OVR_strcmp(enumInfos[i].Name, name) == 0) {
             out = static_cast<Type>(enumInfos[i].Value);
             return true;

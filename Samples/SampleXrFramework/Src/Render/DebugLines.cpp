@@ -43,12 +43,12 @@ using OVR::Vector4f;
 namespace OVRFW {
 
 static const char* DebugLineVertexSrc = R"glsl(
-	attribute highp vec4 Position;
+	attribute highp vec3 Position;
 	attribute lowp vec4 VertexColor;
 	varying lowp vec4 outColor;
 	void main()
 	{
-	   gl_Position = TransformVertex( Position );
+	   gl_Position = TransformVertex( vec4(Position.xyz, 1.0) );
 	   outColor = VertexColor;
 	}
 )glsl";
@@ -161,10 +161,14 @@ void OvrDebugLinesLocal::Init(float lineWidth) {
     const int MAX_INDICES = MAX_DEBUG_LINES * 2;
     std::vector<LineIndex_t> indices;
     indices.reserve(MAX_INDICES);
-
     for (LineIndex_t i = 0; i < MAX_INDICES; ++i) {
         indices.push_back(i);
     }
+    // Dummy content for VB intialization
+    NonDepthTested.Attr.position.resize(MAX_INDICES, OVR::Vector3f{0.0f, 0.0f, 0.0f});
+    DepthTested.Attr.position.resize(MAX_INDICES, OVR::Vector3f{0.0f, 0.0f, 0.0f});
+    NonDepthTested.Attr.color.resize(MAX_INDICES, OVR::Vector4f{0.0f, 0.0f, 0.0f, 0.0f});
+    DepthTested.Attr.color.resize(MAX_INDICES, OVR::Vector4f{0.0f, 0.0f, 0.0f, 0.0f});
 
     for (int i = 0; i < 2; i++) {
         DebugLines_t& dl = i == 0 ? NonDepthTested : DepthTested;

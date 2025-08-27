@@ -46,11 +46,9 @@ const char* VertexShaderSrc = R"glsl(
   } jb;
   attribute highp vec4 Position;
   attribute highp vec3 Normal;
-  attribute highp vec3 Tangent;
-  attribute highp vec3 Binormal;
   attribute highp vec2 TexCoord;
-  attribute highp vec4 JointWeights;
   attribute highp vec4 JointIndices;
+  attribute highp vec4 JointWeights;
 
   varying lowp vec3 oEye;
   varying lowp vec3 oNormal;
@@ -251,7 +249,6 @@ bool HandRenderer::Init(const XrHandTrackingMeshFB* mesh, bool leftHand) {
     gc.UniformData[1].Data = &SpecularLightDirection;
     gc.UniformData[2].Data = &SpecularLightColor;
     gc.UniformData[3].Data = &AmbientLightColor;
-    gc.UniformData[4].Count = MAX_JOINTS;
     gc.UniformData[4].Data = &SkinUniformBuffer;
     gc.UniformData[5].Data = &GlowColor;
     gc.UniformData[6].Data = &Confidence;

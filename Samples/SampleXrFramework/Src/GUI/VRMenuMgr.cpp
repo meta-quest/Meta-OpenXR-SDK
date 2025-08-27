@@ -54,16 +54,16 @@ uniform lowp vec4 UniformColor;
 uniform lowp vec4 UniformFadeDirection;
 uniform lowp vec2 UniformUVOffset;
 
-attribute vec4 Position;
-attribute vec2 TexCoord;
+attribute vec3 Position;
 attribute vec4 VertexColor;
+attribute vec2 TexCoord;
 
 varying highp vec2 oTexCoord;
 varying lowp vec4 oColor;
 
 void main()
 {
-    gl_Position = TransformVertex( Position );
+    gl_Position = TransformVertex( vec4(Position.xyz, 1.0) );
     oTexCoord = vec2( TexCoord.x + UniformUVOffset.x, TexCoord.y + UniformUVOffset.y );
     oColor = UniformColor * VertexColor;
 	// Fade out vertices if direction is positive
@@ -139,10 +139,10 @@ static const char* GUIDiffuseColorRampTargetVertexShaderSrc = R"glsl(
 uniform lowp vec4 UniformColor;
 uniform lowp vec4 UniformFadeDirection;
 
-attribute vec4 Position;
+attribute vec3 Position;
+attribute vec4 VertexColor;
 attribute vec2 TexCoord;
 attribute vec2 TexCoord1;
-attribute vec4 VertexColor;
 
 varying highp vec2 oTexCoord;
 varying highp vec2 oTexCoord1;
@@ -150,7 +150,7 @@ varying lowp vec4 oColor;
 
 void main()
 {
-    gl_Position = TransformVertex( Position );
+    gl_Position = TransformVertex( vec4(Position.xyz, 1.0) );
     oTexCoord = TexCoord;
     oTexCoord1 = TexCoord1;
     oColor = UniformColor * VertexColor;
@@ -188,11 +188,10 @@ static const char* GUITwoTextureColorModulatedShaderSrc = R"glsl(
 uniform lowp vec4 UniformColor;
 uniform lowp vec4 UniformFadeDirection;
 
-attribute vec4 Position;
+attribute vec3 Position;
+attribute vec4 VertexColor;
 attribute vec2 TexCoord;
 attribute vec2 TexCoord1;
-attribute vec4 VertexColor;
-attribute vec4 Parms;
 
 varying highp vec2 oTexCoord;
 varying highp vec2 oTexCoord1;
@@ -200,7 +199,7 @@ varying lowp vec4 oColor;
 
 void main()
 {
-    gl_Position = TransformVertex( Position );
+    gl_Position = TransformVertex( vec4(Position.xyz, 1.0) );
     oTexCoord = TexCoord;
     oTexCoord1 = TexCoord1;
     oColor = UniformColor * VertexColor;
@@ -689,10 +688,11 @@ menuHandle_t VRMenuMgrLocal::CreateObject(VRMenuObjectParms const& parms) {
     // ALOG( "VRMenuMgrLocal::CreateObject - handle is %llu", handle.Get() );
 
     VRMenuObject* obj = new VRMenuObject(parms, handle);
-    if (obj == NULL) {
+    if (obj == nullptr) {
         ALOGW("VRMenuMgrLocal::CreateObject - failed to allocate menu object!");
         assert(
-            obj != NULL); // this would be bad -- but we're likely just going to explode elsewhere
+            obj !=
+            nullptr); // this would be bad -- but we're likely just going to explode elsewhere
         return menuHandle_t();
     }
 
@@ -703,7 +703,7 @@ menuHandle_t VRMenuMgrLocal::CreateObject(VRMenuObjectParms const& parms) {
         ObjectList.push_back(obj);
     } else {
         // insert in existing slot
-        assert(ObjectList[index] == NULL);
+        assert(ObjectList[index] == nullptr);
         ObjectList[index] = obj;
     }
 
@@ -721,7 +721,7 @@ void VRMenuMgrLocal::FreeObject(menuHandle_t const handle) {
     if (!HandleComponentsAreValid(index, id)) {
         return;
     }
-    if (ObjectList[index] == NULL) {
+    if (ObjectList[index] == nullptr) {
         // already freed
         return;
     }
@@ -730,7 +730,7 @@ void VRMenuMgrLocal::FreeObject(menuHandle_t const handle) {
     // remove this object from its parent's child list
     if (obj->GetParentHandle().IsValid()) {
         VRMenuObject* parentObj = ToObject(obj->GetParentHandle());
-        if (parentObj != NULL) {
+        if (parentObj != nullptr) {
             parentObj->RemoveChild(*this, handle);
         }
     }
@@ -741,7 +741,7 @@ void VRMenuMgrLocal::FreeObject(menuHandle_t const handle) {
     delete obj;
 
     // empty the slot
-    ObjectList[index] = NULL;
+    ObjectList[index] = nullptr;
     // add the index to the free list
     FreeList.push_back(index);
 
@@ -791,27 +791,27 @@ VRMenuObject* VRMenuMgrLocal::ToObject(menuHandle_t const handle) const {
     std::uint32_t id;
     DecomposeHandle(handle, index, id);
     if (id == INVALID_MENU_OBJECT_ID) {
-        return NULL;
+        return nullptr;
     }
     if (!HandleComponentsAreValid(index, id)) {
         ALOGW("VRMenuMgrLocal::ToObject - invalid handle.");
-        return NULL;
+        return nullptr;
     }
     if (index >= static_cast<int>(ObjectList.size())) {
         ALOGW("VRMenuMgrLocal::ToObject - index out of range.");
-        return NULL;
+        return nullptr;
     }
     VRMenuObject* object = ObjectList[index];
-    if (object == NULL) {
+    if (object == nullptr) {
         ALOGW("VRMenuMgrLocal::ToObject - slot empty.");
-        return NULL; // this can happen if someone is holding onto the handle of an object that's
-                     // been freed
+        return nullptr; // this can happen if someone is holding onto the handle of an object that's
+                        // been freed
     }
     if (object->GetHandle() != handle) {
         // if the handle of the object in the slot does not match, then the object the handle refers
         // to was deleted and a new object is in the slot
         ALOGW("VRMenuMgrLocal::ToObject - slot mismatch.");
-        return NULL;
+        return nullptr;
     }
     return object;
 }
@@ -877,7 +877,7 @@ void VRMenuMgrLocal::SubmitForRenderingRecursive(
         scale,
         curColor);
 
-    assert(obj != NULL);
+    assert(obj != nullptr);
 
     cullBounds = obj->GetLocalBounds(guiSys.GetDefaultFont()) * parentScale;
 
@@ -1083,7 +1083,7 @@ void VRMenuMgrLocal::SubmitForRenderingRecursive(
         for (int i = 0; i < static_cast<int>(obj->Children.size()); ++i) {
             menuHandle_t childHandle = obj->Children[i];
             VRMenuObject const* child = static_cast<VRMenuObject const*>(ToObject(childHandle));
-            if (child == NULL) {
+            if (child == nullptr) {
                 continue;
             }
 
@@ -1114,7 +1114,7 @@ void VRMenuMgrLocal::SubmitForRenderingRecursive(
     // VRMenuId_t debugId( 297 );
     if (ShowCollision) {
         OvrCollisionPrimitive const* cp = obj->GetCollisionPrimitive();
-        if (cp != NULL) {
+        if (cp != nullptr) {
             cp->DebugRender(guiSys.GetDebugLines(), curModelPose, scale, ShowDebugNormals);
         }
         // if ( obj->GetId() == debugId )
@@ -1199,7 +1199,7 @@ void VRMenuMgrLocal::SubmitForRendering(
         return;
     }
     VRMenuObject* obj = static_cast<VRMenuObject*>(ToObject(handle));
-    if (obj == NULL) {
+    if (obj == nullptr) {
         return;
     }
 
@@ -1275,7 +1275,7 @@ void VRMenuMgrLocal::AppendSurfaceList(
         SubmittedMenuObject const& cur = Submitted[idx];
 
         VRMenuObject* obj = static_cast<VRMenuObject*>(ToObject(cur.Handle));
-        if (obj != NULL) {
+        if (obj != nullptr) {
             Vector3f translation(
                 cur.Pose.Translation.x + cur.Offsets.x,
                 cur.Pose.Translation.y + cur.Offsets.y,
@@ -1327,7 +1327,7 @@ void VRMenuMgrLocal::AppendSurfaceList(
         }
     }
 
-    glDisable(GL_POLYGON_OFFSET_FILL);
+    // glDisable(GL_POLYGON_OFFSET_FILL);
 
     if (ShowStats) {
         ALOG("VRMenuMgr: submitted %i surfaces", NumToRender);
@@ -1358,7 +1358,7 @@ GlProgram const* VRMenuMgrLocal::GetGUIGlProgram(eGUIProgramType const programTy
             /// assert_WITH_TAG( !"Invalid gui program type", "VrMenu" );
             break;
     }
-    return NULL;
+    return nullptr;
 }
 
 //==============================
@@ -1405,10 +1405,10 @@ OvrVRMenuMgr* OvrVRMenuMgr::Create(OvrGuiSys& guiSys) {
 //==============================
 // OvrVRMenuMgr::Free
 void OvrVRMenuMgr::Destroy(OvrVRMenuMgr*& mgr) {
-    if (mgr != NULL) {
+    if (mgr != nullptr) {
         mgr->Shutdown();
         delete mgr;
-        mgr = NULL;
+        mgr = nullptr;
     }
 }
 

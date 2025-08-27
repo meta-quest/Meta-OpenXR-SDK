@@ -47,9 +47,9 @@ void ovrFramebuffer_Clear(ovrFramebuffer* frameBuffer) {
     frameBuffer->ColorSwapChain.Handle = XR_NULL_HANDLE;
     frameBuffer->ColorSwapChain.Width = 0;
     frameBuffer->ColorSwapChain.Height = 0;
-    frameBuffer->ColorSwapChainImage = NULL;
-    frameBuffer->DepthBuffers = NULL;
-    frameBuffer->FrameBuffers = NULL;
+    frameBuffer->ColorSwapChainImage = nullptr;
+    frameBuffer->DepthBuffers = nullptr;
+    frameBuffer->FrameBuffers = nullptr;
 }
 
 bool ovrFramebuffer_Create(
@@ -75,7 +75,7 @@ bool ovrFramebuffer_Create(
     // Get the number of supported formats.
     uint32_t numInputFormats = 0;
     uint32_t numOutputFormats = 0;
-    OXR(xrEnumerateSwapchainFormats(session, numInputFormats, &numOutputFormats, NULL));
+    OXR(xrEnumerateSwapchainFormats(session, numInputFormats, &numOutputFormats, nullptr));
 
     // Allocate an array large enough to contain the supported formats.
     numInputFormats = numOutputFormats;
@@ -115,7 +115,7 @@ bool ovrFramebuffer_Create(
     OXR(xrCreateSwapchain(session, &swapChainCreateInfo, &frameBuffer->ColorSwapChain.Handle));
     // Get the number of swapchain images.
     OXR(xrEnumerateSwapchainImages(
-        frameBuffer->ColorSwapChain.Handle, 0, &frameBuffer->TextureSwapChainLength, NULL));
+        frameBuffer->ColorSwapChain.Handle, 0, &frameBuffer->TextureSwapChainLength, nullptr));
     // Allocate the swapchain images array.
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
     frameBuffer->ColorSwapChainImage = (XrSwapchainImageOpenGLESKHR*)malloc(
@@ -158,8 +158,8 @@ bool ovrFramebuffer_Create(
         GL(glTexParameteri(colorTextureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
         GL(glBindTexture(colorTextureTarget, 0));
 
-        if (multisamples > 1 && glRenderbufferStorageMultisampleEXT != NULL &&
-            glFramebufferTexture2DMultisampleEXT != NULL) {
+        if (multisamples > 1 && glRenderbufferStorageMultisampleEXT != nullptr &&
+            glFramebufferTexture2DMultisampleEXT != nullptr) {
             // Create multisampled depth buffer.
             GL(glGenRenderbuffers(1, &frameBuffer->DepthBuffers[i]));
             GL(glBindRenderbuffer(GL_RENDERBUFFER, frameBuffer->DepthBuffers[i]));

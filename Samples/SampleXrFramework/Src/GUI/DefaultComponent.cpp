@@ -127,7 +127,7 @@ eMsgStatus OvrDefaultComponent::Frame(
     if (!NoHilight) {
         if (UseSurfaceAnimator) {
             OvrSurfaceAnimComponent* sac = self->GetComponentById<OvrSurfaceAnimComponent>();
-            if (sac != NULL) {
+            if (sac != nullptr) {
                 sac->SetFrame(self, hilightAlpha >= 0.5f ? 1 : 0);
             }
         } else {

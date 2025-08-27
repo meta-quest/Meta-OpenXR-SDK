@@ -46,6 +46,20 @@ struct VertexAttribs {
 
 typedef uint16_t TriangleIndex;
 
+// Font specific vertex
+
+struct fontVertex_t {
+    fontVertex_t() : xyz(0.0f), s(0.0f), t(0.0f), rgba(), fontParms() {}
+
+    OVR::Vector3f xyz;
+    float s;
+    float t;
+    std::uint8_t rgba[4];
+    std::uint8_t fontParms[4];
+};
+
+typedef TriangleIndex fontIndex_t;
+
 class GlGeometry {
    public:
     static constexpr uint32_t kPrimitiveTypePoints = 0x0000; /* GL_POINTS */
@@ -99,13 +113,26 @@ class GlGeometry {
 
     class TransformScope {
        public:
-        TransformScope(const OVR::Matrix4f m, bool enableTransfom = true);
-        ~TransformScope();
+        explicit TransformScope(const OVR::Matrix4f m, bool enableTransfom = true) {
+            // store old
+            wasEnabled_ = enableGeometryTransfom;
+            previousTransform_ = geometryTransfom;
+            // set new
+            enableGeometryTransfom = enableTransfom;
+            geometryTransfom = m;
+        }
+        ~TransformScope() {
+            // restore
+            enableGeometryTransfom = wasEnabled_;
+            geometryTransfom = previousTransform_;
+        }
 
        private:
-        OVR::Matrix4f previousTransform;
-        bool wasEnabled;
+        OVR::Matrix4f previousTransform_;
+        bool wasEnabled_;
     };
+    static bool enableGeometryTransfom;
+    static OVR::Matrix4f geometryTransfom;
 
     struct Descriptor {
         Descriptor(
@@ -129,6 +156,9 @@ class GlGeometry {
     int32_t indexCount;
     OVR::Bounds3f localBounds;
 };
+
+GlGeometry FontGeometryCreate(fontVertex_t* verts, int numVerts, OVR::Bounds3f& localBounds);
+void FontGeometryUpdate(GlGeometry& geo, fontVertex_t* verts, int numVerts, int numIndices);
 
 // Build it in a -1 to 1 range, which will be scaled to the appropriate
 // aspect ratio for each usage.

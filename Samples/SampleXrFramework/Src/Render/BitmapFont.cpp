@@ -44,8 +44,6 @@ Authors     :   Jonathan E. Wright
 #include "OVR_Math.h"
 
 #include "Misc/Log.h"
-
-#include "Egl.h"
 #include "GlProgram.h"
 #include "GlTexture.h"
 #include "GlGeometry.h"
@@ -226,13 +224,13 @@ static char const* SDFFontFragmentShaderSrc = R"glsl(
 	{
 	    mediump float distance = texture2D( Texture0, oTexCoord ).r;
 	    mediump float ds = oFontParms.z * 255.0;
-		 mediump float dd = fwidth( oTexCoord.x ) * oFontParms.w * 10.0 * ds;
+		mediump float dd = fwidth( oTexCoord.x ) * oFontParms.w * 10.0 * ds;
 	    mediump float ALPHA_MIN = oFontParms.x - dd;
 	    mediump float ALPHA_MAX = oFontParms.x + dd;
 	    mediump float COLOR_MIN = oFontParms.y - dd;
 	    mediump float COLOR_MAX = oFontParms.y + dd;
-		 gl_FragColor.xyz = ( oColor * ( clamp( distance, COLOR_MIN, COLOR_MAX ) - COLOR_MIN ) / ( COLOR_MAX - COLOR_MIN ) ).xyz;
-		 gl_FragColor.w = oColor.w * ( clamp( distance, ALPHA_MIN, ALPHA_MAX ) - ALPHA_MIN ) / ( ALPHA_MAX - ALPHA_MIN );
+		gl_FragColor.xyz = ( oColor * ( clamp( distance, COLOR_MIN, COLOR_MAX ) - COLOR_MIN ) / ( COLOR_MAX - COLOR_MIN ) ).xyz;
+		gl_FragColor.w = oColor.w * ( clamp( distance, ALPHA_MIN, ALPHA_MAX ) - ALPHA_MIN ) / ( ALPHA_MAX - ALPHA_MIN );
 	}
 )glsl";
 
@@ -448,18 +446,6 @@ static BitmapFontLocal const& AsLocal(BitmapFont const& font) {
     return *static_cast<BitmapFontLocal const*>(&font);
 }
 
-struct fontVertex_t {
-    fontVertex_t() : xyz(0.0f), s(0.0f), t(0.0f), rgba(), fontParms() {}
-
-    Vector3f xyz;
-    float s;
-    float t;
-    std::uint8_t rgba[4];
-    std::uint8_t fontParms[4];
-};
-
-typedef unsigned short fontIndex_t;
-
 //==============================
 // ftoi
 #if defined(OVR_CPU_X86_64)
@@ -640,84 +626,6 @@ class VertexBlockType {
     bool Billboard; // true to always face the camera
     bool TrackRoll; // if true, when billboarded, roll with the camera
 };
-
-// Sets up VB and VAO for font drawing
-GlGeometry FontGeometry(int maxQuads, Bounds3f& localBounds) {
-    GlGeometry Geo;
-
-    Geo.indexCount = maxQuads * 6;
-    Geo.vertexCount = maxQuads * 4;
-
-    Geo.localBounds = localBounds;
-
-    // font VAO
-    glGenVertexArrays(1, &Geo.vertexArrayObject);
-    glBindVertexArray(Geo.vertexArrayObject);
-
-    // vertex buffer
-    const int vertexByteCount = Geo.vertexCount * sizeof(fontVertex_t);
-    glGenBuffers(1, &Geo.vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, Geo.vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vertexByteCount, NULL, GL_DYNAMIC_DRAW);
-
-    glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_POSITION); // x, y and z
-    glVertexAttribPointer(
-        VERTEX_ATTRIBUTE_LOCATION_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(fontVertex_t), (void*)0);
-
-    glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_UV0); // s and t
-    glVertexAttribPointer(
-        VERTEX_ATTRIBUTE_LOCATION_UV0,
-        2,
-        GL_FLOAT,
-        GL_FALSE,
-        sizeof(fontVertex_t),
-        (void*)offsetof(fontVertex_t, s));
-
-    glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_COLOR); // color
-    glVertexAttribPointer(
-        VERTEX_ATTRIBUTE_LOCATION_COLOR,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(fontVertex_t),
-        (void*)offsetof(fontVertex_t, rgba));
-
-    glDisableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_UV1);
-
-    glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_FONT_PARMS); // outline parms
-    glVertexAttribPointer(
-        VERTEX_ATTRIBUTE_LOCATION_FONT_PARMS,
-        4,
-        GL_UNSIGNED_BYTE,
-        GL_TRUE,
-        sizeof(fontVertex_t),
-        (void*)offsetof(fontVertex_t, fontParms));
-
-    fontIndex_t* indices = new fontIndex_t[Geo.indexCount];
-    const int indexByteCount = Geo.indexCount * sizeof(fontIndex_t);
-
-    // indices never change
-    fontIndex_t v = 0;
-    for (int i = 0; i < maxQuads; i++) {
-        indices[i * 6 + 0] = v + 2;
-        indices[i * 6 + 1] = v + 1;
-        indices[i * 6 + 2] = v + 0;
-        indices[i * 6 + 3] = v + 3;
-        indices[i * 6 + 4] = v + 2;
-        indices[i * 6 + 5] = v + 0;
-        v += 4;
-    }
-
-    glGenBuffers(1, &Geo.indexBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Geo.indexBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexByteCount, (void*)indices, GL_STATIC_DRAW);
-
-    glBindVertexArray(0);
-
-    delete[] indices;
-
-    return Geo;
-}
 
 struct ovrFormat {
     ovrFormat(uint32_t const color) : Color(color), Weight(0xffffffff), LastWeight(0xffffffff) {}
@@ -1027,12 +935,7 @@ ovrSurfaceDef BitmapFontLocal::TextSurface(
     }
 
     ovrSurfaceDef s;
-    s.geo = FontGeometry(vb.NumVerts / 4, blockBounds);
-
-    glBindVertexArray(s.geo.vertexArrayObject);
-    glBindBuffer(GL_ARRAY_BUFFER, s.geo.vertexBuffer);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vb.NumVerts * sizeof(fontVertex_t), (void*)vb.Verts);
-    glBindVertexArray(0);
+    s.geo = FontGeometryCreate(vb.Verts, vb.NumVerts, blockBounds);
 
     vb.Free();
 
@@ -1040,12 +943,11 @@ ovrSurfaceDef BitmapFontLocal::TextSurface(
 
     // Special blend mode to also work over underlay layers
     s.graphicsCommand.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE_SEPARATE;
-    s.graphicsCommand.GpuState.blendSrc = GL_SRC_ALPHA;
-    s.graphicsCommand.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
-    s.graphicsCommand.GpuState.blendSrcAlpha = GL_ONE;
-    s.graphicsCommand.GpuState.blendDstAlpha = GL_ONE_MINUS_SRC_ALPHA;
+    s.graphicsCommand.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    s.graphicsCommand.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
+    s.graphicsCommand.GpuState.blendSrcAlpha = ovrGpuState::kGL_ONE;
+    s.graphicsCommand.GpuState.blendDstAlpha = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     s.graphicsCommand.GpuState.depthMaskEnable = false;
-
     s.graphicsCommand.Program = FontProgram;
     s.graphicsCommand.UniformData[0].Data = (void*)&FontTexture;
 
@@ -1633,13 +1535,9 @@ bool BitmapFontLocal::LoadImageFromBuffer(
         return false;
     }
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, FontTexture.texture);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // Texture filtering and wrap - linear/clamped to edge
+    MakeTextureClamped(FontTexture);
+    MakeTextureLinear(FontTexture);
 
     ALOG("BitmapFontLocal::LoadImageFromBuffer: success");
     return true;
@@ -2186,25 +2084,15 @@ void BitmapFontSurfaceLocal::Init(const int maxVertices) {
     CurIndex = 0;
 
     Bounds3f localBounds(Bounds3f::Init);
-    FontSurfaceDef.geo = FontGeometry(MaxVertices / 4, localBounds);
+    FontSurfaceDef.geo = FontGeometryCreate(Vertices, MaxVertices, localBounds);
     FontSurfaceDef.geo.indexCount = 0; // if there's anything to render this will be modified
-
     FontSurfaceDef.surfaceName = "font";
 
     // FontSurfaceDef.graphicsCommand.GpuState.blendMode = GL_FUNC_ADD;
-    FontSurfaceDef.graphicsCommand.GpuState.blendSrc = GL_SRC_ALPHA;
-    FontSurfaceDef.graphicsCommand.GpuState.blendDst = GL_ONE_MINUS_SRC_ALPHA;
-
-#if 0
-	FontSurfaceDef.graphicsCommand.GpuState.blendSrcAlpha = GL_ONE;
-	FontSurfaceDef.graphicsCommand.GpuState.blendDstAlpha = GL_ONE_MINUS_SRC_ALPHA;
-	FontSurfaceDef.graphicsCommand.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE_SEPARATE;
-#else
+    FontSurfaceDef.graphicsCommand.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    FontSurfaceDef.graphicsCommand.GpuState.blendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     FontSurfaceDef.graphicsCommand.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
-#endif
-
-    FontSurfaceDef.graphicsCommand.GpuState.frontFace = GL_CCW;
-
+    FontSurfaceDef.graphicsCommand.GpuState.frontFace = ovrGpuState::kGL_CCW;
     FontSurfaceDef.graphicsCommand.GpuState.depthEnable = true;
     FontSurfaceDef.graphicsCommand.GpuState.depthMaskEnable = false;
     FontSurfaceDef.graphicsCommand.GpuState.polygonOffsetEnable = false;
@@ -2413,11 +2301,8 @@ void BitmapFontSurfaceLocal::Finish(Matrix4f const& viewMatrix) {
     // needed on the next frame.
     VertexBlocks.clear();
 
-    glBindVertexArray(FontSurfaceDef.geo.vertexArrayObject);
-    glBindBuffer(GL_ARRAY_BUFFER, FontSurfaceDef.geo.vertexBuffer);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, CurVertex * sizeof(fontVertex_t), (void*)Vertices);
-    glBindVertexArray(0);
-    FontSurfaceDef.geo.indexCount = CurIndex;
+    // Update Geometry
+    FontGeometryUpdate(FontSurfaceDef.geo, Vertices, CurVertex, CurIndex);
 }
 
 //==============================

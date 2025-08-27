@@ -546,7 +546,7 @@ void XrApp::SuggestInteractionProfileBindings(
     // Best practice is for apps to suggest bindings for *ALL* interaction profiles
     // that the app supports. Loop over all interaction profiles we support and suggest
     // bindings:
-    for (auto& [interactionProfilePath, bindings] : allSuggestedBindings) {
+    for (const auto& [interactionProfilePath, bindings] : allSuggestedBindings) {
         XrInteractionProfileSuggestedBinding suggestedBindings = {
             XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
         suggestedBindings.interactionProfile = interactionProfilePath;
@@ -622,7 +622,7 @@ XrInstance XrApp::CreateInstance(const xrJava& context) {
     // Check that the extensions required are present.
     std::vector<const char*> extensions = GetExtensions();
     ALOGV("Required extension from app (num=%i): ", extensions.size());
-    for (auto extension : extensions) {
+    for (const auto* extension : extensions) {
         ALOGV("\t%s", extension);
     }
 

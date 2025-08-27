@@ -94,7 +94,7 @@ eMsgStatus OvrAnimComponent::Frame(
 //================================
 // OvrAnimComponent::SetFrame
 void OvrAnimComponent::SetFrame(VRMenuObject* self, int const frameNum) {
-    assert(self != NULL);
+    assert(self != nullptr);
     CurFrame = std::clamp<int>(frameNum, 0, GetNumFrames(self) - 1);
     // we must reset the base frame and the current time so that the frame calculation
     // remains correct if we're playing.  If we're not playing, this will cause the
@@ -148,7 +148,7 @@ eMsgStatus OvrAnimComponent::OnEvent_Impl(
 const char* OvrSurfaceAnimComponent::TYPE_NAME = "OvrSurfaceAnimComponent";
 
 OvrSurfaceAnimComponent* OvrSurfaceAnimComponent::Create(void* placementBuffer) {
-    if (placementBuffer != NULL) {
+    if (placementBuffer != nullptr) {
         return new (placementBuffer) OvrSurfaceAnimComponent;
     }
     return new OvrSurfaceAnimComponent();

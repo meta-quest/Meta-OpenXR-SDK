@@ -39,7 +39,7 @@ eMsgStatus VRMenuComponent::OnEvent(
     ovrApplFrameIn const& vrFrame,
     VRMenuObject* self,
     VRMenuEvent const& event) {
-    assert(self != NULL);
+    assert(self != nullptr);
 
     //-------------------
     // do any pre work that every event handler must do

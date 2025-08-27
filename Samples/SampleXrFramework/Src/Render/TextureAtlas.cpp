@@ -28,7 +28,6 @@ Authors     :   Jonathan E. Wright
 #include "TextureAtlas.h"
 
 #include "OVR_Std.h"
-#include "Render/Egl.h"
 
 using OVR::Bounds3f;
 using OVR::Matrix4f;
@@ -96,8 +95,6 @@ bool ovrTextureAtlas::BuildSpritesFromGrid(
 bool ovrTextureAtlas::Init(ovrFileSys& fileSys, const char* atlasTextureName) {
     std::vector<uint8_t> buffer;
     if (fileSys.ReadFile(atlasTextureName, buffer)) {
-        GLCheckErrorsWithTitle("Pre atlas texture load");
-
         AtlasTexture = LoadTextureFromBuffer(
             atlasTextureName,
             buffer.data(),
@@ -105,9 +102,6 @@ bool ovrTextureAtlas::Init(ovrFileSys& fileSys, const char* atlasTextureName) {
             TextureFlags_t(TEXTUREFLAG_NO_DEFAULT),
             TextureWidth,
             TextureHeight);
-
-        GLCheckErrorsWithTitle("Post atlas texture load");
-
         if (AtlasTexture == 0) {
             return false;
         }

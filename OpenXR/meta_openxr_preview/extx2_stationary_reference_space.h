@@ -52,7 +52,7 @@ typedef struct XrStationaryReferenceSpaceIdResultEXTX2 {
     XrUuid                generationId;
 } XrStationaryReferenceSpaceIdResultEXTX2;
 
-typedef XrResult (XRAPI_PTR *PFN_xrGetStationaryReferenceSpaceIdEXTX2)(XrSession  session, const XrStationaryReferenceSpaceIdGetInfoEXTX2* getInfo, XrStationaryReferenceSpaceIdResultEXTX2* result);
+typedef XrResult (XRAPI_PTR *PFN_xrGetStationaryReferenceSpaceIdEXTX2)(XrSession session, const XrStationaryReferenceSpaceIdGetInfoEXTX2* getInfo, XrStationaryReferenceSpaceIdResultEXTX2* result);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES

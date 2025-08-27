@@ -64,7 +64,7 @@ void VRMenuEventHandler::Frame(
     Matrix4f const& traceMat,
     std::vector<VRMenuEvent>& events) {
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(rootHandle);
-    if (root == NULL) {
+    if (root == nullptr) {
         return;
     }
 
@@ -86,7 +86,7 @@ void VRMenuEventHandler::Frame(
     result.RayStart = viewPos;
     result.RayDir = viewFwd;
 
-    VRMenuObject* hit = hitHandle.IsValid() ? guiSys.GetVRMenuMgr().ToObject(hitHandle) : NULL;
+    VRMenuObject* hit = hitHandle.IsValid() ? guiSys.GetVRMenuMgr().ToObject(hitHandle) : nullptr;
     /*
         if ( hit != NULL )
         {
@@ -97,7 +97,7 @@ void VRMenuEventHandler::Frame(
     if (focusChanged) {
         // focus changed
         VRMenuObject* oldFocus = guiSys.GetVRMenuMgr().ToObject(FocusedHandle);
-        if (oldFocus != NULL) {
+        if (oldFocus != nullptr) {
             // setup event for item losing the focus
             VRMenuEvent event(
                 VRMENU_EVENT_FOCUS_LOST,
@@ -108,7 +108,7 @@ void VRMenuEventHandler::Frame(
                 "");
             events.push_back(event);
         }
-        if (hit != NULL) {
+        if (hit != nullptr) {
             if ((hit->GetFlags() & VRMENUOBJECT_FLAG_NO_FOCUS_GAINED) == 0) {
                 // set up event for item gaining the focus
                 VRMenuEvent event(
@@ -253,7 +253,7 @@ static void FindTargetPath(
     menuHandle_t const curHandle,
     std::vector<menuHandle_t>& targetPath) {
     VRMenuObject* obj = guiSys.GetVRMenuMgr().ToObject(curHandle);
-    if (obj != NULL) {
+    if (obj != nullptr) {
         FindTargetPath(guiSys, obj->GetParentHandle(), targetPath);
         targetPath.push_back(curHandle);
     }
@@ -280,7 +280,7 @@ void VRMenuEventHandler::HandleEvents(
     menuHandle_t const rootHandle,
     std::vector<VRMenuEvent> const& events) const {
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(rootHandle);
-    if (root == NULL) {
+    if (root == nullptr) {
         return;
     }
 
@@ -358,13 +358,13 @@ bool VRMenuEventHandler::DispatchToPath(
         char const* const indent =
             "                                                                ";
         // set to
-        if (obj != NULL && DispatchToComponents(guiSys, vrFrame, event, obj)) {
+        if (obj != nullptr && DispatchToComponents(guiSys, vrFrame, event, obj)) {
             if (log) {
                 ALOG(
                     "%sDispatchToPath: %s, object '%s' consumed event.",
                     &indent[64 - i * 2],
                     VRMenuEvent::EventTypeNames[event.EventType],
-                    (obj != NULL ? obj->GetText().c_str() : "<null>"));
+                    (obj != nullptr ? obj->GetText().c_str() : "<null>"));
             }
             return true; // consumed by a component
         }
@@ -373,7 +373,7 @@ bool VRMenuEventHandler::DispatchToPath(
                 "%sDispatchToPath: %s, object '%s' passed event.",
                 &indent[64 - i * 2],
                 VRMenuEvent::EventTypeNames[event.EventType],
-                obj != NULL ? obj->GetText().c_str() : "<null>");
+                obj != nullptr ? obj->GetText().c_str() : "<null>");
         }
     }
     return false;
@@ -398,7 +398,7 @@ bool VRMenuEventHandler::BroadcastEvent(
     for (int i = 0; i < numChildren; ++i) {
         menuHandle_t childHandle = receiver->GetChildHandleForIndex(i);
         VRMenuObject* child = guiSys.GetVRMenuMgr().ToObject(childHandle);
-        if (child != NULL && BroadcastEvent(guiSys, vrFrame, event, child)) {
+        if (child != nullptr && BroadcastEvent(guiSys, vrFrame, event, child)) {
             return true; // consumed by child
         }
     }

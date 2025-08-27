@@ -78,7 +78,7 @@ class SimpleBeamRenderer {
         }
 
         // Add UI pointers to render
-        for (auto& device : hitTestDevices) {
+        for (const auto& device : hitTestDevices) {
             constexpr float beamLength = 0.5f; // 0.5 meter beam length
             const OVR::Vector3f beamDir =
                 ((device.pointerEnd - device.pointerStart) * 0.5f).Normalized();

@@ -115,7 +115,7 @@ class SimpleCollisionRenderer {
         }
 
         // Add UI pointers to render
-        for (auto& device : hitTestDevices) {
+        for (const auto& device : hitTestDevices) {
             bool showBeam = beamlessDeviceIds_.count(device.deviceNum) == 0;
             if (showBeam) {
                 constexpr float beamLength = 0.5f; // 0.5 meter beam length

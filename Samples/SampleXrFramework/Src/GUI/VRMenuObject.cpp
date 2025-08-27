@@ -30,7 +30,6 @@ Authors     :   Jonathan E. Wright
 #include <algorithm>
 
 #include "Misc/Log.h"
-#include "Render/Egl.h"
 #include "Render/GlTexture.h"
 #include "Render/BitmapFont.h"
 #include "Render/TextureManager.h"
@@ -120,7 +119,7 @@ bool VRMenuSurfaceTexture::LoadTexture(
 
     Type = type;
 
-    if (imageName != NULL && imageName[0] != '\0') {
+    if (imageName != nullptr && imageName[0] != '\0') {
 #if defined(USE_TEXTURE_MANAGER)
         textureHandle_t const h =
             guiSys.GetTextureManager().LoadTexture(guiSys.GetFileSys(), imageName);
@@ -168,7 +167,7 @@ bool VRMenuSurfaceTexture::LoadTexture(
 // VRMenuSurfaceTexture::LoadTexture
 void VRMenuSurfaceTexture::LoadTexture(
     eSurfaceTextureType const type,
-    const GLuint texId,
+    const uint32_t texId,
     const int width,
     const int height) {
     Free();
@@ -432,7 +431,7 @@ void VRMenuSurface::BuildDrawSurface(
 
     ovrGraphicsCommand& gc = SurfaceDef.graphicsCommand;
 
-    GlProgram const* program = NULL;
+    GlProgram const* program = nullptr;
 
     eGUIProgramType pt = ProgramType;
     if (skipAdditivePass) {
@@ -442,8 +441,8 @@ void VRMenuSurface::BuildDrawSurface(
     }
 
     program = menuMgr.GetGUIGlProgram(pt);
-    if (program == NULL) {
-        assert(program != NULL);
+    if (program == nullptr) {
+        assert(program != nullptr);
         return;
     }
 
@@ -547,14 +546,17 @@ void VRMenuSurface::BuildDrawSurface(
             /// assert_WITH_TAG( !"Invalid gui program type", "VrMenu" );
             break;
     }
+    // ensure all textures are properly matched
+    gc.BindUniformTextures();
 
     // most programs use normal blending
     gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
     gc.GpuState.depthEnable = (flags & VRMENU_RENDER_NO_DEPTH) != 0 ? false : true;
     gc.GpuState.depthMaskEnable = (flags & VRMENU_RENDER_NO_DEPTH_MASK) != 0 ? false : true;
     gc.GpuState.polygonOffsetEnable = (flags & VRMENU_RENDER_POLYGON_OFFSET) != 0 ? true : false;
-    gc.GpuState.blendSrc = GL_SRC_ALPHA;
-    gc.GpuState.blendDst = pt == PROGRAM_ADDITIVE_ONLY ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA;
+    gc.GpuState.blendSrc = ovrGpuState::kGL_SRC_ALPHA;
+    gc.GpuState.blendDst =
+        pt == PROGRAM_ADDITIVE_ONLY ? ovrGpuState::kGL_ONE : ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     gc.GpuState.cullEnable = true;
 }
 
@@ -571,108 +573,70 @@ void VRMenuSurface::SetTextureSampling(eGUIProgramType const pt) {
                 1);
             /// assert_WITH_TAG( diffuseIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind the texture
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuseIndex].GetTexture().texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            MakeTextureClamped(Textures[diffuseIndex].GetTexture());
             break;
         }
         case PROGRAM_DIFFUSE_COMPOSITE: {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             int diffuseIndex = IndexForTextureType(SURFACE_TEXTURE_DIFFUSE, 1);
             /// assert_WITH_TAG( diffuseIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
             int diffuse2Index = IndexForTextureType(SURFACE_TEXTURE_DIFFUSE, 2);
             /// assert_WITH_TAG( diffuse2Index >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind both textures
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuseIndex].GetTexture().texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuse2Index].GetTexture().texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            MakeTextureClamped(Textures[diffuseIndex].GetTexture());
+            MakeTextureClamped(Textures[diffuse2Index].GetTexture());
             break;
         }
         case PROGRAM_ALPHA_DIFFUSE: {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             int alphaIndex = IndexForTextureType(SURFACE_TEXTURE_ALPHA_MASK, 1);
             /// assert_WITH_TAG( alphaIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
             int diffuseIndex = IndexForTextureType(SURFACE_TEXTURE_DIFFUSE, 1);
             /// assert_WITH_TAG( diffuseIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind both textures
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[alphaIndex].GetTexture().texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuseIndex].GetTexture().texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            MakeTextureClamped(Textures[alphaIndex].GetTexture());
+            MakeTextureClamped(Textures[diffuseIndex].GetTexture());
             break;
         }
         case PROGRAM_ADDITIVE_ONLY: {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
             int additiveIndex = IndexForTextureType(SURFACE_TEXTURE_ADDITIVE, 1);
             /// assert_WITH_TAG( additiveIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind the texture
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[additiveIndex].GetTexture().texture);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            MakeTextureClamped(Textures[additiveIndex].GetTexture());
             break;
         }
         case PROGRAM_DIFFUSE_PLUS_ADDITIVE: // has a diffuse and an additive
         {
-            // glBlendFunc( GL_ONE, GL_ONE );
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             int diffuseIndex = IndexForTextureType(SURFACE_TEXTURE_DIFFUSE, 1);
             /// assert_WITH_TAG( diffuseIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
             int additiveIndex = IndexForTextureType(SURFACE_TEXTURE_ADDITIVE, 1);
             /// assert_WITH_TAG( additiveIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind both textures
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuseIndex].GetTexture().texture);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, Textures[additiveIndex].GetTexture().texture);
+            MakeTextureClamped(Textures[diffuseIndex].GetTexture());
+            MakeTextureClamped(Textures[additiveIndex].GetTexture());
             break;
         }
         case PROGRAM_DIFFUSE_COLOR_RAMP: // has a diffuse and color ramp, and color ramp target is
                                          // the diffuse
         {
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             int diffuseIndex = IndexForTextureType(SURFACE_TEXTURE_DIFFUSE, 1);
             /// assert_WITH_TAG( diffuseIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
             int rampIndex = IndexForTextureType(SURFACE_TEXTURE_COLOR_RAMP, 1);
             /// assert_WITH_TAG( rampIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind both textures
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuseIndex].GetTexture().texture);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, Textures[rampIndex].GetTexture().texture);
-            // do not do any filtering on the "palette" texture
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            MakeTextureClamped(Textures[diffuseIndex].GetTexture());
+            MakeTextureClamped(Textures[rampIndex].GetTexture());
+            MakeTextureAniso(Textures[rampIndex].GetTexture(), 1.0f);
+            MakeTextureNearest(Textures[rampIndex].GetTexture());
             break;
         }
         case PROGRAM_DIFFUSE_COLOR_RAMP_TARGET: // has diffuse, color ramp, and a separate color
                                                 // ramp target
         {
             // ALOG( "Surface '%s' - PROGRAM_COLOR_RAMP_TARGET", SurfaceName );
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             int diffuseIndex = IndexForTextureType(SURFACE_TEXTURE_DIFFUSE, 1);
             /// assert_WITH_TAG( diffuseIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
@@ -682,19 +646,12 @@ void VRMenuSurface::SetTextureSampling(eGUIProgramType const pt) {
             int targetIndex = IndexForTextureType(SURFACE_TEXTURE_COLOR_RAMP_TARGET, 1);
             /// assert_WITH_TAG( targetIndex >= 0, "VrMenu" );	// surface setup should have
             /// detected this!
-            // bind both textures
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, Textures[diffuseIndex].GetTexture().texture);
-            glActiveTexture(GL_TEXTURE1);
-            glBindTexture(GL_TEXTURE_2D, Textures[targetIndex].GetTexture().texture);
-            glActiveTexture(GL_TEXTURE2);
-            glBindTexture(GL_TEXTURE_2D, Textures[rampIndex].GetTexture().texture);
-            // do not do any filtering on the "palette" texture
-            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 1.0f);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            MakeTextureClamped(Textures[diffuseIndex].GetTexture());
+            MakeTextureClamped(Textures[targetIndex].GetTexture());
+            MakeTextureClamped(Textures[rampIndex].GetTexture());
+            MakeTextureAniso(Textures[rampIndex].GetTexture(), 1.0f);
+            MakeTextureNearest(Textures[rampIndex].GetTexture());
             break;
         }
         case PROGRAM_MAX: {
@@ -928,7 +885,7 @@ void VRMenuSurface::LoadTexture(
 void VRMenuSurface::LoadTexture(
     int const textureIndex,
     eSurfaceTextureType const type,
-    const GLuint texId,
+    const uint32_t texId,
     const int width,
     const int height) {
     if (textureIndex < 0 || textureIndex >= VRMENUSURFACE_IMAGE_MAX) {
@@ -972,7 +929,7 @@ VRMenuObject::VRMenuObject(VRMenuObjectParms const& parms, menuHandle_t const ha
       TextLocalPose(parms.TextLocalPose),
       TextLocalScale(parms.TextLocalScale),
       Text(parms.Text),
-      CollisionPrimitive(NULL),
+      CollisionPrimitive(nullptr),
       Contents(parms.Contents),
       Color(parms.Color),
       TextColor(parms.TextColor),
@@ -1070,7 +1027,7 @@ bool VRMenuObject::IsDescendant(OvrVRMenuMgr& menuMgr, menuHandle_t const handle
 
     for (int i = 0; i < static_cast<int>(Children.size()); ++i) {
         VRMenuObject* child = menuMgr.ToObject(Children[i]);
-        if (child != NULL) {
+        if (child != nullptr) {
             bool r = child->IsDescendant(menuMgr, handle);
             if (r) {
                 return true;
@@ -1087,7 +1044,7 @@ void VRMenuObject::AddChild(OvrVRMenuMgr& menuMgr, menuHandle_t const handle) {
     Children.push_back(handle);
 
     VRMenuObject* child = menuMgr.ToObject(handle);
-    if (child != NULL) {
+    if (child != nullptr) {
         child->SetParentHandle(this->Handle);
     }
     // NOTE: bounds will be incorrect until submitted for rendering
@@ -1128,7 +1085,7 @@ void VRMenuObject::FreeChild(OvrVRMenuMgr& menuMgr, menuHandle_t const handle) {
 void VRMenuObject::Frame(OvrVRMenuMgr& menuMgr, Matrix4f const& viewMatrix) {
     for (int i = 0; i < static_cast<int>(Children.size()); ++i) {
         VRMenuObject* child = menuMgr.ToObject(Children[i]);
-        if (child != NULL) {
+        if (child != nullptr) {
             child->Frame(menuMgr, viewMatrix);
         }
     }
@@ -1194,7 +1151,7 @@ bool VRMenuObject::IntersectRay(
     Vector3f const scale = GetLocalScale() * parentScale;
 
     // test vs. collision primitive
-    if (CollisionPrimitive != NULL) {
+    if (CollisionPrimitive != nullptr) {
         CollisionPrimitive->IntersectRay(localStart, localDir, scale, testContents, result);
     }
 
@@ -1355,7 +1312,7 @@ bool VRMenuObject::HitTest_r(
     for (int i = 0; i < static_cast<int>(Children.size()); ++i) {
         VRMenuObject* child =
             static_cast<VRMenuObject*>(guiSys.GetVRMenuMgr().ToObject(Children[i]));
-        if (child != NULL) {
+        if (child != nullptr) {
             HitTestResult childResult;
             bool intersected = child->HitTest_r(
                 guiSys, modelPose, scale, rayStart, rayDir, testContents, childResult);
@@ -1392,7 +1349,7 @@ Bounds3f VRMenuObject::GetLocalBounds(BitmapFont const& font) const {
         bounds = Bounds3f::Union(bounds, surfaceBounds);
     }
 
-    if (CollisionPrimitive != NULL) {
+    if (CollisionPrimitive != nullptr) {
         bounds = Bounds3f::Union(bounds, CollisionPrimitive->GetBounds());
     }
 
@@ -1652,7 +1609,7 @@ Bounds3f VRMenuObject::CalcLocalBoundsForText(BitmapFont const& font, std::strin
 //==============================
 // VRMenuObject::AddComponent
 void VRMenuObject::AddComponent(VRMenuComponent* component) {
-    if (component == NULL) {
+    if (component == nullptr) {
         return; // this is fine... makes submitting VRMenuComponentParms easier.
     }
 
@@ -1716,7 +1673,7 @@ VRMenuComponent* VRMenuObject::GetComponentById_Impl(int const id, const char* n
     for (int c = 0; c < static_cast<int>(comps.size()); ++c) {
         if (VRMenuComponent* comp = comps[c]) {
             if (comp->GetTypeId() == id) {
-                if (name == NULL || !OVR::OVR_strcmp(comp->GetName(), name)) {
+                if (name == nullptr || !OVR::OVR_strcmp(comp->GetName(), name)) {
                     return comp;
                 }
             }
@@ -1725,7 +1682,7 @@ VRMenuComponent* VRMenuObject::GetComponentById_Impl(int const id, const char* n
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //==============================
@@ -1742,7 +1699,7 @@ VRMenuComponent* VRMenuObject::GetComponentByTypeName_Impl(const char* typeName)
         }
     }
 
-    return NULL;
+    return nullptr;
 }
 
 //==============================
@@ -1823,7 +1780,7 @@ menuHandle_t VRMenuObject::ChildHandleForId(OvrVRMenuMgr const& menuMgr, VRMenuI
 //==============================
 // VRMenuObject::ChildHandleForName
 menuHandle_t VRMenuObject::ChildHandleForName(OvrVRMenuMgr const& menuMgr, char const* name) const {
-    if (name == NULL || name[0] == '\0') {
+    if (name == nullptr || name[0] == '\0') {
         return menuHandle_t();
     }
 
@@ -1831,7 +1788,7 @@ menuHandle_t VRMenuObject::ChildHandleForName(OvrVRMenuMgr const& menuMgr, char 
     for (int i = 0; i < n; ++i) {
         VRMenuObject const* child =
             static_cast<VRMenuObject*>(menuMgr.ToObject(GetChildHandleForIndex(i)));
-        if (child != NULL) {
+        if (child != nullptr) {
             if (OVR::OVR_stricmp(child->GetName().c_str(), name) == 0) {
                 return child->GetHandle();
             } else {
@@ -1848,7 +1805,7 @@ menuHandle_t VRMenuObject::ChildHandleForName(OvrVRMenuMgr const& menuMgr, char 
 //==============================
 // VRMenuObject::ChildHandleForTag
 menuHandle_t VRMenuObject::ChildHandleForTag(OvrVRMenuMgr const& menuMgr, char const* tag) const {
-    if (tag == NULL || tag[0] == '\0') {
+    if (tag == nullptr || tag[0] == '\0') {
         return menuHandle_t();
     }
 
@@ -1856,7 +1813,7 @@ menuHandle_t VRMenuObject::ChildHandleForTag(OvrVRMenuMgr const& menuMgr, char c
     for (int i = 0; i < n; ++i) {
         VRMenuObject const* child =
             static_cast<VRMenuObject*>(menuMgr.ToObject(GetChildHandleForIndex(i)));
-        if (child != NULL) {
+        if (child != nullptr) {
             if (OVR::OVR_stricmp(child->GetTag().c_str(), tag) == 0) {
                 return child->GetHandle();
             } else {
@@ -1908,7 +1865,7 @@ void VRMenuObject::SetSurfaceTexture(
     int const surfaceIndex,
     int const textureIndex,
     eSurfaceTextureType const type,
-    GLuint const texId,
+    uint32_t const texId,
     int const width,
     int const height) {
     if (surfaceIndex < 0 || surfaceIndex >= static_cast<int>(Surfaces.size())) {
@@ -1941,7 +1898,7 @@ void VRMenuObject::SetSurfaceTextureTakeOwnership(
     int const surfaceIndex,
     int const textureIndex,
     eSurfaceTextureType const type,
-    GLuint const texId,
+    uint32_t const texId,
     int const width,
     int const height) {
     if (surfaceIndex < 0 || surfaceIndex >= static_cast<int>(Surfaces.size())) {
@@ -2046,7 +2003,7 @@ void VRMenuObject::SetLocalBoundsExpand(Vector3f const mins, Vector3f const& max
 //==============================
 // VRMenuObject::SetCollisionPrimitive
 void VRMenuObject::SetCollisionPrimitive(OvrCollisionPrimitive* c) {
-    if (CollisionPrimitive != NULL) {
+    if (CollisionPrimitive != nullptr) {
         delete CollisionPrimitive;
     }
     CollisionPrimitive = c;

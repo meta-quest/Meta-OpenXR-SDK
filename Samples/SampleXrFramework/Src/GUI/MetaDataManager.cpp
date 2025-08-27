@@ -89,9 +89,9 @@ std::unordered_map<std::string, std::string> RelativeDirectoryFileList(
         const std::string fullPath = searchPaths[index] + relativeDirPathString;
 #if !defined(OVR_OS_WIN32)
         DIR* dir = opendir(fullPath.c_str());
-        if (dir != NULL) {
+        if (dir != nullptr) {
             struct dirent* entry;
-            while ((entry = readdir(dir)) != NULL) {
+            while ((entry = readdir(dir)) != nullptr) {
                 if (entry->d_name[0] == '.') {
                     continue;
                 }
@@ -328,7 +328,7 @@ void OvrMetaData::InitFromFileList(
         // Add loose file
         const int dataIndex = static_cast<int>(MetaData.size());
         OvrMetaDatum* datum = CreateMetaDatum(filePath.c_str());
-        if (datum != NULL) {
+        if (datum != nullptr) {
             datum->Id = dataIndex;
             datum->Url = filePath;
             datum->Tags.push_back(currentCategory.CategoryTag);
@@ -386,7 +386,7 @@ bool OvrMetaData::RenameCategoryTag(const char* currentTag, const char* newName)
 
 std::shared_ptr<JSON> LoadPackageMetaFile(const char* metaFile) {
     int bufferLength = 0;
-    void* buffer = NULL;
+    void* buffer = nullptr;
     std::string assetsMetaFile = "assets/";
     assetsMetaFile += metaFile;
     ovr_ReadFileFromApplicationPackage(assetsMetaFile.c_str(), bufferLength, buffer);
@@ -405,14 +405,14 @@ std::shared_ptr<JSON> OvrMetaData::CreateOrGetStoredMetaFile(
     ALOG("CreateOrGetStoredMetaFile FilePath: %s", FilePath.c_str());
 
     std::shared_ptr<JSON> dataFile = JSON::Load(FilePath.c_str());
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         // If this is the first run, or we had an error loading the file, we copy the meta file from
         // assets to app's cache
         WriteMetaFile(metaFile);
 
         // try loading it again
         dataFile = JSON::Load(FilePath.c_str());
-        if (dataFile == NULL) {
+        if (dataFile == nullptr) {
             ALOGW("OvrMetaData failed to load JSON meta file: %s", metaFile);
         }
     } else {
@@ -426,7 +426,7 @@ void OvrMetaData::WriteMetaFile(const char* metaFile) const {
 
     if (FILE* newMetaFile = fopen(FilePath.c_str(), "w")) {
         int bufferLength = 0;
-        void* buffer = NULL;
+        void* buffer = nullptr;
         std::string assetsMetaFile = "assets/";
         assetsMetaFile += metaFile;
         ovr_ReadFileFromApplicationPackage(assetsMetaFile.c_str(), bufferLength, buffer);
@@ -521,9 +521,9 @@ void OvrMetaData::InsertCategoryList(
 }
 
 void OvrMetaData::ProcessRemoteMetaFile(const char* metaFileString, const int startIndex) {
-    char const* errorMsg = NULL;
+    char const* errorMsg = nullptr;
     std::shared_ptr<JSON> remoteMetaFile = JSON::Parse(metaFileString, &errorMsg);
-    if (remoteMetaFile != NULL) {
+    if (remoteMetaFile != nullptr) {
         // First grab the version
         double remoteVersion = 0.0;
         ExtractVersion(remoteMetaFile, remoteVersion);
@@ -551,7 +551,7 @@ void OvrMetaData::ProcessRemoteMetaFile(const char* metaFileString, const int st
 
         // Serialize the new metadata
         std::shared_ptr<JSON> dataFile = MetaDataToJson();
-        if (dataFile == NULL) {
+        if (dataFile == nullptr) {
             ALOGE_FAIL("OvrMetaData::ProcessMetaData failed to generate JSON meta file");
         }
 
@@ -559,7 +559,7 @@ void OvrMetaData::ProcessRemoteMetaFile(const char* metaFileString, const int st
 
         ALOG("OvrMetaData::ProcessRemoteMetaFile updated %s", FilePath.c_str());
     } else {
-        ALOG("Meta file parse error '%s'", errorMsg != NULL ? "<NULL>" : errorMsg);
+        ALOG("Meta file parse error '%s'", errorMsg != nullptr ? "<NULL>" : errorMsg);
     }
 }
 
@@ -567,7 +567,7 @@ void OvrMetaData::ProcessMetaData(
     std::shared_ptr<JSON> dataFile,
     const std::vector<std::string>& searchPaths,
     const char* metaFile) {
-    if (dataFile != NULL) {
+    if (dataFile != nullptr) {
         // Grab the version from the loaded data
         ExtractVersion(dataFile, Version);
 
@@ -623,7 +623,7 @@ void OvrMetaData::ProcessMetaData(
 
     // Rewrite new data
     dataFile = MetaDataToJson();
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         ALOGE_FAIL("OvrMetaData::ProcessMetaData failed to generate JSON meta file");
     }
 
@@ -732,7 +732,7 @@ void OvrMetaData::ReconcileCategories(std::vector<Category>& storedCategories) {
 }
 
 void OvrMetaData::ExtractVersion(std::shared_ptr<JSON> dataFile, double& outVersion) const {
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         return;
     }
 
@@ -745,7 +745,7 @@ void OvrMetaData::ExtractVersion(std::shared_ptr<JSON> dataFile, double& outVers
 void OvrMetaData::ExtractCategories(
     std::shared_ptr<JSON> dataFile,
     std::vector<Category>& outCategories) const {
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         return;
     }
 
@@ -781,7 +781,7 @@ void OvrMetaData::ExtractMetaData(
     std::shared_ptr<JSON> dataFile,
     const std::vector<std::string>& searchPaths,
     std::unordered_map<std::string, OvrMetaDatum*>& outMetaData) const {
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         return;
     }
 
@@ -853,7 +853,7 @@ void OvrMetaData::ExtractMetaData(
 void OvrMetaData::ExtractRemoteMetaData(
     std::shared_ptr<JSON> dataFile,
     std::unordered_map<std::string, OvrMetaDatum*>& outMetaData) const {
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         return;
     }
 
@@ -901,7 +901,7 @@ void OvrMetaData::ExtractRemoteMetaData(
 void OvrMetaData::Serialize() {
     // Serialize the new metadata
     std::shared_ptr<JSON> dataFile = MetaDataToJson();
-    if (dataFile == NULL) {
+    if (dataFile == nullptr) {
         ALOGE_FAIL("OvrMetaData::Serialize failed to generate JSON meta file");
     }
 
@@ -1123,7 +1123,7 @@ OvrMetaData::Category* OvrMetaData::GetCategory(const std::string& categoryName)
             return &category;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const OvrMetaDatum& OvrMetaData::GetMetaDatum(const int index) const {

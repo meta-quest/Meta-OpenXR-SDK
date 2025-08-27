@@ -1507,7 +1507,7 @@ unsigned char* LoadImageToRGBABuffer(
     int& width,
     int& height) {
     std::string ext = GetExtension(fileName);
-    auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+    const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
     loc.tolower(&ext[0], &ext[0] + ext.length());
 
     width = 0;
@@ -1547,7 +1547,7 @@ GlTexture LoadTextureFromBuffer(
     int& width,
     int& height) {
     std::string ext = GetExtension(fileName);
-    auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+    const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
     loc.tolower(&ext[0], &ext[0] + ext.length());
 
     // LOG( "Loading texture buffer %s (%s), length %i", fileName, ext.c_str(), buffer.Length );
@@ -1769,6 +1769,13 @@ void MakeTextureLinear(GlTexture texId) {
     glBindTexture(texId.target, texId.texture);
     glTexParameteri(texId.target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(texId.target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindTexture(texId.target, 0);
+}
+
+void MakeTextureNearest(GlTexture texId) {
+    glBindTexture(texId.target, texId.texture);
+    glTexParameteri(texId.target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(texId.target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glBindTexture(texId.target, 0);
 }
 

@@ -34,7 +34,6 @@ Authors     :   Jonathan E. Wright
 #include "OVR_TypesafeNumber.h"
 #include "OVR_Math.h"
 
-#include "Render/Egl.h" // GLuint
 #include "Render/BitmapFont.h" // HorizontalJustification & VerticalJustification
 #include "Misc/Log.h"
 
@@ -173,8 +172,7 @@ enum eVRMenuBorder { BORDER_LEFT, BORDER_BOTTOM, BORDER_RIGHT, BORDER_TOP };
 class VRMenuSurfaceParms {
    public:
     VRMenuSurfaceParms()
-        : SurfaceName(""),
-          ImageNames(),
+        : ImageNames(),
           Contents(CONTENT_SOLID),
           Color(1.0f),
           Anchors(0.5f, 0.5f),
@@ -275,22 +273,22 @@ class VRMenuSurfaceParms {
 
     {
         InitSurfaceProperties();
-        for (int i = 0; i < VRMENUSURFACE_IMAGE_MAX && imageNames[i] != NULL; ++i) {
+        for (int i = 0; i < VRMENUSURFACE_IMAGE_MAX && imageNames[i] != nullptr; ++i) {
             ImageNames[i] = imageNames[i];
             TextureTypes[i] = textureTypes[i];
         }
     }
     VRMenuSurfaceParms(
         char const* surfaceName,
-        GLuint imageTexId0,
+        uint32_t imageTexId0,
         int width0,
         int height0,
         eSurfaceTextureType textureType0,
-        GLuint imageTexId1,
+        uint32_t imageTexId1,
         int width1,
         int height1,
         eSurfaceTextureType textureType1,
-        GLuint imageTexId2,
+        uint32_t imageTexId2,
         int width2,
         int height2,
         eSurfaceTextureType textureType2)
@@ -324,7 +322,7 @@ class VRMenuSurfaceParms {
 
     std::string SurfaceName; // for debugging only
     std::string ImageNames[VRMENUSURFACE_IMAGE_MAX];
-    GLuint ImageTexId[VRMENUSURFACE_IMAGE_MAX];
+    uint32_t ImageTexId[VRMENUSURFACE_IMAGE_MAX];
     int ImageWidth[VRMENUSURFACE_IMAGE_MAX];
     int ImageHeight[VRMENUSURFACE_IMAGE_MAX];
     eSurfaceTextureType TextureTypes[VRMENUSURFACE_IMAGE_MAX];
@@ -682,7 +680,7 @@ class VRMenuSurfaceTexture {
         bool const allowDefault);
     void LoadTexture(
         eSurfaceTextureType const type,
-        const GLuint texId,
+        const uint32_t texId,
         const int width,
         const int height);
     void Free();
@@ -789,7 +787,7 @@ class VRMenuSurface {
     void LoadTexture(
         int const textureIndex,
         eSurfaceTextureType const type,
-        const GLuint texId,
+        const uint32_t texId,
         const int width,
         const int height);
 
@@ -851,6 +849,9 @@ class VRMenuSurface {
 
     std::string const& GetName() const {
         return SurfaceName;
+    }
+    void SetName(const std::string& name) {
+        SurfaceName = name;
     }
 
     void BuildDrawSurface(
@@ -1265,7 +1266,7 @@ class VRMenuObject {
         int const surfaceIndex,
         int const textureIndex,
         eSurfaceTextureType const type,
-        GLuint const texId,
+        uint32_t const texId,
         int const width,
         int const height);
     void SetSurfaceTexture(
@@ -1278,7 +1279,7 @@ class VRMenuObject {
         int const surfaceIndex,
         int const textureIndex,
         eSurfaceTextureType const type,
-        GLuint const texId,
+        uint32_t const texId,
         int const width,
         int const height);
     void SetSurfaceTextureTakeOwnership(

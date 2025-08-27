@@ -39,11 +39,11 @@ extern "C" {
 XR_DEFINE_HANDLE(XrEventChannelEXTX1)
 #define XR_EXTX1_event_channel_SPEC_VERSION 3
 #define XR_EXTX1_EVENT_CHANNEL_EXTENSION_NAME "XR_EXTX1_event_channel"
+// XrEventChannelEXTX1
+static const XrObjectType XR_OBJECT_TYPE_EVENT_CHANNEL_EXTX1 = (XrObjectType) 1000170000;
 static const XrStructureType XR_TYPE_EVENT_CHANNEL_CREATE_INFO_EXTX1 = (XrStructureType) 1000170001;
 static const XrStructureType XR_TYPE_EVENT_CHANNEL_TARGET_EXTX1 = (XrStructureType) 1000170002;
 static const XrStructureType XR_TYPE_SELECT_EVENT_CHANNEL_INFO_EXTX1 = (XrStructureType) 1000170003;
-// XrEventChannelEXTX1
-static const XrObjectType XR_OBJECT_TYPE_EVENT_CHANNEL_EXTX1 = (XrObjectType) 1000170000;
 
 typedef enum XrSelectEventChannelFlagsEXTX1 {
     XR_SELECT_EVENT_CHANNEL_FLAGS_EXTX1_MAX_ENUM = 0x7FFFFFFF

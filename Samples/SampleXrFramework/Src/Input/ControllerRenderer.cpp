@@ -44,10 +44,17 @@ namespace Controller {
 static const char* VertexShaderSrc = R"glsl(
 attribute highp vec4 Position;
 attribute highp vec3 Normal;
-attribute highp vec3 Tangent;
-attribute highp vec3 Binormal;
-attribute highp vec2 TexCoord;
+#ifdef USE_COLOR
+attribute highp vec3 Tangent;  // not used
+attribute highp vec3 Binormal; // not used
 attribute lowp vec4 VertexColor;
+#endif
+
+#ifdef USE_TEXTURE
+attribute highp vec2 TexCoord;
+attribute highp vec4 JointIndices;
+attribute highp vec4 JointWeights;
+#endif
 
 varying lowp vec3 oEye;
 varying lowp vec3 oNormal;
@@ -78,16 +85,23 @@ void main()
 
   oNormal = multiply( ModelMatrix, Normal );
 
-  oTexCoord = TexCoord;
+#ifdef USE_COLOR
+  oTexCoord = vec2(0.5,0.5);
   oColor = VertexColor;
+#else
+  oTexCoord = TexCoord;
+  oColor = vec4(1,1,1,1);
+#endif
 }
 )glsl";
 
 static const char* FragmentShaderSrc = R"glsl(
-uniform sampler2D Texture0;
 uniform lowp vec3 SpecularLightDirection;
 uniform lowp vec3 SpecularLightColor;
 uniform lowp vec3 AmbientLightColor;
+#ifdef USE_TEXTURE
+uniform sampler2D Texture0;
+#endif
 
 varying lowp vec3 oEye;
 varying lowp vec3 oNormal;
@@ -148,10 +162,10 @@ void ControllerRenderer::LoadModelFromResource(
         if (Model != nullptr) {
             for (auto& model : Model->Models) {
                 auto& gc = model.surfaces[0].surfaceDef.graphicsCommand;
-                gc.UniformData[0].Data = &gc.Textures[0];
-                gc.UniformData[1].Data = &SpecularLightDirection;
-                gc.UniformData[2].Data = &SpecularLightColor;
-                gc.UniformData[3].Data = &AmbientLightColor;
+                gc.UniformData[0].Data = &SpecularLightDirection;
+                gc.UniformData[1].Data = &SpecularLightColor;
+                gc.UniformData[2].Data = &AmbientLightColor;
+                gc.UniformData[3].Data = &gc.Textures[0];
                 /// gpu state needs alpha blending
                 gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
                 gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
@@ -175,10 +189,10 @@ bool ControllerRenderer::Init(
 
     /// Shader
     ovrProgramParm UniformParms[] = {
-        {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
         {"SpecularLightDirection", ovrProgramParmType::FLOAT_VECTOR3},
         {"SpecularLightColor", ovrProgramParmType::FLOAT_VECTOR3},
         {"AmbientLightColor", ovrProgramParmType::FLOAT_VECTOR3},
+        {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
     };
     ProgControllerTexture = GlProgram::Build(
         "#define USE_TEXTURE 1\n",
@@ -186,7 +200,7 @@ bool ControllerRenderer::Init(
         "#define USE_TEXTURE 1\n",
         Controller::FragmentShaderSrc,
         UniformParms,
-        sizeof(UniformParms) / sizeof(ovrProgramParm));
+        4);
 
     ProgControllerColor = GlProgram::Build(
         "#define USE_COLOR 1\n",
@@ -194,11 +208,10 @@ bool ControllerRenderer::Init(
         "#define USE_COLOR 1\n",
         Controller::FragmentShaderSrc,
         UniformParms,
-        sizeof(UniformParms) / sizeof(ovrProgramParm));
+        3);
 
     /// Create surface definition
-    ControllerSurfaceDef.surfaceName =
-        leftController ? "ControllerSurfaceL" : "ControllerkSurfaceR";
+    ControllerSurfaceDef.surfaceName = leftController ? "ControllerSurfaceL" : "ControllerSurfaceR";
 
     /// Atempt to load a resource if passed in
     LoadModelFromResource(fileSys, controllerModelFile);
@@ -236,13 +249,16 @@ bool ControllerRenderer::Init(
 
     /// Build the graphics command
     ovrGraphicsCommand& gc = ControllerSurfaceDef.graphicsCommand;
+
     /// Program
     gc.Program = (Model == nullptr) ? ProgControllerColor : ProgControllerTexture;
     /// Uniforms to match UniformParms abovve
-    gc.UniformData[0].Data = &gc.Textures[0];
-    gc.UniformData[1].Data = &SpecularLightDirection;
-    gc.UniformData[2].Data = &SpecularLightColor;
-    gc.UniformData[3].Data = &AmbientLightColor;
+    gc.UniformData[0].Data = &SpecularLightDirection;
+    gc.UniformData[1].Data = &SpecularLightColor;
+    gc.UniformData[2].Data = &AmbientLightColor;
+    if (Model != nullptr) {
+        gc.UniformData[3].Data = &gc.Textures[0];
+    }
     /// gpu state needs alpha blending
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;
     gc.GpuState.blendEnable = ovrGpuState::BLEND_ENABLE;
@@ -253,9 +269,9 @@ bool ControllerRenderer::Init(
     ControllerSurface.surface = &(ControllerSurfaceDef);
 
     /// Set defaults
-    SpecularLightDirection = Vector3f(1.0f, 1.0f, 0.0f);
-    SpecularLightColor = Vector3f(1.0f, 0.95f, 0.8f);
-    AmbientLightColor = Vector3f(1.0f, 1.0f, 1.0f) * 0.15f;
+    SpecularLightDirection = OVR::Vector3f{1.0f, 1.0f, 0.0f}.Normalized();
+    SpecularLightColor = {1.0f, 0.95f, 0.8f};
+    AmbientLightColor = {0.15f, 0.15f, 0.15f};
 
     /// Set hand
     isLeftController = leftController;

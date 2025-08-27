@@ -74,7 +74,7 @@ VRMenuId_t VRMenu::GetRootId() {
 VRMenu::VRMenu(char const* name)
     : CurMenuState(MENUSTATE_CLOSED),
       NextMenuState(MENUSTATE_CLOSED),
-      EventHandler(NULL),
+      EventHandler(nullptr),
       Name(name),
       MenuDistance(1.45f),
       IsInitialized(false),
@@ -87,7 +87,7 @@ VRMenu::VRMenu(char const* name)
 // VRMenu::~VRMenu
 VRMenu::~VRMenu() {
     delete EventHandler;
-    EventHandler = NULL;
+    EventHandler = nullptr;
 }
 
 //==============================
@@ -123,7 +123,7 @@ void VRMenu::Init(
         VRMenuObjectInitFlags_t());
     RootHandle = guiSys.GetVRMenuMgr().CreateObject(rootParms);
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(RootHandle);
-    if (root == NULL) {
+    if (root == nullptr) {
         ALOGW("RootHandle (%" PRIu64 ") is invalid!", RootHandle.Get());
         return;
     }
@@ -150,7 +150,7 @@ class ChildParmsPair {
    public:
     ChildParmsPair(menuHandle_t const handle, VRMenuObjectParms const* parms)
         : Handle(handle), Parms(parms) {}
-    ChildParmsPair() : Parms(NULL) {}
+    ChildParmsPair() : Parms(nullptr) {}
 
     menuHandle_t Handle;
     VRMenuObjectParms const* Parms;
@@ -176,7 +176,7 @@ void VRMenu::AddItems(
     // create all items in the itemParms array, add each one to the parent, and position all items
     // without the INIT_FORCE_POSITION flag vertically, one on top of the other
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(parentHandle_);
-    assert(root != NULL);
+    assert(root != nullptr);
 
 #if defined(OVR_USE_PERF_TIMER)
     double const createStartTime = SystemClock::GetTimeInSeconds();
@@ -215,7 +215,7 @@ void VRMenu::AddItems(
         createObjectTotal += SystemClock::GetTimeInSeconds() - createObjectStartTime;
 #endif
 
-        if (handle.IsValid() && root != NULL) {
+        if (handle.IsValid() && root != nullptr) {
             if (parms->ParentId != root->GetId() &&
                 (parms->ParentId.IsValid() || !parms->ParentName.empty())) {
                 pairs.push_back(ChildParmsPair(handle, parms));
@@ -223,7 +223,7 @@ void VRMenu::AddItems(
             root->AddChild(guiSys.GetVRMenuMgr(), handle);
             VRMenuObject* obj =
                 guiSys.GetVRMenuMgr().ToObject(root->GetChildHandleForIndex(childIndex++));
-            if (obj != NULL && (parms->InitFlags & VRMENUOBJECT_INIT_FORCE_POSITION) == 0) {
+            if (obj != nullptr && (parms->InitFlags & VRMENUOBJECT_INIT_FORCE_POSITION) == 0) {
                 Bounds3f const& lb = obj->GetLocalBounds(guiSys.GetDefaultFont());
                 Vector3f size = lb.GetSize() * obj->GetLocalScale();
                 Vector3f centerOfs(left * (size.x * -0.5f));
@@ -428,7 +428,7 @@ void VRMenu::Frame(
     }
 
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(RootHandle);
-    if (root != NULL) {
+    if (root != nullptr) {
         // OVR_PERF_TIMER( VRMenu_Frame_SubmitForRendering );
         VRMenuRenderFlags_t renderFlags;
         guiSys.GetVRMenuMgr().SubmitForRendering(
@@ -499,7 +499,7 @@ void VRMenu::Close(OvrGuiSys& guiSys, bool const instant) {
 // VRMenu::HandleForId
 menuHandle_t VRMenu::HandleForId(OvrVRMenuMgr const& menuMgr, VRMenuId_t const id) const {
     VRMenuObject* root = menuMgr.ToObject(RootHandle);
-    assert(root != NULL);
+    assert(root != nullptr);
     return root->ChildHandleForId(menuMgr, id);
 }
 
@@ -507,7 +507,7 @@ menuHandle_t VRMenu::HandleForId(OvrVRMenuMgr const& menuMgr, VRMenuId_t const i
 // VRMenu::ObjectForId
 VRMenuObject* VRMenu::ObjectForId(OvrGuiSys const& guiSys, VRMenuId_t const id) const {
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(RootHandle);
-    assert(root != NULL);
+    assert(root != nullptr);
     menuHandle_t handle = root->ChildHandleForId(guiSys.GetVRMenuMgr(), id);
     return guiSys.GetVRMenuMgr().ToObject(handle);
 }
@@ -516,7 +516,7 @@ VRMenuObject* VRMenu::ObjectForId(OvrGuiSys const& guiSys, VRMenuId_t const id) 
 // VRMenu::HandleForName
 menuHandle_t VRMenu::HandleForName(OvrVRMenuMgr const& menuMgr, char const* name) const {
     VRMenuObject* root = menuMgr.ToObject(RootHandle);
-    assert(root != NULL);
+    assert(root != nullptr);
     return root->ChildHandleForName(menuMgr, name);
 }
 
@@ -524,7 +524,7 @@ menuHandle_t VRMenu::HandleForName(OvrVRMenuMgr const& menuMgr, char const* name
 // VRMenu::ObjectForName
 VRMenuObject* VRMenu::ObjectForName(OvrGuiSys const& guiSys, char const* name) const {
     VRMenuObject* root = guiSys.GetVRMenuMgr().ToObject(RootHandle);
-    assert(root != NULL);
+    assert(root != nullptr);
     menuHandle_t handle = root->ChildHandleForName(guiSys.GetVRMenuMgr(), name);
     return guiSys.GetVRMenuMgr().ToObject(handle);
 }
@@ -643,7 +643,7 @@ void VRMenu::OnItemEvent_Impl(
 //==============================
 // VRMenu::GetFocusedHandle()
 menuHandle_t VRMenu::GetFocusedHandle() const {
-    if (EventHandler != NULL) {
+    if (EventHandler != nullptr) {
         return EventHandler->GetFocusedHandle();
     }
     return menuHandle_t();
@@ -665,7 +665,7 @@ void VRMenu::ResetMenuOrientation_Impl(Matrix4f const& viewMatrix) {
 //==============================
 // VRMenu::SetSelected
 void VRMenu::SetSelected(VRMenuObject* obj, bool const selected) {
-    if (obj != NULL) {
+    if (obj != nullptr) {
         if (obj->IsSelected() != selected) {
             obj->SetSelected(selected);
             VRMenuEvent ev(

@@ -31,7 +31,6 @@ Authors     :   John Carmack
 #include <algorithm>
 
 #include "Misc/Log.h"
-#include "Render/Egl.h"
 
 using OVR::Bounds3f;
 using OVR::Matrix4f;

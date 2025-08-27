@@ -28,7 +28,6 @@ Authors     :   Jonathan E. Wright
 #include "GazeCursor.h"
 
 #include "Misc/Log.h"
-#include "Render/Egl.h"
 #include "Render/GlTexture.h"
 #include "Render/GlProgram.h"
 #include "Render/GlGeometry.h"
@@ -497,7 +496,7 @@ GlGeometry CreateCursorGeometry(VertexAttribs& attr, int const numTrails, int co
         Vector2f(1.0f, 1.0f),
     };
 
-    static const GLushort GazeCursorIndices[6] = {
+    static const TriangleIndex GazeCursorIndices[6] = {
         0,
         1,
         2,
@@ -600,10 +599,10 @@ OvrGazeCursor* OvrGazeCursor::Create(ovrFileSys& fileSys) {
 //==============================
 // OvrGazeCursor::Destroy
 void OvrGazeCursor::Destroy(OvrGazeCursor*& gazeCursor) {
-    if (gazeCursor != NULL) {
+    if (gazeCursor != nullptr) {
         static_cast<OvrGazeCursorLocal*>(gazeCursor)->Shutdown();
         delete gazeCursor;
-        gazeCursor = NULL;
+        gazeCursor = nullptr;
     }
 }
 
