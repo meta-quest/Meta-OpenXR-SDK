@@ -33,9 +33,7 @@ using OVR::Quatf;
 using OVR::Vector3f;
 using OVR::Vector4f;
 
-namespace OVRFW {
-
-namespace Hand {
+namespace OVRFW::Hand {
 
 /// clang-format off
 static_assert(MAX_JOINTS == 64, "MAX_JOINTS != 64");
@@ -168,7 +166,9 @@ static const char* FragmentShaderSrc = R"glsl(
 )glsl";
 /// clang-format on
 
-} // namespace Hand
+} // namespace OVRFW::Hand
+
+namespace OVRFW {
 
 bool HandRenderer::Init(const XrHandTrackingMeshFB* mesh, bool leftHand) {
     /// Shader

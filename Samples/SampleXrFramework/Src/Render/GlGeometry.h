@@ -171,7 +171,8 @@ void FontGeometryUpdate(GlGeometry& geo, fontVertex_t* verts, int numVerts, int 
 GlGeometry::Descriptor BuildTesselatedQuadDescriptor(
     const TriangleIndex horizontal,
     const TriangleIndex vertical,
-    bool twoSided = false);
+    bool twoSided = false,
+    bool fadeout = true);
 
 inline GlGeometry BuildTesselatedQuad(
     const TriangleIndex horizontal,

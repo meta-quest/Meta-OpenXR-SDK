@@ -840,6 +840,7 @@ void VRMenuSurface::Free() {
     for (int i = 0; i < VRMENUSURFACE_IMAGE_MAX; ++i) {
         Textures[i].Free();
     }
+    SurfaceDef.geo.Free();
 }
 
 //==============================

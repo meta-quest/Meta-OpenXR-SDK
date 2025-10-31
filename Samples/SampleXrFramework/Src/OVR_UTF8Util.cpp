@@ -30,8 +30,7 @@ Notes       :   Much useful info at "UTF-8 and Unicode FAQ"
 #include "OVR_UTF8Util.h"
 #include <assert.h>
 
-namespace OVRFW {
-namespace UTF8Util {
+namespace OVRFW::UTF8Util {
 
 intptr_t GetLength(const char* buf, intptr_t buflen) {
     const char* p = buf;
@@ -528,5 +527,4 @@ void AppendChar(std::string& s, uint32_t ch) {
     s += buff;
 }
 
-} // namespace UTF8Util
-} // namespace OVRFW
+} // namespace OVRFW::UTF8Util

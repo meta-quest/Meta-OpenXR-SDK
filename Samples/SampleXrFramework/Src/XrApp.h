@@ -468,6 +468,10 @@ class XrApp {
 
     virtual void PreWaitFrame(XrFrameWaitInfo&) {}
 
+    // Expose an API to allow apps to attach custom data to the xrFrameEndInfo struct,
+    // such as apertureID for PC aperture usage, before the frame ends.
+    virtual void PreEndFrame(XrFrameEndInfo& frameEndInfo) {}
+
     /// Xr Helpers
     XrInstance& GetInstance() {
         return Instance;
@@ -578,7 +582,7 @@ class XrApp {
         0,
         0,
         EGL_NO_DISPLAY,
-        EGL_CAST(EGLConfig, 0),
+        EGL_CAST(EGLConfig, nullptr),
         EGL_NO_SURFACE,
         EGL_NO_SURFACE,
         EGL_NO_CONTEXT
@@ -616,6 +620,7 @@ class XrApp {
     XrSpace CurrentSpace = XR_NULL_HANDLE;
     bool SessionActive = false;
 
+    std::vector<XrActionSet> ActionSets;
     XrActionSet BaseActionSet = XR_NULL_HANDLE;
     XrPath LeftHandPath = XR_NULL_PATH;
     XrPath RightHandPath = XR_NULL_PATH;

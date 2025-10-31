@@ -56,7 +56,10 @@ enum eTextureFlags {
     // Will only work for uncompressed textures.
     // TODO: this only does the top mip level, since we use genMipmaps
     // to create the rest. Consider manually building the mip levels.
-    TEXTUREFLAG_ALPHA_BORDER
+    TEXTUREFLAG_ALPHA_BORDER,
+
+    // Flips the source image on the Y axis on load before applying to texture
+    TEXTUREFLAG_FLIP_Y_ON_LOAD
 };
 
 typedef OVR::BitFlagsT<eTextureFlags> TextureFlags_t;

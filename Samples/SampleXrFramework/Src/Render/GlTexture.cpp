@@ -1562,7 +1562,7 @@ GlTexture LoadTextureFromBuffer(
         ALOG(
             "LoadTextureFromBuffer - can't load from empties: fileName = %s buffer = %p bufferSize = %d",
             fileName == nullptr ? "<null>" : fileName,
-            buffer == nullptr ? 0 : buffer,
+            buffer == nullptr ? nullptr : buffer,
             static_cast<int>(bufferSize));
 #endif
     } else if (
@@ -1571,7 +1571,7 @@ GlTexture LoadTextureFromBuffer(
         // Uncompressed files loaded by stb_image
         int comp;
         stbi_uc* image = stbi_load_from_memory(buffer, bufferSize, &width, &height, &comp, 4);
-        if (image != NULL) {
+        if (image != nullptr) {
             // Optionally outline the border alpha.
             if (flags & TEXTUREFLAG_ALPHA_BORDER) {
                 for (int i = 0; i < width; i++) {
@@ -1581,6 +1581,22 @@ GlTexture LoadTextureFromBuffer(
                 for (int i = 0; i < height; i++) {
                     image[i * width * 4 + 3] = 0;
                     image[(i * width + width - 1) * 4 + 3] = 0;
+                }
+            }
+
+            // flip
+            if (flags & TEXTUREFLAG_FLIP_Y_ON_LOAD) {
+                std::vector<uint32_t> flipBuffer(width);
+                uint32_t* imageData = (uint32_t*)image;
+                uint32_t* bufferData = flipBuffer.data();
+                const int top = height - 1;
+                for (int y = 0; y < (height / 2); ++y) {
+                    int t = top - y;
+                    uint32_t* src = imageData + (y * width);
+                    uint32_t* dst = imageData + (t * width);
+                    memcpy(bufferData, src, width * sizeof(uint32_t));
+                    memcpy(src, dst, width * sizeof(uint32_t));
+                    memcpy(dst, bufferData, width * sizeof(uint32_t));
                 }
             }
 
@@ -1679,7 +1695,7 @@ GlTexture LoadTextureFromOtherApplicationPackage(
     int& height) {
     width = 0;
     height = 0;
-    if (zipFile == 0) {
+    if (zipFile == nullptr) {
         return GlTexture(0, 0, 0);
     }
 

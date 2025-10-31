@@ -27,8 +27,7 @@
 
 #include <string>
 
-namespace OVRFW {
-namespace UTF8Util {
+namespace OVRFW::UTF8Util {
 
 // *** UTF8 string length and indexing.
 
@@ -90,5 +89,4 @@ bool DecodePrevChar(char const* p, intptr_t& offset, uint32_t& ch);
 
 void AppendChar(std::string& s, uint32_t ch);
 
-} // namespace UTF8Util
-} // namespace OVRFW
+} // namespace OVRFW::UTF8Util

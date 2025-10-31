@@ -35,8 +35,7 @@ using OVR::Quatf;
 using OVR::Vector3f;
 using OVR::Vector4f;
 
-namespace OVRFW {
-namespace SimpleGlbShaders {
+namespace OVRFW::SimpleGlbShaders {
 
 /// clang-format off
 static const char* VertexShaderSrc = R"glsl(
@@ -139,7 +138,9 @@ void main()
 
 /// clang-format on
 
-} // namespace SimpleGlbShaders
+} // namespace OVRFW::SimpleGlbShaders
+
+namespace OVRFW {
 
 SimpleGlbRenderer::~SimpleGlbRenderer() {
     if (jointsBuffer) {
@@ -178,7 +179,11 @@ std::vector<Matrix4f> SimpleGlbRenderer::GetDefaultPoseTransforms() const {
     return outTransforms;
 }
 
-bool SimpleGlbRenderer::Init(std::vector<uint8_t>& modelBuffer) {
+bool SimpleGlbRenderer::Init(
+    std::vector<uint8_t>& modelBuffer,
+    const OVR::Matrix4f& poseCorrection) {
+    PoseCorrection = poseCorrection;
+
     /// Shader
     ovrProgramParm UniformParms[] = {
         {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
@@ -259,10 +264,7 @@ void SimpleGlbRenderer::Shutdown() {
 
 void SimpleGlbRenderer::Update(const OVR::Posef& pose) {
     /// Compute transform for the root
-
-    OVR::Posef offsetPose = pose;
-
-    Transform = Matrix4f(offsetPose);
+    Transform = OVR::Matrix4f(pose) * PoseCorrection;
 }
 
 void SimpleGlbRenderer::Render(std::vector<ovrDrawSurface>& surfaceList) {

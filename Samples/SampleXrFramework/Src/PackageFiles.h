@@ -49,7 +49,7 @@ class OvrApkFile {
         return ZipFile;
     }
     operator bool() const {
-        return ZipFile != 0;
+        return ZipFile != nullptr;
     }
 
    private:

@@ -79,7 +79,7 @@ struct ovrDrawCounters {
 };
 
 struct ovrDrawSurface {
-    ovrDrawSurface() : surface(NULL) {}
+    ovrDrawSurface() : surface(nullptr) {}
 
     ovrDrawSurface(const OVR::Matrix4f& modelMatrix_, const ovrSurfaceDef* surface_)
         : modelMatrix(modelMatrix_), surface(surface_) {}
@@ -88,7 +88,7 @@ struct ovrDrawSurface {
 
     void Clear() {
         modelMatrix = OVR::Matrix4f();
-        surface = NULL;
+        surface = nullptr;
     }
 
     OVR::Matrix4f modelMatrix;

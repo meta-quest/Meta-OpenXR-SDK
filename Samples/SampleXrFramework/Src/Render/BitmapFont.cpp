@@ -88,7 +88,7 @@ inline void StripFilename(char const* inPath, char* outPath, size_t const outPat
     const char NIX_PATH_SEPARATOR = '/';
     const char URI_PATH_SEPARATOR = '/';
 
-    assert(inPath != NULL);
+    assert(inPath != nullptr);
     if (inPath[0] == '\0') {
         OVR::OVR_strcpy(outPath, outPathSize, inPath);
         return;
@@ -143,8 +143,8 @@ bool AppendUriPath(
     const char NIX_PATH_SEPARATOR = '/';
     const char URI_PATH_SEPARATOR = '/';
 
-    if (inPath == NULL || outPath == NULL || appendPath == NULL || outPathSize < 2) {
-        assert(inPath != NULL && outPath != NULL && appendPath != NULL && outPathSize > 1);
+    if (inPath == nullptr || outPath == nullptr || appendPath == nullptr || outPathSize < 2) {
+        assert(inPath != nullptr && outPath != nullptr && appendPath != nullptr && outPathSize > 1);
         return false;
     }
     intptr_t inOfs = 0;
@@ -549,8 +549,8 @@ static bool CheckForFormatEscape(char const** buffer, uint32_t& color, uint32_t&
 class VertexBlockType {
    public:
     VertexBlockType()
-        : Font(NULL),
-          Verts(NULL),
+        : Font(nullptr),
+          Verts(nullptr),
           NumVerts(0),
           Pivot(0.0f),
           Rotation(),
@@ -558,8 +558,8 @@ class VertexBlockType {
           TrackRoll(false) {}
 
     VertexBlockType(VertexBlockType const& other)
-        : Font(NULL),
-          Verts(NULL),
+        : Font(nullptr),
+          Verts(nullptr),
           NumVerts(0),
           Pivot(0.0f),
           Rotation(),
@@ -586,8 +586,8 @@ class VertexBlockType {
         Billboard = other.Billboard;
         TrackRoll = other.TrackRoll;
 
-        other.Font = NULL;
-        other.Verts = NULL;
+        other.Font = nullptr;
+        other.Verts = nullptr;
         other.NumVerts = 0;
     }
 
@@ -612,9 +612,9 @@ class VertexBlockType {
     }
 
     void Free() {
-        Font = NULL;
+        Font = nullptr;
         delete[] Verts;
-        Verts = NULL;
+        Verts = nullptr;
         NumVerts = 0;
     }
 
@@ -675,7 +675,7 @@ VertexBlockType DrawTextToVertexBlock(
     if (toNextLine) {
         *toNextLine = Vector3f::ZERO;
     }
-    if (text == NULL || text[0] == '\0') {
+    if (text == nullptr || text[0] == '\0') {
 #if defined(OVR_BUILD_DEBUG)
         ALOG("DrawTextToVertexBlock: null or empty text!");
 #endif
@@ -1063,14 +1063,14 @@ bool FontInfoType::Load(ovrFileSys& fileSys, char const* uri) {
 //==============================
 // FontInfoType::LoadFromBuffer
 bool FontInfoType::LoadFromBuffer(void const* buffer, size_t const bufferSize) {
-    char const* errorMsg = NULL;
+    char const* errorMsg = nullptr;
     std::shared_ptr<OVR::JSON> jsonRoot =
         OVR::JSON::Parse(reinterpret_cast<char const*>(buffer), &errorMsg);
-    if (jsonRoot == NULL) {
-        ALOGW("OVR::JSON Error: %s", (errorMsg != NULL) ? errorMsg : "<NULL>");
+    if (jsonRoot == nullptr) {
+        ALOGW("OVR::JSON Error: %s", (errorMsg != nullptr) ? errorMsg : "<NULL>");
         ALOG(
             "FontInfoType::LoadFromBuffer FAIL OVR::JSON ERROR = '%s' ",
-            (errorMsg != NULL) ? errorMsg : "<NULL>");
+            (errorMsg != nullptr) ? errorMsg : "<NULL>");
         return false;
     }
 
@@ -1414,7 +1414,7 @@ FontGlyphType const& FontInfoType::GlyphForCharCode(uint32_t const charCode) con
 //==================================================================================================
 
 static bool ExtensionMatches(char const* fileName, char const* ext) {
-    if (fileName == NULL || ext == NULL) {
+    if (fileName == nullptr || ext == nullptr) {
         return false;
     }
     size_t extLen = OVR::OVR_strlen(ext);
@@ -1439,18 +1439,18 @@ bool BitmapFontLocal::Load(ovrFileSys& fileSys, char const* uri) {
             uri,
             scheme,
             sizeof(scheme),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
             host,
             sizeof(host),
             port,
             path,
             sizeof(path),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0)) {
         ALOG("ParseUri FAILED Uri = %s", uri);
         return false;
@@ -1913,10 +1913,10 @@ void BitmapFontLocal::CalcTextMetrics(
     width = 0.0f;
     height = 0.0f;
 
-    if (lineWidths == NULL || maxLines <= 0) {
+    if (lineWidths == nullptr || maxLines <= 0) {
         return;
     }
-    if (text == NULL || text[0] == '\0') {
+    if (text == nullptr || text[0] == '\0') {
         return;
     }
 
@@ -2046,7 +2046,7 @@ void BitmapFontLocal::TruncateText(std::string& inOutText, int const maxLines) c
 //==============================
 // BitmapFontSurfaceLocal::BitmapFontSurface
 BitmapFontSurfaceLocal::BitmapFontSurfaceLocal()
-    : Vertices(NULL),
+    : Vertices(nullptr),
       MaxVertices(0),
       MaxIndices(0),
       CurVertex(0),
@@ -2058,7 +2058,7 @@ BitmapFontSurfaceLocal::BitmapFontSurfaceLocal()
 BitmapFontSurfaceLocal::~BitmapFontSurfaceLocal() {
     FontSurfaceDef.geo.Free();
     delete[] Vertices;
-    Vertices = NULL;
+    Vertices = nullptr;
 }
 
 //==============================
@@ -2068,10 +2068,10 @@ void BitmapFontSurfaceLocal::Init(const int maxVertices) {
     OVR_ASSERT(
         FontSurfaceDef.geo.vertexBuffer == 0 && FontSurfaceDef.geo.indexBuffer == 0 &&
         FontSurfaceDef.geo.vertexArrayObject == 0);
-    OVR_ASSERT(Vertices == NULL);
-    if (Vertices != NULL) {
+    OVR_ASSERT(Vertices == nullptr);
+    if (Vertices != nullptr) {
         delete[] Vertices;
-        Vertices = NULL;
+        Vertices = nullptr;
     }
     OVR_ASSERT(maxVertices % 4 == 0);
 
@@ -2118,7 +2118,7 @@ Vector3f BitmapFontSurfaceLocal::DrawText3D(
 ///	ALOG( "DrawText3D -> '%s'", text == NULL ? "<null>" : text );
 #endif
 
-    if (text == NULL || text[0] == '\0') {
+    if (text == nullptr || text[0] == '\0') {
         return Vector3f::ZERO; // nothing to do here, move along
     }
     Vector3f toNextLine;
@@ -2336,9 +2336,9 @@ BitmapFont* BitmapFont::Create() {
 //==============================
 // BitmapFont::Free
 void BitmapFont::Free(BitmapFont*& font) {
-    if (font != NULL) {
+    if (font != nullptr) {
         delete font;
-        font = NULL;
+        font = nullptr;
     }
 }
 
@@ -2351,9 +2351,9 @@ BitmapFontSurface* BitmapFontSurface::Create() {
 //==============================
 // BitmapFontSurface::Free
 void BitmapFontSurface::Free(BitmapFontSurface*& fontSurface) {
-    if (fontSurface != NULL) {
+    if (fontSurface != nullptr) {
         delete fontSurface;
-        fontSurface = NULL;
+        fontSurface = nullptr;
     }
 }
 

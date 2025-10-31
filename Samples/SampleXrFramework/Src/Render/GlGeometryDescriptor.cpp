@@ -34,7 +34,8 @@ OVR::Matrix4f GlGeometry::geometryTransfom = OVR::Matrix4f();
 GlGeometry::Descriptor BuildTesselatedQuadDescriptor(
     const TriangleIndex horizontal,
     const TriangleIndex vertical,
-    const bool twoSided) {
+    const bool twoSided,
+    const bool fadeout) {
     const int vertexCount = (horizontal + 1) * (vertical + 1);
 
     VertexAttribs attribs;
@@ -56,8 +57,10 @@ GlGeometry::Descriptor BuildTesselatedQuadDescriptor(
                 attribs.color[index][i] = 1.0f;
             }
             // fade to transparent on the outside
-            if (x == 0 || x == horizontal || y == 0 || y == vertical) {
-                attribs.color[index][3] = 0.0f;
+            if (fadeout) {
+                if (x == 0 || x == horizontal || y == 0 || y == vertical) {
+                    attribs.color[index][3] = 0.0f;
+                }
             }
         }
     }

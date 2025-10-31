@@ -435,6 +435,25 @@ OvrSceneView::OvrSceneView()
     CenterEyeViewMatrix = Matrix4f::Identity();
 }
 
+void OvrSceneView::Shutdown() {
+    if (LoadedPrograms) {
+        OVRFW::GlProgram::Free(ProgVertexColor);
+        OVRFW::GlProgram::Free(ProgSingleTexture);
+        OVRFW::GlProgram::Free(ProgLightMapped);
+        OVRFW::GlProgram::Free(ProgReflectionMapped);
+        OVRFW::GlProgram::Free(ProgSimplePBR);
+        OVRFW::GlProgram::Free(ProgBaseColorPBR);
+        OVRFW::GlProgram::Free(ProgBaseColorEmissivePBR);
+        OVRFW::GlProgram::Free(ProgSkinnedVertexColor);
+        OVRFW::GlProgram::Free(ProgSkinnedSingleTexture);
+        OVRFW::GlProgram::Free(ProgSkinnedLightMapped);
+        OVRFW::GlProgram::Free(ProgSkinnedReflectionMapped);
+        OVRFW::GlProgram::Free(ProgSkinnedSimplePBR);
+        OVRFW::GlProgram::Free(ProgSkinnedBaseColorPBR);
+        OVRFW::GlProgram::Free(ProgSkinnedBaseColorEmissivePBR);
+    }
+}
+
 ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
     ModelGlPrograms programs;
 

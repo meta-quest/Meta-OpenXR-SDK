@@ -47,8 +47,8 @@ class ovrTextureAtlas {
        public:
         ovrSpriteDef() : uvMins(0.0f, 0.0f), uvMaxs(1.0f, 1.0f) {}
 
-        ovrSpriteDef(const char* name, const OVR::Vector2f& uvMins, const OVR::Vector2f& uvMaxs)
-            : Name(name), uvMins(uvMins), uvMaxs(uvMaxs) {}
+        ovrSpriteDef(const char* name, const OVR::Vector2f& uvMinsIn, const OVR::Vector2f& uvMaxsIn)
+            : Name(name), uvMins(uvMinsIn), uvMaxs(uvMaxsIn) {}
 
         ovrSpriteDef(
             const char* name,

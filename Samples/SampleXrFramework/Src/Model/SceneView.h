@@ -53,6 +53,8 @@ class OvrSceneView {
    public:
     OvrSceneView();
 
+    void Shutdown();
+
     // The default view will be located at the origin, looking down the -Z axis,
     // with +X to the right and +Y up.
     // Increasing yaw looks to the left (rotation around Y axis).

@@ -95,9 +95,7 @@ Get proc address / extensions
 ================================
 */
 
-PROC GetExtension(const char* functionName) {
-    return wglGetProcAddress(functionName);
-}
+#define GetExtension(type, functionName) ((type)(void*)wglGetProcAddress(functionName))
 
 PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
 PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
@@ -231,157 +229,156 @@ PFNGLINVALIDATEFRAMEBUFFERPROC glInvalidateFramebuffer;
 
 void GlBootstrapExtensions() {
     wglChoosePixelFormatARB =
-        (PFNWGLCHOOSEPIXELFORMATARBPROC)GetExtension("wglChoosePixelFormatARB");
+        GetExtension(PFNWGLCHOOSEPIXELFORMATARBPROC, "wglChoosePixelFormatARB");
     wglCreateContextAttribsARB =
-        (PFNWGLCREATECONTEXTATTRIBSARBPROC)GetExtension("wglCreateContextAttribsARB");
-    wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)GetExtension("wglSwapIntervalEXT");
-    wglDelayBeforeSwapNV = (PFNWGLDELAYBEFORESWAPNVPROC)GetExtension("wglDelayBeforeSwapNV");
+        GetExtension(PFNWGLCREATECONTEXTATTRIBSARBPROC, "wglCreateContextAttribsARB");
+    wglSwapIntervalEXT = GetExtension(PFNWGLSWAPINTERVALEXTPROC, "wglSwapIntervalEXT");
+    wglDelayBeforeSwapNV = GetExtension(PFNWGLDELAYBEFORESWAPNVPROC, "wglDelayBeforeSwapNV");
 }
 
 void GlInitExtensions() {
-    glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)GetExtension("glGenFramebuffers");
-    glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)GetExtension("glDeleteFramebuffers");
-    glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)GetExtension("glBindFramebuffer");
-    glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)GetExtension("glBlitFramebuffer");
-    glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)GetExtension("glGenRenderbuffers");
-    glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)GetExtension("glDeleteRenderbuffers");
-    glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)GetExtension("glBindRenderbuffer");
-    glIsRenderbuffer = (PFNGLISRENDERBUFFERPROC)GetExtension("glIsRenderbuffer");
-    glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)GetExtension("glRenderbufferStorage");
+    glGenFramebuffers = GetExtension(PFNGLGENFRAMEBUFFERSPROC, "glGenFramebuffers");
+    glDeleteFramebuffers = GetExtension(PFNGLDELETEFRAMEBUFFERSPROC, "glDeleteFramebuffers");
+    glBindFramebuffer = GetExtension(PFNGLBINDFRAMEBUFFERPROC, "glBindFramebuffer");
+    glBlitFramebuffer = GetExtension(PFNGLBLITFRAMEBUFFERPROC, "glBlitFramebuffer");
+    glGenRenderbuffers = GetExtension(PFNGLGENRENDERBUFFERSPROC, "glGenRenderbuffers");
+    glDeleteRenderbuffers = GetExtension(PFNGLDELETERENDERBUFFERSPROC, "glDeleteRenderbuffers");
+    glBindRenderbuffer = GetExtension(PFNGLBINDRENDERBUFFERPROC, "glBindRenderbuffer");
+    glIsRenderbuffer = GetExtension(PFNGLISRENDERBUFFERPROC, "glIsRenderbuffer");
+    glRenderbufferStorage = GetExtension(PFNGLRENDERBUFFERSTORAGEPROC, "glRenderbufferStorage");
     glRenderbufferStorageMultisample =
-        (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)GetExtension("glRenderbufferStorageMultisample");
+        GetExtension(PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC, "glRenderbufferStorageMultisample");
     glFramebufferRenderbuffer =
-        (PFNGLFRAMEBUFFERRENDERBUFFERPROC)GetExtension("glFramebufferRenderbuffer");
-    glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)GetExtension("glFramebufferTexture2D");
+        GetExtension(PFNGLFRAMEBUFFERRENDERBUFFERPROC, "glFramebufferRenderbuffer");
+    glFramebufferTexture2D = GetExtension(PFNGLFRAMEBUFFERTEXTURE2DPROC, "glFramebufferTexture2D");
     glFramebufferTextureLayer =
-        (PFNGLFRAMEBUFFERTEXTURELAYERPROC)GetExtension("glFramebufferTextureLayer");
+        GetExtension(PFNGLFRAMEBUFFERTEXTURELAYERPROC, "glFramebufferTextureLayer");
     glCheckFramebufferStatus =
-        (PFNGLCHECKFRAMEBUFFERSTATUSPROC)GetExtension("glCheckFramebufferStatus");
+        GetExtension(PFNGLCHECKFRAMEBUFFERSTATUSPROC, "glCheckFramebufferStatus");
     glCheckNamedFramebufferStatus =
-        (PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC)GetExtension("glCheckNamedFramebufferStatus");
+        GetExtension(PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC, "glCheckNamedFramebufferStatus");
 
-    glGenBuffers = (PFNGLGENBUFFERSPROC)GetExtension("glGenBuffers");
-    glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)GetExtension("glDeleteBuffers");
-    glBindBuffer = (PFNGLBINDBUFFERPROC)GetExtension("glBindBuffer");
-    glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)GetExtension("glBindBufferBase");
-    glBufferData = (PFNGLBUFFERDATAPROC)GetExtension("glBufferData");
-    glBufferSubData = (PFNGLBUFFERSUBDATAPROC)GetExtension("glBufferSubData");
-    glBufferStorage = (PFNGLBUFFERSTORAGEPROC)GetExtension("glBufferStorage");
-    glMapBuffer = (PFNGLMAPBUFFERPROC)GetExtension("glMapBuffer");
-    glMapBufferRange = (PFNGLMAPBUFFERRANGEPROC)GetExtension("glMapBufferRange");
-    glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)GetExtension("glUnmapBuffer");
+    glGenBuffers = GetExtension(PFNGLGENBUFFERSPROC, "glGenBuffers");
+    glDeleteBuffers = GetExtension(PFNGLDELETEBUFFERSPROC, "glDeleteBuffers");
+    glBindBuffer = GetExtension(PFNGLBINDBUFFERPROC, "glBindBuffer");
+    glBindBufferBase = GetExtension(PFNGLBINDBUFFERBASEPROC, "glBindBufferBase");
+    glBufferData = GetExtension(PFNGLBUFFERDATAPROC, "glBufferData");
+    glBufferSubData = GetExtension(PFNGLBUFFERSUBDATAPROC, "glBufferSubData");
+    glBufferStorage = GetExtension(PFNGLBUFFERSTORAGEPROC, "glBufferStorage");
+    glMapBuffer = GetExtension(PFNGLMAPBUFFERPROC, "glMapBuffer");
+    glMapBufferRange = GetExtension(PFNGLMAPBUFFERRANGEPROC, "glMapBufferRange");
+    glUnmapBuffer = GetExtension(PFNGLUNMAPBUFFERPROC, "glUnmapBuffer");
 
-    glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)GetExtension("glGenVertexArrays");
-    glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)GetExtension("glDeleteVertexArrays");
-    glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)GetExtension("glBindVertexArray");
-    glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)GetExtension("glVertexAttribPointer");
-    glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)GetExtension("glVertexAttribDivisor");
+    glGenVertexArrays = GetExtension(PFNGLGENVERTEXARRAYSPROC, "glGenVertexArrays");
+    glDeleteVertexArrays = GetExtension(PFNGLDELETEVERTEXARRAYSPROC, "glDeleteVertexArrays");
+    glBindVertexArray = GetExtension(PFNGLBINDVERTEXARRAYPROC, "glBindVertexArray");
+    glVertexAttribPointer = GetExtension(PFNGLVERTEXATTRIBPOINTERPROC, "glVertexAttribPointer");
+    glVertexAttribDivisor = GetExtension(PFNGLVERTEXATTRIBDIVISORPROC, "glVertexAttribDivisor");
     glDisableVertexAttribArray =
-        (PFNGLDISABLEVERTEXATTRIBARRAYPROC)GetExtension("glDisableVertexAttribArray");
+        GetExtension(PFNGLDISABLEVERTEXATTRIBARRAYPROC, "glDisableVertexAttribArray");
     glEnableVertexAttribArray =
-        (PFNGLENABLEVERTEXATTRIBARRAYPROC)GetExtension("glEnableVertexAttribArray");
+        GetExtension(PFNGLENABLEVERTEXATTRIBARRAYPROC, "glEnableVertexAttribArray");
 
-    glActiveTexture = (PFNGLACTIVETEXTUREPROC)GetExtension("glActiveTexture");
-    glTexImage3D = (PFNGLTEXIMAGE3DPROC)GetExtension("glTexImage3D");
-    glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)GetExtension("glCompressedTexImage2D");
-    glCompressedTexImage3D = (PFNGLCOMPRESSEDTEXIMAGE3DPROC)GetExtension("glCompressedTexImage3D");
-    glTexSubImage3D = (PFNGLTEXSUBIMAGE3DPROC)GetExtension("glTexSubImage3D");
+    glActiveTexture = GetExtension(PFNGLACTIVETEXTUREPROC, "glActiveTexture");
+    glTexImage3D = GetExtension(PFNGLTEXIMAGE3DPROC, "glTexImage3D");
+    glCompressedTexImage2D = GetExtension(PFNGLCOMPRESSEDTEXIMAGE2DPROC, "glCompressedTexImage2D");
+    glCompressedTexImage3D = GetExtension(PFNGLCOMPRESSEDTEXIMAGE3DPROC, "glCompressedTexImage3D");
+    glTexSubImage3D = GetExtension(PFNGLTEXSUBIMAGE3DPROC, "glTexSubImage3D");
     glCompressedTexSubImage2D =
-        (PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC)GetExtension("glCompressedTexSubImage2D");
+        GetExtension(PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC, "glCompressedTexSubImage2D");
     glCompressedTexSubImage3D =
-        (PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC)GetExtension("glCompressedTexSubImage3D");
-    glTexStorage2D = (PFNGLTEXSTORAGE2DPROC)GetExtension("glTexStorage2D");
-    glTexStorage3D = (PFNGLTEXSTORAGE3DPROC)GetExtension("glTexStorage3D");
+        GetExtension(PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC, "glCompressedTexSubImage3D");
+    glTexStorage2D = GetExtension(PFNGLTEXSTORAGE2DPROC, "glTexStorage2D");
+    glTexStorage3D = GetExtension(PFNGLTEXSTORAGE3DPROC, "glTexStorage3D");
     glTexImage2DMultisample =
-        (PFNGLTEXIMAGE2DMULTISAMPLEPROC)GetExtension("glTexImage2DMultisample");
+        GetExtension(PFNGLTEXIMAGE2DMULTISAMPLEPROC, "glTexImage2DMultisample");
     glTexImage3DMultisample =
-        (PFNGLTEXIMAGE3DMULTISAMPLEPROC)GetExtension("glTexImage3DMultisample");
+        GetExtension(PFNGLTEXIMAGE3DMULTISAMPLEPROC, "glTexImage3DMultisample");
     glTexStorage2DMultisample =
-        (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)GetExtension("glTexStorage2DMultisample");
+        GetExtension(PFNGLTEXSTORAGE2DMULTISAMPLEPROC, "glTexStorage2DMultisample");
     glTexStorage3DMultisample =
-        (PFNGLTEXSTORAGE3DMULTISAMPLEPROC)GetExtension("glTexStorage3DMultisample");
-    glGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)GetExtension("glGenerateMipmap");
-    glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)GetExtension("glBindImageTexture");
+        GetExtension(PFNGLTEXSTORAGE3DMULTISAMPLEPROC, "glTexStorage3DMultisample");
+    glGenerateMipmap = GetExtension(PFNGLGENERATEMIPMAPPROC, "glGenerateMipmap");
+    glBindImageTexture = GetExtension(PFNGLBINDIMAGETEXTUREPROC, "glBindImageTexture");
 
-    glCreateProgram = (PFNGLCREATEPROGRAMPROC)GetExtension("glCreateProgram");
-    glDeleteProgram = (PFNGLDELETEPROGRAMPROC)GetExtension("glDeleteProgram");
-    glCreateShader = (PFNGLCREATESHADERPROC)GetExtension("glCreateShader");
-    glDeleteShader = (PFNGLDELETESHADERPROC)GetExtension("glDeleteShader");
-    glShaderSource = (PFNGLSHADERSOURCEPROC)GetExtension("glShaderSource");
-    glCompileShader = (PFNGLCOMPILESHADERPROC)GetExtension("glCompileShader");
-    glGetShaderiv = (PFNGLGETSHADERIVPROC)GetExtension("glGetShaderiv");
-    glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)GetExtension("glGetShaderInfoLog");
-    glUseProgram = (PFNGLUSEPROGRAMPROC)GetExtension("glUseProgram");
-    glAttachShader = (PFNGLATTACHSHADERPROC)GetExtension("glAttachShader");
-    glLinkProgram = (PFNGLLINKPROGRAMPROC)GetExtension("glLinkProgram");
-    glGetProgramiv = (PFNGLGETPROGRAMIVPROC)GetExtension("glGetProgramiv");
-    glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)GetExtension("glGetProgramInfoLog");
-    glGetAttribLocation = (PFNGLGETATTRIBLOCATIONPROC)GetExtension("glGetAttribLocation");
-    glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)GetExtension("glBindAttribLocation");
-    glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)GetExtension("glGetUniformLocation");
-    glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)GetExtension("glGetUniformBlockIndex");
-    glProgramUniform1i = (PFNGLPROGRAMUNIFORM1IPROC)GetExtension("glProgramUniform1i");
-    glUniform1i = (PFNGLUNIFORM1IPROC)GetExtension("glUniform1i");
-    glUniform1iv = (PFNGLUNIFORM1IVPROC)GetExtension("glUniform1iv");
-    glUniform2iv = (PFNGLUNIFORM2IVPROC)GetExtension("glUniform2iv");
-    glUniform3iv = (PFNGLUNIFORM3IVPROC)GetExtension("glUniform3iv");
-    glUniform4iv = (PFNGLUNIFORM4IVPROC)GetExtension("glUniform4iv");
-    glUniform1f = (PFNGLUNIFORM1FPROC)GetExtension("glUniform1f");
-    glUniform3f = (PFNGLUNIFORM3FPROC)GetExtension("glUniform3f");
-    glUniform1fv = (PFNGLUNIFORM1FVPROC)GetExtension("glUniform1fv");
-    glUniform2fv = (PFNGLUNIFORM2FVPROC)GetExtension("glUniform2fv");
-    glUniform3fv = (PFNGLUNIFORM3FVPROC)GetExtension("glUniform3fv");
-    glUniform4fv = (PFNGLUNIFORM4FVPROC)GetExtension("glUniform4fv");
-    glUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)GetExtension("glUniformMatrix2fv");
-    glUniformMatrix2x3fv = (PFNGLUNIFORMMATRIX2X3FVPROC)GetExtension("glUniformMatrix2x3fv");
-    glUniformMatrix2x4fv = (PFNGLUNIFORMMATRIX2X4FVPROC)GetExtension("glUniformMatrix2x4fv");
-    glUniformMatrix3x2fv = (PFNGLUNIFORMMATRIX3X2FVPROC)GetExtension("glUniformMatrix3x2fv");
-    glUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)GetExtension("glUniformMatrix3fv");
-    glUniformMatrix3x4fv = (PFNGLUNIFORMMATRIX3X4FVPROC)GetExtension("glUniformMatrix3x4fv");
-    glUniformMatrix4x2fv = (PFNGLUNIFORMMATRIX4X2FVPROC)GetExtension("glUniformMatrix4x2fv");
-    glUniformMatrix4x3fv = (PFNGLUNIFORMMATRIX4X3FVPROC)GetExtension("glUniformMatrix4x3fv");
-    glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)GetExtension("glUniformMatrix4fv");
+    glCreateProgram = GetExtension(PFNGLCREATEPROGRAMPROC, "glCreateProgram");
+    glDeleteProgram = GetExtension(PFNGLDELETEPROGRAMPROC, "glDeleteProgram");
+    glCreateShader = GetExtension(PFNGLCREATESHADERPROC, "glCreateShader");
+    glDeleteShader = GetExtension(PFNGLDELETESHADERPROC, "glDeleteShader");
+    glShaderSource = GetExtension(PFNGLSHADERSOURCEPROC, "glShaderSource");
+    glCompileShader = GetExtension(PFNGLCOMPILESHADERPROC, "glCompileShader");
+    glGetShaderiv = GetExtension(PFNGLGETSHADERIVPROC, "glGetShaderiv");
+    glGetShaderInfoLog = GetExtension(PFNGLGETSHADERINFOLOGPROC, "glGetShaderInfoLog");
+    glUseProgram = GetExtension(PFNGLUSEPROGRAMPROC, "glUseProgram");
+    glAttachShader = GetExtension(PFNGLATTACHSHADERPROC, "glAttachShader");
+    glLinkProgram = GetExtension(PFNGLLINKPROGRAMPROC, "glLinkProgram");
+    glGetProgramiv = GetExtension(PFNGLGETPROGRAMIVPROC, "glGetProgramiv");
+    glGetProgramInfoLog = GetExtension(PFNGLGETPROGRAMINFOLOGPROC, "glGetProgramInfoLog");
+    glGetAttribLocation = GetExtension(PFNGLGETATTRIBLOCATIONPROC, "glGetAttribLocation");
+    glBindAttribLocation = GetExtension(PFNGLBINDATTRIBLOCATIONPROC, "glBindAttribLocation");
+    glGetUniformLocation = GetExtension(PFNGLGETUNIFORMLOCATIONPROC, "glGetUniformLocation");
+    glGetUniformBlockIndex = GetExtension(PFNGLGETUNIFORMBLOCKINDEXPROC, "glGetUniformBlockIndex");
+    glProgramUniform1i = GetExtension(PFNGLPROGRAMUNIFORM1IPROC, "glProgramUniform1i");
+    glUniform1i = GetExtension(PFNGLUNIFORM1IPROC, "glUniform1i");
+    glUniform1iv = GetExtension(PFNGLUNIFORM1IVPROC, "glUniform1iv");
+    glUniform2iv = GetExtension(PFNGLUNIFORM2IVPROC, "glUniform2iv");
+    glUniform3iv = GetExtension(PFNGLUNIFORM3IVPROC, "glUniform3iv");
+    glUniform4iv = GetExtension(PFNGLUNIFORM4IVPROC, "glUniform4iv");
+    glUniform1f = GetExtension(PFNGLUNIFORM1FPROC, "glUniform1f");
+    glUniform3f = GetExtension(PFNGLUNIFORM3FPROC, "glUniform3f");
+    glUniform1fv = GetExtension(PFNGLUNIFORM1FVPROC, "glUniform1fv");
+    glUniform2fv = GetExtension(PFNGLUNIFORM2FVPROC, "glUniform2fv");
+    glUniform3fv = GetExtension(PFNGLUNIFORM3FVPROC, "glUniform3fv");
+    glUniform4fv = GetExtension(PFNGLUNIFORM4FVPROC, "glUniform4fv");
+    glUniformMatrix2fv = GetExtension(PFNGLUNIFORMMATRIX2FVPROC, "glUniformMatrix2fv");
+    glUniformMatrix2x3fv = GetExtension(PFNGLUNIFORMMATRIX2X3FVPROC, "glUniformMatrix2x3fv");
+    glUniformMatrix2x4fv = GetExtension(PFNGLUNIFORMMATRIX2X4FVPROC, "glUniformMatrix2x4fv");
+    glUniformMatrix3x2fv = GetExtension(PFNGLUNIFORMMATRIX3X2FVPROC, "glUniformMatrix3x2fv");
+    glUniformMatrix3fv = GetExtension(PFNGLUNIFORMMATRIX3FVPROC, "glUniformMatrix3fv");
+    glUniformMatrix3x4fv = GetExtension(PFNGLUNIFORMMATRIX3X4FVPROC, "glUniformMatrix3x4fv");
+    glUniformMatrix4x2fv = GetExtension(PFNGLUNIFORMMATRIX4X2FVPROC, "glUniformMatrix4x2fv");
+    glUniformMatrix4x3fv = GetExtension(PFNGLUNIFORMMATRIX4X3FVPROC, "glUniformMatrix4x3fv");
+    glUniformMatrix4fv = GetExtension(PFNGLUNIFORMMATRIX4FVPROC, "glUniformMatrix4fv");
     glGetProgramResourceIndex =
-        (PFNGLGETPROGRAMRESOURCEINDEXPROC)GetExtension("glGetProgramResourceIndex");
-    glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)GetExtension("glUniformBlockBinding");
+        GetExtension(PFNGLGETPROGRAMRESOURCEINDEXPROC, "glGetProgramResourceIndex");
+    glUniformBlockBinding = GetExtension(PFNGLUNIFORMBLOCKBINDINGPROC, "glUniformBlockBinding");
     glShaderStorageBlockBinding =
-        (PFNGLSHADERSTORAGEBLOCKBINDINGPROC)GetExtension("glShaderStorageBlockBinding");
+        GetExtension(PFNGLSHADERSTORAGEBLOCKBINDINGPROC, "glShaderStorageBlockBinding");
 
     glDrawElementsInstanced =
-        (PFNGLDRAWELEMENTSINSTANCEDPROC)GetExtension("glDrawElementsInstanced");
-    glDispatchCompute = (PFNGLDISPATCHCOMPUTEPROC)GetExtension("glDispatchCompute");
-    glMemoryBarrier = (PFNGLMEMORYBARRIERPROC)GetExtension("glMemoryBarrier");
+        GetExtension(PFNGLDRAWELEMENTSINSTANCEDPROC, "glDrawElementsInstanced");
+    glDispatchCompute = GetExtension(PFNGLDISPATCHCOMPUTEPROC, "glDispatchCompute");
+    glMemoryBarrier = GetExtension(PFNGLMEMORYBARRIERPROC, "glMemoryBarrier");
+    glGenQueries = GetExtension(PFNGLGENQUERIESPROC, "glGenQueries");
+    glDeleteQueries = GetExtension(PFNGLDELETEQUERIESPROC, "glDeleteQueries");
+    glIsQuery = GetExtension(PFNGLISQUERYPROC, "glIsQuery");
+    glBeginQuery = GetExtension(PFNGLBEGINQUERYPROC, "glBeginQuery");
+    glEndQuery = GetExtension(PFNGLENDQUERYPROC, "glEndQuery");
+    glQueryCounter = GetExtension(PFNGLQUERYCOUNTERPROC, "glQueryCounter");
+    glGetQueryiv = GetExtension(PFNGLGETQUERYIVPROC, "glGetQueryiv");
+    glGetQueryObjectiv = GetExtension(PFNGLGETQUERYOBJECTIVPROC, "glGetQueryObjectiv");
+    glGetQueryObjectuiv = GetExtension(PFNGLGETQUERYOBJECTUIVPROC, "glGetQueryObjectuiv");
+    glGetQueryObjecti64v = GetExtension(PFNGLGETQUERYOBJECTI64VPROC, "glGetQueryObjecti64v");
+    glGetQueryObjectui64v = GetExtension(PFNGLGETQUERYOBJECTUI64VPROC, "glGetQueryObjectui64v");
 
-    glGenQueries = (PFNGLGENQUERIESPROC)GetExtension("glGenQueries");
-    glDeleteQueries = (PFNGLDELETEQUERIESPROC)GetExtension("glDeleteQueries");
-    glIsQuery = (PFNGLISQUERYPROC)GetExtension("glIsQuery");
-    glBeginQuery = (PFNGLBEGINQUERYPROC)GetExtension("glBeginQuery");
-    glEndQuery = (PFNGLENDQUERYPROC)GetExtension("glEndQuery");
-    glQueryCounter = (PFNGLQUERYCOUNTERPROC)GetExtension("glQueryCounter");
-    glGetQueryiv = (PFNGLGETQUERYIVPROC)GetExtension("glGetQueryiv");
-    glGetQueryObjectiv = (PFNGLGETQUERYOBJECTIVPROC)GetExtension("glGetQueryObjectiv");
-    glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC)GetExtension("glGetQueryObjectuiv");
-    glGetQueryObjecti64v = (PFNGLGETQUERYOBJECTI64VPROC)GetExtension("glGetQueryObjecti64v");
-    glGetQueryObjectui64v = (PFNGLGETQUERYOBJECTUI64VPROC)GetExtension("glGetQueryObjectui64v");
+    glFenceSync = GetExtension(PFNGLFENCESYNCPROC, "glFenceSync");
+    glClientWaitSync = GetExtension(PFNGLCLIENTWAITSYNCPROC, "glClientWaitSync");
+    glDeleteSync = GetExtension(PFNGLDELETESYNCPROC, "glDeleteSync");
+    glIsSync = GetExtension(PFNGLISSYNCPROC, "glIsSync");
 
-    glFenceSync = (PFNGLFENCESYNCPROC)GetExtension("glFenceSync");
-    glClientWaitSync = (PFNGLCLIENTWAITSYNCPROC)GetExtension("glClientWaitSync");
-    glDeleteSync = (PFNGLDELETESYNCPROC)GetExtension("glDeleteSync");
-    glIsSync = (PFNGLISSYNCPROC)GetExtension("glIsSync");
-
-    glBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)GetExtension("glBlendFuncSeparate");
+    glBlendFuncSeparate = GetExtension(PFNGLBLENDFUNCSEPARATEPROC, "glBlendFuncSeparate");
     glBlendEquationSeparate =
-        (PFNGLBLENDEQUATIONSEPARATEPROC)GetExtension("glBlendEquationSeparate");
+        GetExtension(PFNGLBLENDEQUATIONSEPARATEPROC, "glBlendEquationSeparate");
 
-    glBlendColor = (PFNGLBLENDCOLORPROC)GetExtension("glBlendColor");
+    glBlendColor = GetExtension(PFNGLBLENDCOLORPROC, "glBlendColor");
 
-    glDebugMessageControl = (PFNGLDEBUGMESSAGECONTROLPROC)GetExtension("glDebugMessageControl");
-    glDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC)GetExtension("glDebugMessageCallback");
+    glDebugMessageControl = GetExtension(PFNGLDEBUGMESSAGECONTROLPROC, "glDebugMessageControl");
+    glDebugMessageCallback = GetExtension(PFNGLDEBUGMESSAGECALLBACKPROC, "glDebugMessageCallback");
 
-    glDepthRangef = (PFNGLDEPTHRANGEFPROC)GetExtension("glDepthRangef");
-    glBlendEquation = (PFNGLBLENDEQUATIONPROC)GetExtension("glBlendEquation");
+    glDepthRangef = GetExtension(PFNGLDEPTHRANGEFPROC, "glDepthRangef");
+    glBlendEquation = GetExtension(PFNGLBLENDEQUATIONPROC, "glBlendEquation");
     glInvalidateFramebuffer =
-        (PFNGLINVALIDATEFRAMEBUFFERPROC)GetExtension("glInvalidateFramebuffer");
+        GetExtension(PFNGLINVALIDATEFRAMEBUFFERPROC, "glInvalidateFramebuffer");
 }
 
 typedef enum {

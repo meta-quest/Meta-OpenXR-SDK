@@ -1798,7 +1798,7 @@ bool LoadModelFile_glTF_Json(
 
                                             if (loaded) {
                                                 // validation sampler now that we have the path
-                                                auto sampler = modelAnimationChannel.sampler;
+                                                const auto* sampler = modelAnimationChannel.sampler;
                                                 int inputCount = sampler->input->count;
                                                 int outputCount = sampler->output->count;
                                                 if (modelAnimationChannel.path ==

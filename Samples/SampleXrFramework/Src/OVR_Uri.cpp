@@ -57,7 +57,7 @@ bool ovrUri::InUnitTest = false;
 class UTF8Decoder {
    public:
     explicit UTF8Decoder(char const* source)
-        : Source(source), Cur(source), Prev(NULL), PrevPrev(NULL) {}
+        : Source(source), Cur(source), Prev(nullptr), PrevPrev(nullptr) {}
 
     explicit UTF8Decoder(UTF8Decoder const& other)
         : Source(other.Source), Cur(other.Cur), Prev(other.Prev), PrevPrev(other.PrevPrev) {}
@@ -90,13 +90,13 @@ class UTF8Decoder {
     }
 
     void Backup() {
-        if (Prev == NULL) {
-            assert(Prev != NULL);
+        if (Prev == nullptr) {
+            assert(Prev != nullptr);
             return;
         }
         Cur = Prev;
         Prev = PrevPrev;
-        PrevPrev = NULL;
+        PrevPrev = nullptr;
     }
 
     char const* GetCur() const {
@@ -104,8 +104,8 @@ class UTF8Decoder {
     }
     void Reset() {
         Cur = Source;
-        Prev = NULL;
-        PrevPrev = NULL;
+        Prev = nullptr;
+        PrevPrev = nullptr;
     }
 
    private:
@@ -120,7 +120,22 @@ class UTF8Decoder {
 bool ovrUri::ParseScheme(char const* uri, char* outScheme, size_t const outSchemeSize) {
     int port = 0;
     return ParseUri(
-        uri, outScheme, outSchemeSize, NULL, 0, NULL, 0, NULL, 0, port, NULL, 0, NULL, 0, NULL, 0);
+        uri,
+        outScheme,
+        outSchemeSize,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        port,
+        nullptr,
+        0,
+        nullptr,
+        0,
+        nullptr,
+        0);
 }
 
 //==============================
@@ -128,7 +143,7 @@ bool ovrUri::ParseScheme(char const* uri, char* outScheme, size_t const outSchem
 // only returns false if the buffer overflows -- NULL out pointers are just skipped
 static bool
 EncodeCharToBuffer(uint32_t const ch, char* out, size_t const outSize, ptrdiff_t& outOffset) {
-    if (out == NULL) {
+    if (out == nullptr) {
         // if the output buffer is null, just skip
         return true;
     }
@@ -174,49 +189,49 @@ bool ovrUri::ParseUri(
     char* outFragment,
     size_t const outFragmentSize) {
     // verify all parameters are either NULL or large enough to hold a meaningful path
-    if (outScheme != NULL) {
+    if (outScheme != nullptr) {
         if (outSchemeSize < 2) {
             assert(outSchemeSize > 1);
             return false;
         }
         outScheme[0] = '\0';
     }
-    if (outHost != NULL) {
+    if (outHost != nullptr) {
         if (outHostSize < 2) {
             assert(outHostSize > 1);
             return false;
         }
         outHost[0] = '\0';
     }
-    if (outUsername != NULL) {
+    if (outUsername != nullptr) {
         if (outUsernameSize < 2) {
             assert(outUsernameSize > 1);
             return false;
         }
         outUsername[0] = '\0';
     }
-    if (outPassword != NULL) {
+    if (outPassword != nullptr) {
         if (outPasswordSize < 2) {
             assert(outPasswordSize > 1);
             return false;
         }
         outPassword[0] = '\0';
     }
-    if (outPath != NULL) {
+    if (outPath != nullptr) {
         if (outPathSize < 2) {
             assert(outPathSize > 1);
             return false;
         }
         outPath[0] = '\0';
     }
-    if (outQuery != NULL) {
+    if (outQuery != nullptr) {
         if (outQuerySize < 2) {
             assert(outQuerySize > 1);
             return false;
         }
         outQuery[0] = '\0';
     }
-    if (outFragment != NULL) {
+    if (outFragment != nullptr) {
         if (outFragmentSize < 2) {
             assert(outFragmentSize > 1);
             return false;
@@ -237,7 +252,7 @@ bool ovrUri::ParseUri(
             ch = decoder.DecodeNext();
             if (ch == '\0') {
                 // if we get here then we didn't have a colon and there's no scheme
-                if (outScheme != NULL) {
+                if (outScheme != nullptr) {
                     outScheme[0] = '\0';
                 }
 #if defined(TOLERATE_MISSING_SCHEME) // tolerant to missing scheme, but not clear if that's
@@ -251,7 +266,7 @@ bool ovrUri::ParseUri(
 #endif
             } else if (ch == ':') {
                 // 0-terminate
-                if (outScheme != NULL) {
+                if (outScheme != nullptr) {
                     outScheme[schemeOffset] = '\0';
                     // scheme must at least 1 character in length and start with a letter
                     if (schemeOffset < 1) {
@@ -287,7 +302,7 @@ bool ovrUri::ParseUri(
                 } else if (!isalpha(ch)) {
                     // assert( schemeOffset > 0 || isalpha( ch ) );
                     ALOG("Uri '%s': scheme does not start with a letter.", uri);
-                    if (outScheme != NULL) {
+                    if (outScheme != nullptr) {
                         outScheme[0] = '\0';
                     }
                     return false;
@@ -323,10 +338,10 @@ bool ovrUri::ParseUri(
                 // we reached the end of the host section or the uri without finding a username /
                 // password reset to the start of the host and continue trying to parse a host
                 decoder = hostStartDecoder;
-                if (outUsername != NULL) {
+                if (outUsername != nullptr) {
                     outUsername[0] = '\0';
                 }
-                if (outPassword != NULL) {
+                if (outPassword != nullptr) {
                     outPassword[0] = '\0';
                 }
                 break;
@@ -338,7 +353,7 @@ bool ovrUri::ParseUri(
                 }
                 // start parsing the password now
                 parsedUsername = true;
-                if (outUsername != NULL) {
+                if (outUsername != nullptr) {
                     outUsername[usernameOffset] = '\0';
                 }
                 continue;
@@ -350,7 +365,7 @@ bool ovrUri::ParseUri(
                 if (passwordOverflowed) {
                     ALOG("Uri '%s': password buffer overflow!", uri);
                 }
-                if (outPassword != NULL) {
+                if (outPassword != nullptr) {
                     outPassword[passwordOffset] = '\0';
                 }
                 break;
@@ -394,7 +409,7 @@ bool ovrUri::ParseUri(
                         outPort = atoi(portString);
                         if (ch == '\0') {
                             // finished parsing the Uri
-                            if (outPath != NULL) {
+                            if (outPath != nullptr) {
                                 // assert( outPath != NULL && ch != '\0' );
                                 ALOG(
                                     "Uri '%s': found host:port without path when a path was expected!",
@@ -424,7 +439,7 @@ bool ovrUri::ParseUri(
             // port at this point
             if (ch == '/' || ch == '\0') {
                 // end of the host
-                if (outHost != NULL) {
+                if (outHost != nullptr) {
                     outHost[hostOffset] = '\0';
                 }
                 if (ch == '\0') {
@@ -449,7 +464,7 @@ bool ovrUri::ParseUri(
 
             if (!IsLegalHostCharacter(ch)) {
                 ALOG("Uri '%s': illegal character 0x%x in host.", uri, ch);
-                if (outHost != NULL) {
+                if (outHost != nullptr) {
                     outHost[0] = '\0';
                 }
                 return false;
@@ -469,7 +484,7 @@ bool ovrUri::ParseUri(
             ch = decoder.DecodeNext();
             if (ch == '\0' || ch == '?') {
                 // zero-terminate
-                if (outPath != NULL) {
+                if (outPath != nullptr) {
                     outPath[pathOffset] = '\0';
                     if (pathOffset == 1 && outPath[0] == '/') {
                         ALOG("Uri '%s': empty path!", uri);
@@ -497,7 +512,7 @@ bool ovrUri::ParseUri(
             ch = decoder.DecodeNext();
             if (ch == '\0' || ch == '#') {
                 // zero-terminate
-                if (outQuery != NULL) {
+                if (outQuery != nullptr) {
                     outQuery[queryOffset] = '\0';
                 }
                 if (ch == '\0') {
@@ -521,7 +536,7 @@ bool ovrUri::ParseUri(
             ch = decoder.DecodeNext();
             if (ch == '\0') {
                 // zero-terminate
-                if (outFragment != NULL) {
+                if (outFragment != nullptr) {
                     outFragment[fragmentOffset] = '\0';
                 }
                 return true;
@@ -567,7 +582,7 @@ bool ovrUri::IsValidUri(char const* uri) {
 
 static void LogResult(char const* name, char const* value) {
 #if defined(OVR_BUILD_DEBUG)
-    ALOG("%s: %s", name, value != NULL ? value : "<NULL>");
+    ALOG("%s: %s", name, value != nullptr ? value : "<NULL>");
 #endif
 }
 
@@ -590,14 +605,14 @@ static void ReportTest(
     char const* path,
     char const* query,
     char const* fragment) {
-    char const* failMsg = NULL;
+    char const* failMsg = nullptr;
     if (isValid) {
-        failMsg = !success ? "FAILED TO PARSE VALID URI" : NULL;
+        failMsg = !success ? "FAILED TO PARSE VALID URI" : nullptr;
     } else if (!isValid) {
-        failMsg = success ? "INCORRECTLY PARSED INVALID URI" : NULL;
+        failMsg = success ? "INCORRECTLY PARSED INVALID URI" : nullptr;
     }
 
-    if (failMsg != NULL) {
+    if (failMsg != nullptr) {
         ALOG("Test %s", testName);
         ALOG("URI: %s", uri);
         ALOG("%s", failMsg);
@@ -609,7 +624,7 @@ static void ReportTest(
         LogResult("path", path);
         LogResult("query", query);
         LogResult("fragment", fragment);
-        assert(failMsg == NULL);
+        assert(failMsg == nullptr);
     }
 }
 

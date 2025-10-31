@@ -150,7 +150,7 @@ void LoadModelFileTexture(
     const MaterialParms& materialParms) {
     ModelTexture tex;
     tex.name = textureName;
-    tex.name = tex.name.substr(0, tex.name.rfind("."));
+    tex.name = tex.name.substr(0, tex.name.rfind('.'));
     int width;
     int height;
     tex.texid = LoadTextureFromBuffer(

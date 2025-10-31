@@ -98,6 +98,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         return result;
     }
 
+
     // Returns a list of OpenXr extensions needed for this app
     virtual std::vector<const char*> GetExtensions() override {
         std::vector<const char*> extensions = XrApp::GetExtensions();
@@ -247,7 +248,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             instance,
             "/interaction_profiles/meta/touch_plus_controller",
             &touchPlusInteractionProfile));
-        
+
         std::vector<XrActionSuggestedBinding> baseTouchBindings{};
 
         baseTouchBindings.emplace_back(
@@ -332,7 +333,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             ActionSuggestedBinding(squeezeValueAction_, "/user/hand/right/input/squeeze/value"));
 
         // Copy(construct) base paths since these interaction profiles are similar
-        // NOTE: Only bindings that are different from touch controller will be listed here. 
+        // NOTE: Only bindings that are different from touch controller will be listed here.
         // Bindings that also exist on touch controller will be copied from baseTouchBindings
         std::vector<XrActionSuggestedBinding> touchProBindings(baseTouchBindings);
 
@@ -365,7 +366,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
             ActionSuggestedBinding(thumbHapticAction_, "/user/hand/right/output/haptic_thumb"));
 
         // Copy(construct) base paths since these interaction profiles are similar
-        // NOTE: Only bindings that are different from touch controller will be listed here. 
+        // NOTE: Only bindings that are different from touch controller will be listed here.
         // Bindings that also exist on touch controller will be copied from baseTouchBindings
         std::vector<XrActionSuggestedBinding> touchPlusBindings(baseTouchBindings);
         touchPlusBindings.emplace_back(
@@ -530,19 +531,11 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         for (int i = 0; i < 500; i++) {
             aeBufferSimple[i] = 0.1;
         }
-        ui_.AddButton("AE 1s", position, size, [this, aeBufferSimple, sampleDurationBuffered]() {
-            VibrateControllerAmplitude(
-                mainHapticAction_,
-                LeftHandPath,
-                aeBufferSimple,
-                std::size(aeBufferSimple),
-                sampleDurationBuffered * std::size(aeBufferSimple));
-        });
-        position.x -= 0.4f;
         ui_.AddButton("AE 0.5s\n(Downsample)", position, size, [this, aeBufferSimple]() {
             VibrateControllerAmplitude(
                 mainHapticAction_, LeftHandPath, aeBufferSimple, std::size(aeBufferSimple), 0.5f);
         });
+
 
         // Right Hand
         position = {+1.2f, 0.7f, -1.9f};
@@ -561,11 +554,6 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
                 mainHapticAction_, RightHandPath, aeBufferSingle, std::size(aeBufferSingle), 1.0f);
         });
 
-        position.x += 0.4f;
-        ui_.AddButton("AE Fail:\nexceeding\nmax samples", position, size, [this, aeBufferSingle]() {
-            VibrateControllerAmplitude(
-                mainHapticAction_, RightHandPath, aeBufferSingle, std::size(aeBufferSingle), 10.0f);
-        });
 
         position = {+0.0f, 0.5f, -1.9f};
         position.y -= dh;
@@ -1271,6 +1259,7 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         });
         t.detach();
     }
+
 
     void StopHapticEffect(const XrAction& action, const XrPath& subactionPath) {
         XrHapticActionInfo hai = {XR_TYPE_HAPTIC_ACTION_INFO, nullptr};

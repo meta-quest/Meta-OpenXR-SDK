@@ -72,12 +72,12 @@ void GlBuffer::Update(const size_t updateDataSize, const void* data) const {
 void* GlBuffer::MapBuffer() const {
     assert(buffer != 0);
 
-    void* data = NULL;
+    void* data = nullptr;
     glBindBuffer(target, buffer);
     data = glMapBufferRange(target, 0, size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
     glBindBuffer(target, 0);
 
-    if (data == NULL) {
+    if (data == nullptr) {
         ALOGE_FAIL("GlBuffer::MapBuffer: Failed to map buffer");
     }
 

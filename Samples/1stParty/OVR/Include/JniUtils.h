@@ -110,8 +110,8 @@ class TempJniEnv {
 #if !defined(JNI_TMP_ENV)
 class TempJniEnv {
    public:
-    explicit TempJniEnv(JavaVM*, const char* /*file*/ = "<unspecified>", int /*line*/ = -1){};
-    ~TempJniEnv(){};
+    explicit TempJniEnv(JavaVM*, const char* /*file*/ = "<unspecified>", int /*line*/ = -1) {}
+    ~TempJniEnv() {}
 
     operator JNIEnv*() {
         return nullptr;
@@ -451,11 +451,40 @@ ovr_GetMethodID(JNIEnv* jni, jclass jniclass, const char* name, const char* sign
     }
     return methodId;
 }
+// Helper function to get class name and log error when method lookup fails and abort (OVR_FAIL)
+inline jmethodID
+ovr_LogMethodLookupFailure(JNIEnv* jni, jclass jniclass, const char* name, const char* signature) {
+    // Get the class name using reflection
+    jclass classClass = jni->FindClass("java/lang/Class");
+    if (classClass) {
+        jmethodID getNameMethod = jni->GetMethodID(classClass, "getName", "()Ljava/lang/String;");
+        if (getNameMethod) {
+            jstring classNameJString = (jstring)jni->CallObjectMethod(jniclass, getNameMethod);
+            if (classNameJString) {
+                const char* className = jni->GetStringUTFChars(classNameJString, NULL);
+                if (className) {
+                    OVR_FAIL(
+                        "couldn't get %s, %s, jniclass: %p, class name: %s",
+                        name,
+                        signature,
+                        jniclass,
+                        className);
+                }
+                jni->ReleaseStringUTFChars(classNameJString, className);
+                jni->DeleteLocalRef(classNameJString);
+            }
+        }
+        jni->DeleteLocalRef(classClass);
+    }
+    // Fallback if we couldn't get the class name
+    OVR_FAIL("couldn't get %s, %s, jniclass: %p", name, signature, jniclass);
+}
+
 inline jmethodID
 ovr_GetStaticMethodID(JNIEnv* jni, jclass jniclass, const char* name, const char* signature) {
     const jmethodID method = jni->GetStaticMethodID(jniclass, name, signature);
     if (!method) {
-        OVR_FAIL("couldn't get %s, %s", name, signature);
+        return ovr_LogMethodLookupFailure(jni, jniclass, name, signature);
     }
     return method;
 }

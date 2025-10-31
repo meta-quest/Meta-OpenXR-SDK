@@ -195,6 +195,7 @@ bool TinyUI::Init(
 }
 
 void TinyUI::Shutdown() {
+    GuiSys->GetDebugLines().Shutdown();
     OvrGuiSys::Destroy(GuiSys);
 }
 
@@ -205,6 +206,16 @@ void TinyUI::AddHitTestRay(const OVR::Posef& ray, bool isClicking, int deviceNum
     device.pointerEnd = ray.Transform({0.0f, 0.0f, -1.0f});
     device.clicked = isClicking;
     Devices.push_back(device);
+}
+
+OVR::Posef TinyUI::GetWorldPose(OVRFW::VRMenuObject* obj) {
+    OVR::Posef p = OVR::Posef();
+    auto it = Menus.find(obj);
+    if (it != Menus.end()) {
+        VRMenu* m = it->second;
+        p = m->GetMenuPose();
+    }
+    return p;
 }
 
 void TinyUI::Update(const OVRFW::ovrApplFrameIn& in) {

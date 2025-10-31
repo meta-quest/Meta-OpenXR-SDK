@@ -66,6 +66,7 @@ class GeometryRenderer {
     OVR::Vector3f SpecularLightDirection = OVR::Vector3f{1, 1, 1}.Normalized();
     OVR::Vector3f SpecularLightColor = {1, 1, 1};
     OVR::Vector3f AmbientLightColor = {.1, .1, .1};
+    OVR::Vector3f AdditionalColor = {0.0, 0.0, 0.0};
     uint32_t BlendSrc = ovrGpuState::kGL_SRC_ALPHA;
     uint32_t BlendDst = ovrGpuState::kGL_ONE_MINUS_SRC_ALPHA;
     uint32_t BlendMode = ovrGpuState::kGL_FUNC_ADD;

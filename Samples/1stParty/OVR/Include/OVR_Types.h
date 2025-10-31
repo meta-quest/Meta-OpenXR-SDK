@@ -261,6 +261,7 @@ typedef jfloat* jfloatArray;
 typedef jint* jintArray;
 typedef jlong* jlongArray;
 typedef jobject* jobjectArray;
+typedef int64_t jsize;
 #else
 typedef const struct JNINativeInterface* JNIEnv;
 typedef const struct JNIInvokeInterface* JavaVM;

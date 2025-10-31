@@ -182,7 +182,8 @@ void XrApp::HandleSessionStateChanges(XrSessionState state) {
                     break;
             }
 
-            PFN_xrPerfSettingsSetPerformanceLevelEXT pfnPerfSettingsSetPerformanceLevelEXT = NULL;
+            PFN_xrPerfSettingsSetPerformanceLevelEXT pfnPerfSettingsSetPerformanceLevelEXT =
+                nullptr;
             OXR(xrGetInstanceProcAddr(
                 Instance,
                 "xrPerfSettingsSetPerformanceLevelEXT",
@@ -193,7 +194,7 @@ void XrApp::HandleSessionStateChanges(XrSessionState state) {
             OXR(pfnPerfSettingsSetPerformanceLevelEXT(
                 Session, XR_PERF_SETTINGS_DOMAIN_GPU_EXT, gpuPerfLevel));
 
-            PFN_xrSetAndroidApplicationThreadKHR pfnSetAndroidApplicationThreadKHR = NULL;
+            PFN_xrSetAndroidApplicationThreadKHR pfnSetAndroidApplicationThreadKHR = nullptr;
             OXR(xrGetInstanceProcAddr(
                 Instance,
                 "xrSetAndroidApplicationThreadKHR",
@@ -227,7 +228,7 @@ void XrApp::HandleXrEvents() {
     for (;;) {
         XrEventDataBaseHeader* baseEventHeader = (XrEventDataBaseHeader*)(&eventDataBuffer);
         baseEventHeader->type = XR_TYPE_EVENT_DATA_BUFFER;
-        baseEventHeader->next = NULL;
+        baseEventHeader->next = nullptr;
         XrResult r;
         OXR(r = PollXrEvent(&eventDataBuffer));
         if (r != XR_SUCCESS) {
@@ -388,7 +389,7 @@ XrApp::LocVel XrApp::GetSpaceLocVel(XrSpace space, XrTime time) {
     XrApp::LocVel lv = {{XR_TYPE_SPACE_LOCATION}, {XR_TYPE_SPACE_VELOCITY}};
     lv.loc.next = &lv.vel;
     OXR(xrLocateSpace(space, CurrentSpace, time, &lv.loc));
-    lv.loc.next = NULL; // pointer no longer valid or necessary
+    lv.loc.next = nullptr; // pointer no longer valid or necessary
     return lv;
 }
 
@@ -425,7 +426,7 @@ std::vector<XrExtensionProperties> XrApp::GetXrExtensionProperties() const {
     uint32_t numInputExtensions = 0;
     uint32_t numOutputExtensions = 0;
     OXR(xrEnumerateInstanceExtensionProperties(
-        NULL, numInputExtensions, &numOutputExtensions, NULL));
+        nullptr, numInputExtensions, &numOutputExtensions, nullptr));
     ALOGV("xrEnumerateInstanceExtensionProperties found %u extension(s).", numOutputExtensions);
 
     numInputExtensions = numOutputExtensions;
@@ -434,7 +435,7 @@ std::vector<XrExtensionProperties> XrApp::GetXrExtensionProperties() const {
         numOutputExtensions, {XR_TYPE_EXTENSION_PROPERTIES});
 
     OXR(xrEnumerateInstanceExtensionProperties(
-        NULL, numInputExtensions, &numOutputExtensions, extensionProperties.data()));
+        nullptr, numInputExtensions, &numOutputExtensions, extensionProperties.data()));
     for (uint32_t i = 0; i < numOutputExtensions; i++) {
         ALOGV("Extension #%d = '%s'.", i, extensionProperties[i].extensionName);
     }
@@ -579,7 +580,7 @@ XrInstance XrApp::CreateInstance(const xrJava& context) {
     PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR;
     xrGetInstanceProcAddr(
         XR_NULL_HANDLE, "xrInitializeLoaderKHR", (PFN_xrVoidFunction*)&xrInitializeLoaderKHR);
-    if (xrInitializeLoaderKHR != NULL) {
+    if (xrInitializeLoaderKHR != nullptr) {
         XrLoaderInitInfoAndroidKHR loaderInitializeInfoAndroid = {
             XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR};
         loaderInitializeInfoAndroid.applicationVM = context.Vm;
@@ -604,7 +605,7 @@ XrInstance XrApp::CreateInstance(const xrJava& context) {
 
         uint32_t numInputLayers = 0;
         uint32_t numOutputLayers = 0;
-        OXR(xrEnumerateApiLayerProperties(numInputLayers, &numOutputLayers, NULL));
+        OXR(xrEnumerateApiLayerProperties(numInputLayers, &numOutputLayers, nullptr));
 
         numInputLayers = numOutputLayers;
 
@@ -683,7 +684,7 @@ XrInstance XrApp::CreateInstance(const xrJava& context) {
     instanceCreateInfo.createFlags = 0;
     instanceCreateInfo.applicationInfo = appInfo;
     instanceCreateInfo.enabledApiLayerCount = 0;
-    instanceCreateInfo.enabledApiLayerNames = NULL;
+    instanceCreateInfo.enabledApiLayerNames = nullptr;
     instanceCreateInfo.enabledExtensionCount = extensions.size();
     instanceCreateInfo.enabledExtensionNames = extensions.data();
 
@@ -748,7 +749,7 @@ bool XrApp::Init(const xrJava& context) {
 
     // Get the graphics requirements.
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
-    PFN_xrGetOpenGLESGraphicsRequirementsKHR pfnGetOpenGLESGraphicsRequirementsKHR = NULL;
+    PFN_xrGetOpenGLESGraphicsRequirementsKHR pfnGetOpenGLESGraphicsRequirementsKHR = nullptr;
     OXR(xrGetInstanceProcAddr(
         Instance,
         "xrGetOpenGLESGraphicsRequirementsKHR",
@@ -771,7 +772,7 @@ bool XrApp::Init(const xrJava& context) {
 #endif // defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 
     // Create the EGL Context
-    ovrEgl_CreateContext(&Egl, NULL);
+    ovrEgl_CreateContext(&Egl, nullptr);
 
     // Check the graphics requirements.
     int eglMajor = 0;
@@ -804,15 +805,15 @@ bool XrApp::Init(const xrJava& context) {
         XrPath handSubactionPaths[2] = {LeftHandPath, RightHandPath};
 
         AimPoseAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_POSE_INPUT, "aim_pose", NULL, 2, handSubactionPaths);
+            BaseActionSet, XR_ACTION_TYPE_POSE_INPUT, "aim_pose", nullptr, 2, handSubactionPaths);
         GripPoseAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_POSE_INPUT, "grip_pose", NULL, 2, handSubactionPaths);
+            BaseActionSet, XR_ACTION_TYPE_POSE_INPUT, "grip_pose", nullptr, 2, handSubactionPaths);
 
         JoystickAction = CreateAction(
             BaseActionSet,
             XR_ACTION_TYPE_VECTOR2F_INPUT,
             "move_on_joy",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
 
@@ -820,46 +821,71 @@ bool XrApp::Init(const xrJava& context) {
             BaseActionSet,
             XR_ACTION_TYPE_FLOAT_INPUT,
             "index_trigger",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
 
         GripTriggerAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_FLOAT_INPUT, "grip_trigger", NULL, 2, handSubactionPaths);
+            BaseActionSet,
+            XR_ACTION_TYPE_FLOAT_INPUT,
+            "grip_trigger",
+            nullptr,
+            2,
+            handSubactionPaths);
         ButtonAAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_a", NULL, 2, handSubactionPaths);
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "button_a",
+            nullptr,
+            2,
+            handSubactionPaths);
         ButtonBAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_b", NULL, 2, handSubactionPaths);
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "button_b",
+            nullptr,
+            2,
+            handSubactionPaths);
         ButtonXAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_x", NULL, 2, handSubactionPaths);
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "button_x",
+            nullptr,
+            2,
+            handSubactionPaths);
         ButtonYAction = CreateAction(
-            BaseActionSet, XR_ACTION_TYPE_BOOLEAN_INPUT, "button_y", NULL, 2, handSubactionPaths);
+            BaseActionSet,
+            XR_ACTION_TYPE_BOOLEAN_INPUT,
+            "button_y",
+            nullptr,
+            2,
+            handSubactionPaths);
         ButtonMenuAction = CreateAction(
             BaseActionSet,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
             "button_menu",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
         ThumbStickTouchAction = CreateAction(
             BaseActionSet,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
             "thumb_stick_touch",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
         ThumbRestTouchAction = CreateAction(
             BaseActionSet,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
             "thumb_rest_touch",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
         TriggerTouchAction = CreateAction(
             BaseActionSet,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
             "index_trigger_touch",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
 
@@ -867,9 +893,11 @@ bool XrApp::Init(const xrJava& context) {
             BaseActionSet,
             XR_ACTION_TYPE_BOOLEAN_INPUT,
             "thumbstick_click",
-            NULL,
+            nullptr,
             2,
             handSubactionPaths);
+
+        ActionSets.push_back(BaseActionSet);
     }
 
     /// Interaction profile can be overridden
@@ -943,7 +971,8 @@ bool XrApp::InitSession() {
     // Enumerate the viewport configurations.
     {
         uint32_t viewportConfigTypeCount = 0;
-        OXR(xrEnumerateViewConfigurations(Instance, SystemId, 0, &viewportConfigTypeCount, NULL));
+        OXR(xrEnumerateViewConfigurations(
+            Instance, SystemId, 0, &viewportConfigTypeCount, nullptr));
 
         std::vector<XrViewConfigurationType> viewportConfigurationTypes(viewportConfigTypeCount);
 
@@ -971,7 +1000,7 @@ bool XrApp::InitSession() {
 
             uint32_t viewCount;
             OXR(xrEnumerateViewConfigurationViews(
-                Instance, SystemId, viewportConfigType, 0, &viewCount, NULL));
+                Instance, SystemId, viewportConfigType, 0, &viewCount, nullptr));
 
             if (viewCount > 0) {
                 std::vector<XrViewConfigurationView> elements(
@@ -1027,7 +1056,7 @@ bool XrApp::InitSession() {
 
     bool stageSupported = false;
     uint32_t numOutputSpaces = 0;
-    OXR(xrEnumerateReferenceSpaces(Session, 0, &numOutputSpaces, NULL));
+    OXR(xrEnumerateReferenceSpaces(Session, 0, &numOutputSpaces, nullptr));
 
     std::vector<XrReferenceSpaceType> referenceSpaces(numOutputSpaces);
     OXR(xrEnumerateReferenceSpaces(
@@ -1138,6 +1167,7 @@ void XrApp::Clear() {
     CurrentSpace = XR_NULL_HANDLE;
     SessionActive = false;
 
+    ActionSets.clear();
     BaseActionSet = XR_NULL_HANDLE;
     LeftHandPath = XR_NULL_PATH;
     RightHandPath = XR_NULL_PATH;
@@ -1168,18 +1198,21 @@ void XrApp::Clear() {
 
 // Internal Input
 void XrApp::AttachActionSets() {
-    XrSessionActionSetsAttachInfo attachInfo = {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
-    attachInfo.countActionSets = 1;
-    attachInfo.actionSets = &BaseActionSet;
+    XrSessionActionSetsAttachInfo attachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+    attachInfo.countActionSets = ActionSets.size();
+    attachInfo.actionSets = ActionSets.data();
     OXR(xrAttachSessionActionSets(Session, &attachInfo));
 }
 
 void XrApp::SyncActionSets(ovrApplFrameIn& in) {
     // sync action data
-    XrActiveActionSet activeActionSet{BaseActionSet};
-    XrActionsSyncInfo syncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
-    syncInfo.countActiveActionSets = 1;
-    syncInfo.activeActionSets = &activeActionSet;
+    std::vector<XrActiveActionSet> activeActionSets;
+    for (const auto& actionSet : ActionSets) {
+        activeActionSets.emplace_back(XrActiveActionSet{actionSet});
+    }
+    XrActionsSyncInfo syncInfo = {XR_TYPE_ACTIONS_SYNC_INFO};
+    syncInfo.countActiveActionSets = activeActionSets.size();
+    syncInfo.activeActionSets = activeActionSets.data();
     OXR(xrSyncActions(Session, &syncInfo));
 
     // query input action states
@@ -1431,12 +1464,12 @@ void ActivityMainLoopContext::HandleOsEvents() {
              app_->destroyRequested == 0)
             ? -1
             : 0;
-        if (ALooper_pollAll(timeoutMilliseconds, NULL, &events, (void**)&source) < 0) {
+        if (ALooper_pollAll(timeoutMilliseconds, nullptr, &events, (void**)&source) < 0) {
             break;
         }
 
         // Process this event.
-        if (source != NULL) {
+        if (source != nullptr) {
             source->process(app_, source);
         }
     }
@@ -1613,7 +1646,7 @@ void XrApp::MainLoop(MainLoopContext& loopContext) {
         endFrameInfo.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         endFrameInfo.layerCount = LayerCount;
         endFrameInfo.layers = layers;
-
+        PreEndFrame(endFrameInfo);
         OXR(xrEndFrame(Session, &endFrameInfo));
     }
 

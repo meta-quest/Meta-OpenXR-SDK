@@ -37,14 +37,14 @@ namespace OVRFW {
 
 SurfaceTexture::SurfaceTexture(JNIEnv* jni_)
     : textureId(0),
-      javaObject(NULL),
-      jni(NULL),
+      javaObject(nullptr),
+      jni(nullptr),
       nanoTimeStamp(0)
 #if defined(OVR_OS_ANDROID)
       ,
-      updateTexImageMethodId(NULL),
-      getTimestampMethodId(NULL),
-      setDefaultBufferSizeMethodId(NULL)
+      updateTexImageMethodId(nullptr),
+      getTimestampMethodId(nullptr),
+      setDefaultBufferSizeMethodId(nullptr)
 #endif // defined(OVR_OS_ANDROID)
 {
     jni = jni_;
@@ -60,40 +60,40 @@ SurfaceTexture::SurfaceTexture(JNIEnv* jni_)
 #if defined(OVR_OS_ANDROID)
     static const char* className = "android/graphics/SurfaceTexture";
     JavaClass surfaceTextureClass(jni, jni->FindClass(className));
-    if (0 == surfaceTextureClass.GetJClass()) {
+    if (nullptr == surfaceTextureClass.GetJClass()) {
         ALOGE_FAIL("FindClass( %s ) failed", className);
     }
 
     // find the constructor that takes an int
     const jmethodID constructor =
         jni->GetMethodID(surfaceTextureClass.GetJClass(), "<init>", "(I)V");
-    if (constructor == 0) {
+    if (constructor == nullptr) {
         ALOGE_FAIL("GetMethodID( <init> ) failed");
     }
     updateTexImageMethodId =
         jni->GetMethodID(surfaceTextureClass.GetJClass(), "updateTexImage", "()V");
-    if (updateTexImageMethodId == 0) {
+    if (updateTexImageMethodId == nullptr) {
         ALOGE_FAIL("couldn't get updateTexImageMethodId");
     }
     getTimestampMethodId = jni->GetMethodID(surfaceTextureClass.GetJClass(), "getTimestamp", "()J");
-    if (getTimestampMethodId == 0) {
+    if (getTimestampMethodId == nullptr) {
         ALOGE_FAIL("couldn't get getTimestampMethodId");
     }
     setDefaultBufferSizeMethodId =
         jni->GetMethodID(surfaceTextureClass.GetJClass(), "setDefaultBufferSize", "(II)V");
-    if (setDefaultBufferSizeMethodId == 0) {
+    if (setDefaultBufferSizeMethodId == nullptr) {
         ALOGE_FAIL("couldn't get setDefaultBufferSize");
     }
 
     JavaObject obj(
         jni, jni->NewObject(surfaceTextureClass.GetJClass(), constructor, GetTextureId()));
-    if (obj.GetJObject() == 0) {
+    if (obj.GetJObject() == nullptr) {
         ALOGE_FAIL("NewObject() failed");
     }
 
     /// Keep globar ref around
     javaObject = jni->NewGlobalRef(obj.GetJObject());
-    if (javaObject == 0) {
+    if (javaObject == nullptr) {
         ALOGE_FAIL("NewGlobalRef() failed");
     }
 #endif // defined(OVR_OS_ANDROID)
@@ -107,7 +107,7 @@ SurfaceTexture::~SurfaceTexture() {
 #if defined(OVR_OS_ANDROID)
     if (javaObject) {
         jni->DeleteGlobalRef(javaObject);
-        javaObject = 0;
+        javaObject = nullptr;
     }
 #endif // defined(OVR_OS_ANDROID)
 }

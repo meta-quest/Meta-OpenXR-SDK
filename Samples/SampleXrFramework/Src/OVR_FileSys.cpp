@@ -28,13 +28,11 @@ Authors     :   Jonathan E. Wright
 #include "OVR_FileSys.h"
 
 #include <vector>
-#include <cctype> // for isdigit, isalpha
 #include <regex>
 
 #include "Misc/Log.h"
 
 #include "OVR_Stream_Impl.h"
-#include "OVR_UTF8Util.h"
 #include "OVR_Uri.h"
 #include "OVR_Std.h"
 #include "JniUtils.h"

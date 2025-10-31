@@ -28,9 +28,7 @@ Language    :   C++
 
 #include "System.h"
 
-#include <cstdio>
 #include "time.h"
-#include <string.h>
 
 namespace OVRFW {
 

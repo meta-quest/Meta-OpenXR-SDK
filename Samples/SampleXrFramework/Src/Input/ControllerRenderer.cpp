@@ -36,9 +36,7 @@ using OVR::Quatf;
 using OVR::Vector3f;
 using OVR::Vector4f;
 
-namespace OVRFW {
-
-namespace Controller {
+namespace OVRFW::Controller {
 
 /// clang-format off
 static const char* VertexShaderSrc = R"glsl(
@@ -146,7 +144,9 @@ void main()
 )glsl";
 /// clang-format on
 
-} // namespace Controller
+} // namespace OVRFW::Controller
+
+namespace OVRFW {
 
 void ControllerRenderer::LoadModelFromResource(
     OVRFW::ovrFileSys* fileSys,

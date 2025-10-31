@@ -67,10 +67,10 @@ class OvrGuiSys {
 
     class ovrDummySoundEffectPlayer : public SoundEffectPlayer {
        public:
-        virtual bool Has(const char* name) const;
-        virtual void Play(const char* name);
-        virtual void Stop(const char* name);
-        virtual void LoadSoundAsset(const char* name);
+        bool Has(const char* name) const override;
+        void Play(const char* name) override;
+        void Stop(const char* name) override;
+        void LoadSoundAsset(const char* name) override;
     };
 
     virtual ~OvrGuiSys() {}

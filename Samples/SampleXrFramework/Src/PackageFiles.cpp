@@ -32,7 +32,6 @@ Authors     :   John Carmack
 
 #include <unzip.h>
 
-#include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -89,11 +88,11 @@ void* ovr_OpenOtherApplicationPackage(const char* packageCodePath) {
 }
 
 void ovr_CloseOtherApplicationPackage(void*& zipFile) {
-    if (zipFile == 0) {
+    if (zipFile == nullptr) {
         return;
     }
     unzClose(zipFile);
-    zipFile = 0;
+    zipFile = nullptr;
 }
 
 static std::mutex PackageFileMutex;
@@ -126,8 +125,8 @@ static bool ovr_ReadFileFromOtherApplicationPackageInternal(
     std::function<void*(const size_t size)> allocBuffer,
     std::function<void(void* buffer)> freeBuffer) {
     length = 0;
-    buffer = NULL;
-    if (zipFile == 0) {
+    buffer = nullptr;
+    if (zipFile == nullptr) {
         return false;
     }
 
@@ -142,7 +141,7 @@ static bool ovr_ReadFileFromOtherApplicationPackageInternal(
     }
 
     unz_file_info info;
-    const int getRet = unzGetCurrentFileInfo(zipFile, &info, NULL, 0, NULL, 0, NULL, 0);
+    const int getRet = unzGetCurrentFileInfo(zipFile, &info, nullptr, 0, nullptr, 0, nullptr, 0);
 
     if (getRet != UNZ_OK) {
         ALOGW("File info error reading '%s' from apk!", nameInZip);
@@ -201,7 +200,7 @@ static bool ovr_ReadFileFromOtherApplicationPackageInternal(
         ALOGW("Error reading file '%s' from apk!", nameInZip);
         freeBuffer(buffer);
         length = 0;
-        buffer = NULL;
+        buffer = nullptr;
         return false;
     }
 
@@ -277,7 +276,7 @@ bool ovr_ReadFileFromOtherApplicationPackage(
 // Functions for reading assets from this process's application package
 //--------------------------------------------------------------
 
-static unzFile packageZipFile = 0;
+static unzFile packageZipFile = nullptr;
 
 void* ovr_GetApplicationPackageFile() {
     return packageZipFile;
@@ -287,7 +286,7 @@ void ovr_OpenApplicationPackage(const char* packageCodePath, const char* cachePa
     if (packageZipFile) {
         return;
     }
-    if (cachePath_ != NULL) {
+    if (cachePath_ != nullptr) {
         OVR::OVR_strncpy(CachePath, sizeof(CachePath), cachePath_, sizeof(CachePath) - 1);
     }
     packageZipFile = ovr_OpenOtherApplicationPackage(packageCodePath);

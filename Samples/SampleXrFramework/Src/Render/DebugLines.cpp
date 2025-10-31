@@ -153,7 +153,7 @@ void OvrDebugLinesLocal::Init(float lineWidth) {
 
     // this is only freed by the OS when the program exits
     if (LineProgram.VertexShader == 0 || LineProgram.FragmentShader == 0) {
-        LineProgram = GlProgram::Build(DebugLineVertexSrc, DebugLineFragmentSrc, NULL, 0);
+        LineProgram = GlProgram::Build(DebugLineVertexSrc, DebugLineFragmentSrc, nullptr, 0);
     }
 
     // the indices will never change once we've set them up, we just won't necessarily
@@ -164,11 +164,11 @@ void OvrDebugLinesLocal::Init(float lineWidth) {
     for (LineIndex_t i = 0; i < MAX_INDICES; ++i) {
         indices.push_back(i);
     }
-    // Dummy content for VB intialization
-    NonDepthTested.Attr.position.resize(MAX_INDICES, OVR::Vector3f{0.0f, 0.0f, 0.0f});
-    DepthTested.Attr.position.resize(MAX_INDICES, OVR::Vector3f{0.0f, 0.0f, 0.0f});
-    NonDepthTested.Attr.color.resize(MAX_INDICES, OVR::Vector4f{0.0f, 0.0f, 0.0f, 0.0f});
-    DepthTested.Attr.color.resize(MAX_INDICES, OVR::Vector4f{0.0f, 0.0f, 0.0f, 0.0f});
+    // Vertex buffers are allocated based on the vector capacity
+    NonDepthTested.Attr.position.reserve(MAX_INDICES);
+    DepthTested.Attr.position.reserve(MAX_INDICES);
+    NonDepthTested.Attr.color.reserve(MAX_INDICES);
+    DepthTested.Attr.color.reserve(MAX_INDICES);
 
     for (int i = 0; i < 2; i++) {
         DebugLines_t& dl = i == 0 ? NonDepthTested : DepthTested;
@@ -426,9 +426,9 @@ OvrDebugLines* OvrDebugLines::Create() {
 //==============================
 // OvrDebugLines::Free
 void OvrDebugLines::Free(OvrDebugLines*& debugLines) {
-    if (debugLines != NULL) {
+    if (debugLines != nullptr) {
         delete debugLines;
-        debugLines = NULL;
+        debugLines = nullptr;
     }
 }
 

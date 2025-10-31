@@ -42,7 +42,6 @@ Authors     :   Jonathan E. Wright
 #include "OVR_Lexer2.h" // ovrLexer
 
 namespace OVRFW {
-
 class App;
 class OvrVRMenuMgr;
 class OvrGuiSys;
@@ -664,8 +663,6 @@ struct textMetrics_t {
     float descent;
     float fontHeight;
 };
-
-class App;
 
 //==============================================================
 // VRMenuSurfaceTexture

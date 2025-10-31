@@ -29,8 +29,7 @@ using OVR::Quatf;
 using OVR::Vector3f;
 using OVR::Vector4f;
 
-namespace OVRFW {
-namespace EnvironmentShaders {
+namespace OVRFW::EnvironmentShaders {
 
 /// clang-format off
 static const char* vertexShaderSrc = R"glsl(
@@ -132,7 +131,9 @@ void main()
 
 /// clang-format on
 
-} // namespace EnvironmentShaders
+} // namespace OVRFW::EnvironmentShaders
+
+namespace OVRFW {
 
 bool EnvironmentRenderer::Init(std::string modelPath, OVRFW::ovrFileSys* fileSys) {
     /// Shader

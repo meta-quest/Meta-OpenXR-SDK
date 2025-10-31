@@ -122,7 +122,7 @@ CompileShader(GLenum shaderType, const char* directives, const char* src, GLint 
     std::string srcString;
     srcString = std::string("#version ") + std::to_string(programVersion) + std::string(" es\n");
 
-    if (directives != NULL) {
+    if (directives != nullptr) {
         srcString.append(directives);
         srcString.append("\n");
     }
@@ -148,7 +148,7 @@ CompileShader(GLenum shaderType, const char* directives, const char* src, GLint 
     const char* srcs[1];
     srcs[0] = src;
 
-    glShaderSource(shader, numSources, srcs, 0);
+    glShaderSource(shader, numSources, srcs, nullptr);
     glCompileShader(shader);
 
     GLint r;
@@ -181,7 +181,7 @@ CompileShader(GLenum shaderType, const char* directives, const char* src, GLint 
             line++;
             ALOGW("%03d  %s", line, msg);
         }
-        glGetShaderInfoLog(shader, sizeof(msg), 0, msg);
+        glGetShaderInfoLog(shader, sizeof(msg), nullptr, msg);
         ALOGW("%s\n", msg);
         glDeleteShader(shader);
         return 0;
@@ -197,7 +197,14 @@ GlProgram GlProgram::Build(
     const int requestedProgramVersion,
     bool abortOnError) {
     return Build(
-        NULL, vertexSrc, NULL, fragmentSrc, parms, numParms, requestedProgramVersion, abortOnError);
+        nullptr,
+        vertexSrc,
+        nullptr,
+        fragmentSrc,
+        parms,
+        numParms,
+        requestedProgramVersion,
+        abortOnError);
 }
 
 GlProgram GlProgram::Build(
@@ -277,7 +284,7 @@ GlProgram GlProgram::Build(
     glGetProgramiv(p.Program, GL_LINK_STATUS, &linkStatus);
     if (linkStatus == GL_FALSE) {
         GLchar msg[1024];
-        glGetProgramInfoLog(p.Program, sizeof(msg), 0, msg);
+        glGetProgramInfoLog(p.Program, sizeof(msg), nullptr, msg);
         Free(p);
         ALOG("GlProgram: Linking program failed: %s\n", msg);
         if (abortOnError) {

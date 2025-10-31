@@ -142,7 +142,7 @@ ovrSurfaceRender::~ovrSurfaceRender() {}
 
 void ovrSurfaceRender::Init() {
     for (int i = 0; i < MAX_SCENEMATRICES_UBOS; i++) {
-        SceneMatrices[i].Create(GLBUFFER_TYPE_UNIFORM, GlProgram::SCENE_MATRICES_UBO_SIZE, NULL);
+        SceneMatrices[i].Create(GLBUFFER_TYPE_UNIFORM, GlProgram::SCENE_MATRICES_UBO_SIZE, nullptr);
     }
 
     CurrentSceneMatricesIdx = 0;
@@ -194,7 +194,7 @@ int ovrSurfaceRender::UpdateSceneMatrices(
         }
 
         void* matricesBuffer = SceneMatrices[CurrentSceneMatricesIdx].MapBuffer();
-        if (matricesBuffer != NULL) {
+        if (matricesBuffer != nullptr) {
             memcpy(
                 (char*)matricesBuffer + 0 * GlProgram::MAX_VIEWS * sizeof(Matrix4f),
                 viewMatrixTransposed,
@@ -280,7 +280,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
 
                     switch (cmd.Program.Uniforms[i].Type) {
                         case ovrProgramParmType::INT: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform1iv(
                                     parmLocation,
                                     1,
@@ -288,7 +288,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::INT_VECTOR2: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform2iv(
                                     parmLocation,
                                     1,
@@ -296,7 +296,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::INT_VECTOR3: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform3iv(
                                     parmLocation,
                                     1,
@@ -304,7 +304,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::INT_VECTOR4: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform4iv(
                                     parmLocation,
                                     1,
@@ -312,14 +312,14 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::FLOAT: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform1f(
                                     parmLocation,
                                     *static_cast<const float*>(cmd.UniformData[i].Data)));
                             }
                         } break;
                         case ovrProgramParmType::FLOAT_VECTOR2: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform2fv(
                                     parmLocation,
                                     1,
@@ -327,7 +327,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::FLOAT_VECTOR3: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform3fv(
                                     parmLocation,
                                     1,
@@ -335,7 +335,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::FLOAT_VECTOR4: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 GL(glUniform4fv(
                                     parmLocation,
                                     1,
@@ -343,7 +343,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                             }
                         } break;
                         case ovrProgramParmType::FLOAT_MATRIX4: {
-                            if (parmLocation >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmLocation >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 if (cmd.UniformData[i].Count > 1) {
                                     /// FIXME: setting glUniformMatrix4fv transpose to GL_TRUE for
                                     /// an array of matrices produces garbage using the Adreno 420
@@ -372,7 +372,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                         } break;
                         case ovrProgramParmType::TEXTURE_SAMPLED: {
                             const int parmBinding = cmd.Program.Uniforms[i].Binding;
-                            if (parmBinding >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmBinding >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 const GlTexture& texture =
                                     *static_cast<GlTexture*>(cmd.UniformData[i].Data);
                                 if (currentTextures[parmBinding] != texture.texture) {
@@ -387,7 +387,7 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                         } break;
                         case ovrProgramParmType::BUFFER_UNIFORM: {
                             const int parmBinding = cmd.Program.Uniforms[i].Binding;
-                            if (parmBinding >= 0 && cmd.UniformData[i].Data != NULL) {
+                            if (parmBinding >= 0 && cmd.UniformData[i].Data != nullptr) {
                                 const GlBuffer& buffer =
                                     *static_cast<GlBuffer*>(cmd.UniformData[i].Data);
                                 if (currentBuffers[parmBinding] != buffer.GetBuffer()) {
@@ -432,14 +432,14 @@ ovrDrawCounters ovrSurfaceRender::RenderSurfaceList(
                     surfaceDef.geo.primitiveType,
                     surfaceDef.geo.indexCount,
                     surfaceDef.geo.IndexType,
-                    NULL,
+                    nullptr,
                     surfaceDef.numInstances));
             } else {
                 GL(glDrawElements(
                     surfaceDef.geo.primitiveType,
                     surfaceDef.geo.indexCount,
                     surfaceDef.geo.IndexType,
-                    NULL));
+                    nullptr));
             }
         }
 

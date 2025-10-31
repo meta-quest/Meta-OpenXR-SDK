@@ -35,8 +35,7 @@ using OVR::Quatf;
 using OVR::Vector3f;
 using OVR::Vector4f;
 
-namespace OVRFW {
-namespace SkyboxShaders {
+namespace OVRFW::SkyboxShaders {
 
 /// clang-format off
 static const char* VertexShaderSrc = R"glsl(
@@ -108,7 +107,9 @@ void main()
 
 /// clang-format on
 
-} // namespace SkyboxShaders
+} // namespace OVRFW::SkyboxShaders
+
+namespace OVRFW {
 
 bool SkyboxRenderer::Init(std::string modelPath, OVRFW::ovrFileSys* fileSys) {
     /// Shader

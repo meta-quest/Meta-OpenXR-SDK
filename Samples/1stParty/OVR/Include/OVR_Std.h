@@ -155,8 +155,8 @@ inline char* OVR_CDECL OVR_strcpy(char* dest, size_t destsize, const char* src) 
 
 inline char* OVR_CDECL OVR_strncpy(char* dest, size_t destsize, const char* src, size_t count) {
     // handle an invalid destination the same way for all cases
-    if (destsize == 0 || dest == NULL || src == NULL) {
-        OVR_ASSERT(dest != NULL && destsize > 0 && src != NULL);
+    if (destsize == 0 || dest == nullptr || src == nullptr) {
+        OVR_ASSERT(dest != nullptr && destsize > 0 && src != nullptr);
         return dest;
     }
     if (dest == src) {
@@ -220,7 +220,7 @@ inline const char* OVR_strrchr(const char* str, char c) {
     for (size_t i = len; i > 0; i--)
         if (str[i] == c)
             return str + i;
-    return 0;
+    return nullptr;
 }
 
 inline const uint8_t* OVR_CDECL OVR_memrchr(const uint8_t* str, size_t size, uint8_t c) {
@@ -228,7 +228,7 @@ inline const uint8_t* OVR_CDECL OVR_memrchr(const uint8_t* str, size_t size, uin
         if (str[i] == c)
             return str + i;
     }
-    return 0;
+    return nullptr;
 }
 
 inline char* OVR_CDECL OVR_strrchr(char* str, char c) {
@@ -236,7 +236,7 @@ inline char* OVR_CDECL OVR_strrchr(char* str, char c) {
     for (size_t i = len; i > 0; i--)
         if (str[i] == c)
             return str + i;
-    return 0;
+    return nullptr;
 }
 
 double OVR_CDECL OVR_strtod(const char* string, char** tailptr);
@@ -278,7 +278,7 @@ inline int64_t OVR_CDECL OVR_atoq(const char* string) {
 }
 
 inline uint64_t OVR_CDECL OVR_atouq(const char* string) {
-    return OVR_strtouq(string, NULL, 10);
+    return OVR_strtouq(string, nullptr, 10);
 }
 
 // Case insensitive compare implemented in platform-specific way.
@@ -314,13 +314,13 @@ inline int OVR_CDECL OVR_strnicmp(const char* a, const char* b, size_t count) {
 // Always 0-terminates.
 // Returns an empty string if NULL is passed -- for normal strdup that is undefined behavior.
 inline char* OVR_CDECL OVR_strdup(const char* str) {
-    if (str == NULL) {
+    if (str == nullptr) {
         // for POSIX strdup, str == NULL is undefined.
         // assert, and just allocate a small buffer and make it empty-string
-        OVR_ASSERT(str != NULL);
+        OVR_ASSERT(str != nullptr);
         char* result = static_cast<char*>(malloc(8));
-        if (result == NULL) {
-            return NULL;
+        if (result == nullptr) {
+            return nullptr;
         }
         result[0] = '\0';
         return result;
@@ -329,8 +329,8 @@ inline char* OVR_CDECL OVR_strdup(const char* str) {
     const size_t size = OVR_strlen(str) + 1;
 
     char* result = static_cast<char*>(malloc(size));
-    if (result == NULL) {
-        return NULL;
+    if (result == nullptr) {
+        return nullptr;
     }
 
     // copy the input string -- OVR_strcpy always 0-terminates
@@ -340,7 +340,7 @@ inline char* OVR_CDECL OVR_strdup(const char* str) {
 }
 
 inline int OVR_CDECL OVR_sprintf(char* dest, size_t destsize, const char* format, ...) {
-    if (destsize <= 0 || dest == NULL) {
+    if (destsize <= 0 || dest == nullptr) {
         OVR_ASSERT(destsize > 0);
         return -1;
     }
@@ -393,7 +393,7 @@ inline int OVR_CDECL OVR_sprintf(char* dest, size_t destsize, const char* format
 // indicator without changing the function signature.
 inline size_t OVR_CDECL
 OVR_vsprintf(char* dest, size_t destsize, const char* format, va_list argList) {
-    OVR_ASSERT(dest != NULL);
+    OVR_ASSERT(dest != nullptr);
 
     // always just 0-terminate the dest
     dest[0] = '\0';
@@ -437,7 +437,7 @@ inline int OVR_CDECL OVR_vscprintf(const char* format, va_list argList) {
 #if defined(OVR_CC_MSVC)
     ret = _vscprintf(format, argList);
 #else
-    ret = vsnprintf(NULL, 0, format, argList);
+    ret = vsnprintf(nullptr, 0, format, argList);
 #endif
     return ret;
 }

@@ -85,6 +85,7 @@ static const char* GeometryFragmentShaderSrc = R"glsl(
     uniform lowp vec3 SpecularLightDirection;
     uniform lowp vec3 SpecularLightColor;
     uniform lowp vec3 AmbientLightColor;
+    uniform lowp vec3 AdditionalColor;
 
 #ifdef HAS_VERTEX_COLORS
     varying lowp vec4 oColor;
@@ -123,6 +124,7 @@ static const char* GeometryFragmentShaderSrc = R"glsl(
         lowp vec3 color = diffuseValue * ChannelControl.x
                         + ambientValue * ChannelControl.y
                         + specularValue * ChannelControl.z
+                        + AdditionalColor;
                         ;
         gl_FragColor.xyz = color;
         gl_FragColor.w = diffuse.w * ChannelControl.w;
@@ -137,6 +139,7 @@ void GeometryRenderer::Init(const GlGeometry::Descriptor& d) {
         {"SpecularLightDirection", ovrProgramParmType::FLOAT_VECTOR3},
         {"SpecularLightColor", ovrProgramParmType::FLOAT_VECTOR3},
         {"AmbientLightColor", ovrProgramParmType::FLOAT_VECTOR3},
+        {"AdditionalColor", ovrProgramParmType::FLOAT_VECTOR3},
     };
 
     std::string programDefs;
@@ -169,6 +172,7 @@ void GeometryRenderer::Init(const GlGeometry::Descriptor& d) {
     gc.UniformData[2].Data = &SpecularLightDirection;
     gc.UniformData[3].Data = &SpecularLightColor;
     gc.UniformData[4].Data = &AmbientLightColor;
+    gc.UniformData[5].Data = &AdditionalColor;
 
     /// gpu state needs alpha blending
     gc.GpuState.depthEnable = gc.GpuState.depthMaskEnable = true;

@@ -27,9 +27,6 @@ Authors     :   Jonathan E. Wright
 
 #include "GuiSys.h"
 
-#include "Render/GlProgram.h"
-#include "Render/GlTexture.h"
-#include "Render/GlGeometry.h"
 #include "Render/TextureManager.h"
 
 #include "Misc/Log.h"
@@ -39,15 +36,10 @@ Authors     :   Jonathan E. Wright
 #include "VRMenu.h"
 #include "VRMenuMgr.h"
 #include "VRMenuComponent.h"
-#include "SoundLimiter.h"
-#include "VRMenuEventHandler.h"
-#include "DefaultComponent.h"
 
-#include "JniUtils.h"
 #include "OVR_JSON.h"
 
 #include "Reflection.h"
-#include "ReflectionData.h"
 
 using OVR::Bounds3f;
 using OVR::Matrix4f;

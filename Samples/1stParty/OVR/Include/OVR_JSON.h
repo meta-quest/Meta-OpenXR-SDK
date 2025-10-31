@@ -639,7 +639,7 @@ class JSON {
             return parseObject(buff, perror);
         }
 
-        return AssignError(perror, (std::string("Syntax Error: Invalid syntax: ") + buff).c_str());
+        return AssignError(perror, "Syntax Error: Invalid syntax");
     }
     const char* parseNumber(const char* num) {
         const char* num_start = num;
@@ -807,6 +807,10 @@ class JSON {
                     // we reached the end of the file too soon, stop
                 }
             }
+        }
+
+        if (*ptr == '\0') {
+            return AssignError(perror, "Syntax Error: Missing quote");
         }
 
         // This is how long we need for the string, roughly.

@@ -26,7 +26,6 @@ Authors     :   Federico Schliemann
 ************************************************************************************/
 
 #include "AxisRenderer.h"
-#include "Misc/Log.h"
 
 using OVR::Matrix4f;
 using OVR::Posef;
@@ -40,13 +39,13 @@ static const char* AxisVertexShaderSrc = R"glsl(
         highp mat4 Joints[128];
     } jb;
 
-    attribute highp vec4 Position;
+    attribute highp vec3 Position;
     attribute lowp vec4 VertexColor;
     varying lowp vec4 oColor;
 
     void main()
     {
-        highp vec4 localPos = jb.Joints[ gl_InstanceID ] * Position;
+        highp vec4 localPos = jb.Joints[ gl_InstanceID ] * vec4(Position.xyz, 1.0);
         gl_Position = TransformVertex( localPos );
         oColor = VertexColor;
     }
@@ -101,6 +100,7 @@ bool ovrAxisRenderer::Init(size_t count, float size) {
 void ovrAxisRenderer::Shutdown() {
     OVRFW::GlProgram::Free(ProgAxis);
     InstancedBoneUniformBuffer.Destroy();
+    AxisSurfaceDef.geo.Free();
 }
 
 void ovrAxisRenderer::Update(const std::vector<OVR::Posef>& points) {

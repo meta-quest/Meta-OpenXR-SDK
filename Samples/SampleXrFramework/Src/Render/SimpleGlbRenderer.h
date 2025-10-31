@@ -45,7 +45,9 @@ class SimpleGlbRenderer {
     SimpleGlbRenderer() = default;
     ~SimpleGlbRenderer();
 
-    bool Init(std::vector<uint8_t>& modelBuffer);
+    bool Init(
+        std::vector<uint8_t>& modelBuffer,
+        const OVR::Matrix4f& poseCorrection = OVR::Matrix4f::Identity());
     void Shutdown();
     void Update(const OVR::Posef& pose);
     void Render(std::vector<ovrDrawSurface>& surfaceList);
@@ -71,6 +73,7 @@ class SimpleGlbRenderer {
     OVR::Matrix4f Transform;
     OVR::Posef GripPose = OVR::Posef::Identity();
     size_t kMaxJoints = 16;
+    OVR::Matrix4f PoseCorrection;
 };
 
 } // namespace OVRFW

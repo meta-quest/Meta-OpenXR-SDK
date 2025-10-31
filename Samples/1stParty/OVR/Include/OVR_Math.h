@@ -493,17 +493,17 @@ inline bool DefinitelyLessThan(float a, float b) {
 
 // Conversion functions between degrees and radians
 // (non-templated to ensure passing int arguments causes warning)
-inline float RadToDegree(float rad) {
+inline constexpr float RadToDegree(float rad) {
     return rad * MATH_FLOAT_RADTODEGREEFACTOR;
 }
-inline double RadToDegree(double rad) {
+inline constexpr double RadToDegree(double rad) {
     return rad * MATH_DOUBLE_RADTODEGREEFACTOR;
 }
 
-inline float DegreeToRad(float deg) {
+inline constexpr float DegreeToRad(float deg) {
     return deg * MATH_FLOAT_DEGREETORADFACTOR;
 }
-inline double DegreeToRad(double deg) {
+inline constexpr double DegreeToRad(double deg) {
     return deg * MATH_DOUBLE_DEGREETORADFACTOR;
 }
 
@@ -832,8 +832,8 @@ class Vector3 {
     // C-interop support.
     typedef typename CompatibleTypes<Vector3<T>>::Type CompatibleType;
 
-    Vector3(const CompatibleType& s) : x(s.x), y(s.y), z(s.z) {}
-    Vector3(const CompatibleType&& s) : x(s.x), y(s.y), z(s.z) {}
+    constexpr Vector3(const CompatibleType& s) : x(s.x), y(s.y), z(s.z) {}
+    constexpr Vector3(const CompatibleType&& s) : x(s.x), y(s.y), z(s.z) {}
 
     operator const CompatibleType&() const {
         OVR_MATH_STATIC_ASSERT(
@@ -1698,9 +1698,9 @@ class Quat {
     // x,y,z = axis*sin(angle/2), w = cos(angle/2)
     T x, y, z, w;
 
-    Quat() : x(0), y(0), z(0), w(1) {}
-    Quat(T x_, T y_, T z_, T w_) : x(x_), y(y_), z(z_), w(w_) {}
-    explicit Quat(const Quat<typename Math<T>::OtherFloatType>& src)
+    constexpr Quat() : x(0), y(0), z(0), w(1) {}
+    constexpr Quat(T x_, T y_, T z_, T w_) : x(x_), y(y_), z(z_), w(w_) {}
+    explicit constexpr Quat(const Quat<typename Math<T>::OtherFloatType>& src)
         : x((T)src.x), y((T)src.y), z((T)src.z), w((T)src.w) {
         // NOTE: Converting a normalized Quat<float> to Quat<double>
         // will generally result in an un-normalized quaternion.
@@ -1711,8 +1711,8 @@ class Quat {
     typedef typename CompatibleTypes<Quat<T>>::Type CompatibleType;
 
     // C-interop support.
-    Quat(const CompatibleType& s) : x(s.x), y(s.y), z(s.z), w(s.w) {}
-    Quat(const CompatibleType&& s) : x(s.x), y(s.y), z(s.z), w(s.w) {}
+    constexpr Quat(const CompatibleType& s) : x(s.x), y(s.y), z(s.z), w(s.w) {}
+    constexpr Quat(const CompatibleType&& s) : x(s.x), y(s.y), z(s.z), w(s.w) {}
 
     operator CompatibleType() const {
         CompatibleType result;
@@ -2530,16 +2530,16 @@ class Pose {
 
     Pose() = default;
 
-    Pose(const Quat<T>& orientation, const Vector3<T>& pos)
+    constexpr Pose(const Quat<T>& orientation, const Vector3<T>& pos)
         : Rotation(orientation), Translation(pos) {}
 
     Pose(const Pose& s) = default;
 
     Pose(const Matrix3<T>& R, const Vector3<T>& t) : Rotation((Quat<T>)R), Translation(t) {}
 
-    Pose(const CompatibleType& s) : Rotation(s.Orientation), Translation(s.Position) {}
+    constexpr Pose(const CompatibleType& s) : Rotation(s.Orientation), Translation(s.Position) {}
 
-    Pose(const CompatibleType&& s) : Rotation(s.Orientation), Translation(s.Position) {}
+    constexpr Pose(const CompatibleType&& s) : Rotation(s.Orientation), Translation(s.Position) {}
 
     explicit Pose(const Pose<typename Math<T>::OtherFloatType>& s)
         : Rotation(s.Rotation), Translation(s.Translation) {
@@ -2736,17 +2736,17 @@ class Matrix4 {
     enum NoInitType { NoInit };
 
     // Construct with no memory initialization.
-    Matrix4(NoInitType) {}
+    constexpr Matrix4(NoInitType) {}
 
     // By default, we construct identity matrix.
-    Matrix4() {
+    constexpr Matrix4() {
         M[0][0] = M[1][1] = M[2][2] = M[3][3] = T(1);
         M[0][1] = M[1][0] = M[2][3] = M[3][1] = T(0);
         M[0][2] = M[1][2] = M[2][0] = M[3][2] = T(0);
         M[0][3] = M[1][3] = M[2][1] = M[3][0] = T(0);
     }
 
-    Matrix4(
+    constexpr Matrix4(
         T m11,
         T m12,
         T m13,
@@ -2781,7 +2781,7 @@ class Matrix4 {
         M[3][3] = m44;
     }
 
-    Matrix4(T m11, T m12, T m13, T m21, T m22, T m23, T m31, T m32, T m33) {
+    constexpr Matrix4(T m11, T m12, T m13, T m21, T m22, T m23, T m31, T m32, T m33) {
         M[0][0] = m11;
         M[0][1] = m12;
         M[0][2] = m13;
@@ -2800,7 +2800,7 @@ class Matrix4 {
         M[3][3] = T(1);
     }
 
-    explicit Matrix4(const Matrix3<T>& m) {
+    explicit constexpr Matrix4(const Matrix3<T>& m) {
         M[0][0] = m.M[0][0];
         M[0][1] = m.M[0][1];
         M[0][2] = m.M[0][2];
@@ -2820,7 +2820,7 @@ class Matrix4 {
     }
 
     // Creates a matrix representing the translation passed in.
-    explicit Matrix4(const Vector3<T>& v) {
+    explicit constexpr Matrix4(const Vector3<T>& v) {
         M[0][0] = T(1);
         M[0][1] = T(0);
         M[0][2] = T(0);
@@ -3676,7 +3676,7 @@ class Matrix3 {
     Matrix3(NoInitType) {}
 
     // By default, we construct identity matrix.
-    Matrix3() {
+    constexpr Matrix3() {
         M[0][0] = M[1][1] = M[2][2] = T(1);
         M[0][1] = M[1][0] = M[2][0] = T(0);
         M[0][2] = M[1][2] = M[2][1] = T(0);
@@ -3684,7 +3684,7 @@ class Matrix3 {
 
     Matrix3(const Matrix3& b) = default;
 
-    Matrix3(T m11, T m12, T m13, T m21, T m22, T m23, T m31, T m32, T m33) {
+    constexpr Matrix3(T m11, T m12, T m13, T m21, T m22, T m23, T m31, T m32, T m33) {
         M[0][0] = m11;
         M[0][1] = m12;
         M[0][2] = m13;
@@ -3697,7 +3697,7 @@ class Matrix3 {
     }
 
     // Construction from X, Y, Z basis vectors
-    Matrix3(const Vector3<T>& xBasis, const Vector3<T>& yBasis, const Vector3<T>& zBasis) {
+    constexpr Matrix3(const Vector3<T>& xBasis, const Vector3<T>& yBasis, const Vector3<T>& zBasis) {
         M[0][0] = xBasis.x;
         M[0][1] = yBasis.x;
         M[0][2] = zBasis.x;

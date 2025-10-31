@@ -214,11 +214,11 @@ GlGeometry FontGeometryCreate(fontVertex_t* verts, int numVerts, OVR::Bounds3f& 
     const int vertexByteCount = Geo.vertexCount * sizeof(fontVertex_t);
     glGenBuffers(1, &Geo.vertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, Geo.vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, vertexByteCount, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertexByteCount, nullptr, GL_DYNAMIC_DRAW);
 
     glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_POSITION); // x, y and z
     glVertexAttribPointer(
-        VERTEX_ATTRIBUTE_LOCATION_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(fontVertex_t), (void*)0);
+        VERTEX_ATTRIBUTE_LOCATION_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(fontVertex_t), (void*)nullptr);
 
     glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_UV0); // s and t
     glVertexAttribPointer(

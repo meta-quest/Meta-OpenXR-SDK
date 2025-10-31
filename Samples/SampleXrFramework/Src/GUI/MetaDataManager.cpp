@@ -257,7 +257,7 @@ void OvrMetaData::InitFromDirectory(
             if (GetFullPath(searchPaths, s.c_str(), datum->Url)) {
                 // always use the lowercase version of the URL to search the map
                 std::string lowerCaseUrl = datum->Url.c_str();
-                auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+                const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
                 loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
 
                 auto datumIter = UrlToIndex.find(lowerCaseUrl);
@@ -335,7 +335,7 @@ void OvrMetaData::InitFromFileList(
 
             // always use the lowercase version of the URL
             std::string lowerCaseUrl = datum->Url.c_str();
-            auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+            const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
             loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
             auto datumIter = UrlToIndex.find(lowerCaseUrl);
             if (datumIter == UrlToIndex.end()) {
@@ -669,7 +669,7 @@ void OvrMetaData::DedupMetaData(
 
         // always use the lowercase version of the URL
         std::string lowerCaseUrl = metaDatum->Url.c_str();
-        auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+        const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
         loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
         auto iter = newData.find(lowerCaseUrl);
         if (iter != newData.end()) {
@@ -836,7 +836,7 @@ void OvrMetaData::ExtractMetaData(
 
                 // always use the lowercase version of the URL
                 std::string lowerCaseUrl = metaDatum->Url.c_str();
-                auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+                const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
                 loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
                 auto iter = outMetaData.find(lowerCaseUrl);
                 if (iter == outMetaData.end()) {
@@ -885,7 +885,7 @@ void OvrMetaData::ExtractRemoteMetaData(
 
                 // always use the lowercase version of the URL
                 std::string lowerCaseUrl = metaDatum->Url.c_str();
-                auto& loc = std::use_facet<std::ctype<char>>(std::locale());
+                const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
                 loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
                 auto iter = outMetaData.find(lowerCaseUrl);
                 if (iter == outMetaData.end()) {

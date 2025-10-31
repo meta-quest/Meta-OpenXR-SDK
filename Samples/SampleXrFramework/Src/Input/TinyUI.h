@@ -110,6 +110,8 @@ class TinyUI {
     }
     void AddHitTestRay(const OVR::Posef& ray, bool isClicking, int deviceNum = 0);
 
+    OVR::Posef GetWorldPose(OVRFW::VRMenuObject* obj);
+
     /// ui toggle
     void ShowAll();
     void HideAll(const std::vector<VRMenuObject*>& exceptions = std::vector<VRMenuObject*>());

@@ -46,8 +46,6 @@ Copyright   :   Copyright (c) Meta Platforms, Inc. and affiliates.
 #include "Input/TinyUI.h"
 #include "Render/SimpleBeamRenderer.h"
 #include "meta_openxr_preview/openxr_oculus_helpers.h"
-#include "meta_openxr_preview/meta_detached_controllers.h"
-#include "meta_openxr_preview/meta_simultaneous_hands_and_controllers.h"
 
 // All physical units in OpenXR are in meters, but sometimes it's more useful
 // to think in cm, so this user defined literal converts from centimeters to meters

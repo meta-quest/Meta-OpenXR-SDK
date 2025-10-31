@@ -34,8 +34,8 @@ Authors     :   J.M.P. van Waveren
 #include <string>
 #include <vector>
 
-namespace OVR {
-namespace StringUtils {
+namespace OVR::StringUtils {
+
 //
 // Convert a string to a common type.
 //
@@ -393,5 +393,4 @@ inline bool EndsWith(std::string const& value, std::string const& ending) {
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-} // namespace StringUtils
-} // namespace OVR
+} // namespace OVR::StringUtils
