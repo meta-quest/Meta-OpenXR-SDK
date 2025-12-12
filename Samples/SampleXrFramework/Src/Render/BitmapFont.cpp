@@ -35,9 +35,7 @@ Authors     :   Jonathan E. Wright
 
 #include <algorithm>
 
-#include <errno.h>
 #include <math.h>
-#include <sys/stat.h>
 
 #include "OVR_UTF8Util.h"
 #include "OVR_JSON.h"
@@ -48,7 +46,6 @@ Authors     :   Jonathan E. Wright
 #include "GlTexture.h"
 #include "GlGeometry.h"
 
-#include "PackageFiles.h"
 #include "OVR_FileSys.h"
 #include "OVR_Uri.h"
 
@@ -76,8 +73,9 @@ inline std::string ExtractFile(const std::string& s) {
     }
 
     int start;
-    for (start = end - 1; start > -1 && s[start] != '/'; start--)
+    for (start = end - 1; start > -1 && s[start] != '/'; start--) {
         ;
+    }
     start++;
 
     return std::string(&s[start], end - start);
@@ -641,8 +639,9 @@ static void UpdateFormat(
     char const** buffer,
     ovrFormat& format,
     uint8_t vertexParms[4]) {
-    while (CheckForFormatEscape(buffer, format.Color, format.Weight))
+    while (CheckForFormatEscape(buffer, format.Color, format.Weight)) {
         ;
+    }
     if (format.Weight != format.LastWeight && format.Weight != 0xffffffff) {
         ovrFontWeight const& w = fontInfo.GetFontWeight(format.Weight);
         vertexParms[1] =
@@ -1486,7 +1485,7 @@ bool BitmapFontLocal::Load(ovrFileSys& fileSys, char const* uri) {
     // create the shaders for font rendering if not already created
     if (FontProgram.VertexShader == 0 || FontProgram.FragmentShader == 0) {
         static ovrProgramParm fontUniformParms[] = {
-            {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = ovrProgramParmType::TEXTURE_SAMPLED},
         };
         FontProgram = GlProgram::Build(
             FontSingleTextureVertexShaderSrc,
@@ -1874,8 +1873,9 @@ float BitmapFontLocal::CalcTextWidth(char const* text) const {
     char const* p = text;
     uint32_t color;
     uint32_t weight;
-    while (CheckForFormatEscape(&p, color, weight))
+    while (CheckForFormatEscape(&p, color, weight)) {
         ;
+    }
     for (uint32_t charCode = UTF8Util::DecodeNextChar(&p); charCode != '\0';
          charCode = UTF8Util::DecodeNextChar(&p)) {
         if (charCode == '\r' || charCode == '\n') {
@@ -1884,8 +1884,9 @@ float BitmapFontLocal::CalcTextWidth(char const* text) const {
 
         FontGlyphType const& g = GlyphForCharCode(charCode);
         width += g.AdvanceX * FontInfo.ScaleFactorX;
-        while (CheckForFormatEscape(&p, color, weight))
+        while (CheckForFormatEscape(&p, color, weight)) {
             ;
+        }
     }
 
 #if defined(OVR_BUILD_DEBUG)
@@ -1933,8 +1934,9 @@ void BitmapFontLocal::CalcTextMetrics(
 
     char const* p = text;
     for (;; len++) {
-        while (CheckForFormatEscape(&p, color, weight))
+        while (CheckForFormatEscape(&p, color, weight)) {
             ;
+        }
         uint32_t charCode = UTF8Util::DecodeNextChar(&p);
         if (charCode == '\r') {
             continue; // skip carriage returns
@@ -2017,8 +2019,9 @@ void BitmapFontLocal::TruncateText(std::string& inOutText, int const maxLines) c
     int lineCount = 0;
     size_t len = 0;
     for (;; len++) {
-        while (CheckForFormatEscape(&p, color, weight))
+        while (CheckForFormatEscape(&p, color, weight)) {
             ;
+        }
         uint32_t charCode = UTF8Util::DecodeNextChar(&p);
         if (charCode == '\n') {
             lineCount++;

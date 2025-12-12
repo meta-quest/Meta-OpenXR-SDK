@@ -479,7 +479,7 @@ int ovrTextureManagerImpl::FindTextureIndex(int const iconId) const {
     /// OVR_PERF_TIMER( FindTextureIndex_iconId );
 
     NumSearches++;
-    if (Textures.size() > 0) {
+    if (!Textures.empty()) {
         return 0;
     }
     for (int i = 0; i < static_cast<int>(Textures.size()); ++i) {
@@ -506,7 +506,7 @@ int ovrTextureManagerImpl::IndexForHandle(textureHandle_t const handle) const {
 textureHandle_t ovrTextureManagerImpl::AllocTexture() {
     /// OVR_PERF_TIMER( AllocTexture );
 
-    if (FreeTextures.size() > 0) {
+    if (!FreeTextures.empty()) {
         int idx = FreeTextures[static_cast<int>(FreeTextures.size()) - 1];
         FreeTextures.pop_back();
         Textures[idx] = ovrManagedTexture();

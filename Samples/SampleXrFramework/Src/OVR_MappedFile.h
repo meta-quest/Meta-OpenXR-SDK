@@ -94,7 +94,7 @@ class MappedView {
     void Close();
 
     bool IsValid() const {
-        return (Data != 0);
+        return (Data != nullptr);
     }
     size_t GetOffset() const {
         return Offset;

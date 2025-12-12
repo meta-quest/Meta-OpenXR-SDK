@@ -30,10 +30,8 @@ Language    :   c++
 
 #if defined(ANDROID)
 #include <android/window.h>
-#include <android/native_window_jni.h>
 #include <openxr/openxr.h>
 #include <unistd.h>
-#include <pthread.h>
 #include <sys/prctl.h> // for prctl( PR_SET_NAME )
 #elif defined(WIN32)
 // Favor the high performance NVIDIA or AMD GPUs
@@ -386,7 +384,7 @@ bool XrApp::ActionPoseIsActive(XrAction action, XrPath subactionPath) {
 }
 
 XrApp::LocVel XrApp::GetSpaceLocVel(XrSpace space, XrTime time) {
-    XrApp::LocVel lv = {{XR_TYPE_SPACE_LOCATION}, {XR_TYPE_SPACE_VELOCITY}};
+    XrApp::LocVel lv = {.loc = {XR_TYPE_SPACE_LOCATION}, .vel = {XR_TYPE_SPACE_VELOCITY}};
     lv.loc.next = &lv.vel;
     OXR(xrLocateSpace(space, CurrentSpace, time, &lv.loc));
     lv.loc.next = nullptr; // pointer no longer valid or necessary

@@ -80,8 +80,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer);
 // null character is hit.
 inline uint32_t DecodeNextChar(const char** putf8Buffer) {
     uint32_t ch = DecodeNextChar_Advance0(putf8Buffer);
-    if (ch == 0)
+    if (ch == 0) {
         (*putf8Buffer)--;
+    }
     return ch;
 }
 

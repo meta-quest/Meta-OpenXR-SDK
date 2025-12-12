@@ -344,12 +344,13 @@ traceResult_t ModelTrace::Trace(const Vector3f& start, const Vector3f& end) cons
             // on the ray direction.
             const int nodePlane = ((currentNode->data >> 1) & 3);
             int child;
-            if (rayEntryPoint[nodePlane] - currentNode->dist < 0.00001f)
+            if (rayEntryPoint[nodePlane] - currentNode->dist < 0.00001f) {
                 child = 0;
-            else if (rayEntryPoint[nodePlane] - currentNode->dist > 0.00001f)
+            } else if (rayEntryPoint[nodePlane] - currentNode->dist > 0.00001f) {
                 child = 1;
-            else
+            } else {
                 child = (rayDelta[nodePlane] > 0.0f);
+            }
             currentNode = &nodes[(currentNode->data >> 3) + child];
         }
 

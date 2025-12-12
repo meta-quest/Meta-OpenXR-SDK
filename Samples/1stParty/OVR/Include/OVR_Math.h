@@ -3475,6 +3475,25 @@ class Matrix4 {
     }
     // MERGE_MOBILE_SDK
 
+    // Map the points in the box to [-1, 1]^3
+    // This is used for z reversion : zNear < zFar, zNear -> 1.0, zFar -> -1.0
+    static Matrix4 CreateOrthographicProjection(
+        const T& left,
+        const T& right,
+        const T& bottom,
+        const T& top,
+        const T& zNear,
+        const T& zFar) {
+        OVR::Matrix4<T> proj = OVR::Matrix4<T>::Identity();
+        proj(0, 0) = 2.0 / (right - left);
+        proj(1, 1) = 2.0 / (top - bottom);
+        proj(2, 2) = -2.0 / (zFar - zNear);
+        proj(0, 3) = -(right + left) / (right - left);
+        proj(1, 3) = -(top + bottom) / (top - bottom);
+        proj(2, 3) = (zFar + zNear) / (zFar - zNear);
+        return proj;
+    }
+
     // LookAtRH creates a View transformation matrix for right-handed coordinate system.
     // The resulting matrix points camera from 'eye' towards 'at' direction, with 'up'
     // specifying the up vector. The resulting matrix should be used with PerspectiveRH

@@ -276,12 +276,12 @@ const OVR::Quatf cellAdjustR =
 void HandMaskRenderer::Init(bool leftHand) {
     /// Shader
     static ovrProgramParm UniformParms[] = {
-        {"JointMatrices", ovrProgramParmType::BUFFER_UNIFORM},
-        {"JointColors", ovrProgramParmType::BUFFER_UNIFORM},
-        {"LayerBlend", ovrProgramParmType::FLOAT},
-        {"Falloff", ovrProgramParmType::FLOAT},
-        {"Intensity", ovrProgramParmType::FLOAT},
-        {"FadeIntensity", ovrProgramParmType::FLOAT},
+        {.Name="JointMatrices", .Type=ovrProgramParmType::BUFFER_UNIFORM},
+        {.Name="JointColors", .Type=ovrProgramParmType::BUFFER_UNIFORM},
+        {.Name="LayerBlend", .Type=ovrProgramParmType::FLOAT},
+        {.Name="Falloff", .Type=ovrProgramParmType::FLOAT},
+        {.Name="Intensity", .Type=ovrProgramParmType::FLOAT},
+        {.Name="FadeIntensity", .Type=ovrProgramParmType::FLOAT},
     };
 
     ProgHandMaskAlphaGradient = GlProgram::Build(

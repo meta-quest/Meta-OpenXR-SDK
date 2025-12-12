@@ -55,6 +55,8 @@ Authors   :
 
 #include <meta_openxr_preview/meta_boundary_visibility.h>
 
+#include <meta_openxr_preview/meta_spatial_entity_semantic_label.h>
+#include <meta_openxr_preview/meta_spatial_entity_room_mesh.h>
 
 #include <meta_openxr_preview/extx2_stationary_reference_space.h>
 
@@ -183,8 +185,30 @@ static const std::map<std::string, XrColor4f> SemanticLabelToColorMap = {
     {"LAMP", {0.9f, 0.9f, 0.9f, 0.8f}},
     {"PLANT", {0.1f, 0.9f, 0.2f, 0.6f}},
     {"WALL_ART", {1.0f, 0.6f, 0.0f, 0.6f}},
+    {"UNKNOWN", {0.2f, 1.0f, 0.3f, 0.2f}},
+    {"INNER_WALL_FACE", {0.1f, 0.6f, 0.6f, 0.7f}},
     {"OTHER", {1.0f, 0.0f, 1.0f, 0.2f}}};
 
+std::string stringFromSemanticLabel(XrSemanticLabelMETA label) {
+#define SEMANTIC_LABEL_CASE(x)           \
+    case XR_SEMANTIC_LABEL_##x##_META: \
+        return #x;
+
+    switch (label) {
+        SEMANTIC_LABEL_CASE(UNKNOWN);
+        SEMANTIC_LABEL_CASE(FLOOR);
+        SEMANTIC_LABEL_CASE(CEILING);
+        SEMANTIC_LABEL_CASE(WALL_FACE);
+        SEMANTIC_LABEL_CASE(INNER_WALL_FACE);
+        SEMANTIC_LABEL_CASE(INVISIBLE_WALL_FACE);
+        SEMANTIC_LABEL_CASE(DOOR_FRAME);
+        SEMANTIC_LABEL_CASE(WINDOW_FRAME);
+        default:
+            return "UNKNOWN";
+    }
+
+#undef SEMANTIC_LABEL_CASE
+}
 
 XrColor4f GetColorForSemanticLabels(const std::string& labels) {
     const XrColor4f defaultColor = {0.2f, 0.2f, 0.0f, 0.2f};
@@ -499,7 +523,7 @@ struct ovrExtensionFunctionPointers {
     PFN_xrPassthroughLayerSetStyleFB xrPassthroughLayerSetStyleFB = nullptr;
     PFN_xrPassthroughStartFB xrPassthroughStartFB = nullptr;
     PFN_xrPassthroughPauseFB xrPassthroughPauseFB = nullptr;
-        PFN_xrEnumerateSpaceSupportedComponentsFB xrEnumerateSpaceSupportedComponentsFB = nullptr;
+    PFN_xrEnumerateSpaceSupportedComponentsFB xrEnumerateSpaceSupportedComponentsFB = nullptr;
     PFN_xrGetSpaceComponentStatusFB xrGetSpaceComponentStatusFB = nullptr;
     PFN_xrSetSpaceComponentStatusFB xrSetSpaceComponentStatusFB = nullptr;
     PFN_xrQuerySpacesFB xrQuerySpacesFB = nullptr;
@@ -515,6 +539,8 @@ struct ovrExtensionFunctionPointers {
     PFN_xrRequestSceneCaptureFB xrRequestSceneCaptureFB = nullptr;
 #endif
     PFN_xrRequestBoundaryVisibilityMETA xrRequestBoundaryVisibilityMETA = nullptr;
+    PFN_xrGetSpaceRoomMeshMETA xrGetSpaceRoomMeshMETA = nullptr;
+    PFN_xrGetSpaceRoomMeshFaceIndicesMETA xrGetSpaceRoomMeshFaceIndicesMETA = nullptr;
     PFN_xrGetStationaryReferenceSpaceIdEXTX2 xrGetStationaryReferenceSpaceIdEXTX2 = nullptr;
 };
 
@@ -563,7 +589,8 @@ struct ovrApp {
         QueryAll,
         QueryAllBounded2DEnabled,
         QueryAllRoomLayoutEnabled,
-                QueryByUuids,
+        QueryAllRoomMeshEnabled,
+        QueryByUuids,
     };
     QueryType NextQueryType;
     bool QueryAllAnchorsInRoom = true;
@@ -579,7 +606,8 @@ struct ovrApp {
     enum class VisualizationMode {
         VisualizeAll = 0,
         VisualizePlanesAndVolumes,
-                VisualizeMeshes,
+        VisualizeRoomMeshes,
+        VisualizeMeshes,
         Count, // Not a valid enum
     };
     VisualizationMode CurrentVisualizationMode = VisualizationMode::VisualizeAll;
@@ -919,6 +947,82 @@ bool UpdateOvrMesh(ovrApp& app, ovrMesh& mesh) {
     return true;
 }
 
+bool UpdateOvrRoomMesh(ovrApp& app, ovrRoomMesh& room) {
+    assert(app.FunPtrs.xrGetSpaceRoomMeshMETA != nullptr);
+    assert(app.FunPtrs.xrGetSpaceRoomMeshFaceIndicesMETA != nullptr);
+
+    static const std::vector<XrSemanticLabelMETA> kRecognizedSemanticLabels = {
+        XR_SEMANTIC_LABEL_FLOOR_META,
+        XR_SEMANTIC_LABEL_CEILING_META,
+        XR_SEMANTIC_LABEL_WALL_FACE_META,
+        XR_SEMANTIC_LABEL_INNER_WALL_FACE_META,
+        XR_SEMANTIC_LABEL_INVISIBLE_WALL_FACE_META,
+        XR_SEMANTIC_LABEL_DOOR_FRAME_META,
+        XR_SEMANTIC_LABEL_WINDOW_FRAME_META,
+    };
+    const XrSpaceRoomMeshGetInfoMETA getInfo = {
+        XR_TYPE_SPACE_ROOM_MESH_GET_INFO_META,
+        nullptr,
+        (uint32_t)kRecognizedSemanticLabels.size(),
+        kRecognizedSemanticLabels.data()};
+
+    XrResult res;
+    XrRoomMeshMETA roomMesh = {XR_TYPE_ROOM_MESH_META};
+    // First call
+    OXR(res = app.FunPtrs.xrGetSpaceRoomMeshMETA(room.Space, &getInfo, &roomMesh));
+    if (XR_FAILED(res)) {
+        ALOGE("Failed getting room mesh!");
+        return false;
+    }
+    // Second call
+    std::vector<XrVector3f> vertices(roomMesh.vertexCountOutput);
+    std::vector<XrRoomMeshFaceMETA> roomMeshFaces(
+        roomMesh.faceCountOutput, XrRoomMeshFaceMETA{});
+    roomMesh.vertexCapacityInput = vertices.size();
+    roomMesh.vertices = vertices.data();
+    roomMesh.faceCapacityInput = roomMeshFaces.size();
+    roomMesh.faces = roomMeshFaces.data();
+    OXR(res = app.FunPtrs.xrGetSpaceRoomMeshMETA(room.Space, &getInfo, &roomMesh));
+    if (XR_FAILED(res)) {
+        ALOGE("Failed getting room mesh!");
+        return false;
+    }
+
+    // Get all face indices
+    std::vector<XrRoomMeshFaceIndicesMETA> roomMeshFaceIndicesList(
+        roomMesh.faceCountOutput, XrRoomMeshFaceIndicesMETA{XR_TYPE_ROOM_MESH_FACE_INDICES_META});
+    std::vector<std::vector<uint32_t>> indicesList(
+        roomMesh.faceCountOutput, std::vector<uint32_t>{});
+    for (uint32_t f = 0; f < roomMesh.faceCountOutput; ++f) {
+        // First call
+        OXR(res = app.FunPtrs.xrGetSpaceRoomMeshFaceIndicesMETA(
+            room.Space, &roomMeshFaces[f].uuid, &roomMeshFaceIndicesList[f]));
+        if (XR_FAILED(res)) {
+            ALOGE("Failed getting room face indices!");
+            return false;
+        }
+        // Second call
+        indicesList[f].resize(roomMeshFaceIndicesList[f].indexCountOutput);
+        roomMeshFaceIndicesList[f].indexCapacityInput = indicesList[f].size();
+        roomMeshFaceIndicesList[f].indices = indicesList[f].data();
+        OXR(res = app.FunPtrs.xrGetSpaceRoomMeshFaceIndicesMETA(
+            room.Space, &roomMeshFaces[f].uuid, &roomMeshFaceIndicesList[f]));
+        if (XR_FAILED(res)) {
+            ALOGE("Failed getting room face indices!");
+            return false;
+        }
+    }
+
+    // Get face colors
+    std::vector<XrColor4f> colorList(roomMesh.faceCountOutput);
+    for (uint32_t f = 0; f < roomMesh.faceCountOutput; ++f) {
+        colorList[f] = GetColorForSemanticLabels(
+            stringFromSemanticLabel(roomMeshFaces[f].semanticLabel));
+    }
+
+    room.Update(roomMesh, roomMeshFaceIndicesList, colorList);
+    return true;
+}
 
 void ovrApp::HandleXrEvents() {
     XrEventDataBuffer eventDataBuffer = {};
@@ -1030,6 +1134,13 @@ void ovrApp::HandleXrEvents() {
                                 AppRenderer.Scene.Meshes.emplace_back(mesh);
                             }
                         }
+                        if (IsComponentEnabled(
+                                setStatusComplete->space, XR_SPACE_COMPONENT_TYPE_ROOM_MESH_META)) {
+                            ovrRoomMesh roomMesh(setStatusComplete->space);
+                            if (UpdateOvrRoomMesh(*this, roomMesh)) {
+                                AppRenderer.Scene.RoomMeshes.emplace_back(roomMesh);
+                            }
+                        }
                     }
                 }
             } break;
@@ -1098,6 +1209,13 @@ void ovrApp::HandleXrEvents() {
                                 ovrMesh mesh(result.space);
                                 if (UpdateOvrMesh(*this, mesh)) {
                                     AppRenderer.Scene.Meshes.emplace_back(mesh);
+                                }
+                            }
+                            if (IsComponentEnabled(
+                                    result.space, XR_SPACE_COMPONENT_TYPE_ROOM_MESH_META)) {
+                                ovrRoomMesh roomMesh(result.space);
+                                if (UpdateOvrRoomMesh(*this, roomMesh)) {
+                                    AppRenderer.Scene.RoomMeshes.emplace_back(roomMesh);
                                 }
                             }
                         }
@@ -1201,7 +1319,6 @@ static void app_handle_cmd(struct android_app* androidApp, int32_t cmd) {
         case APP_CMD_DESTROY: {
             ALOGV("onDestroy()");
             ALOGV("    APP_CMD_DESTROY");
-            app.Clear();
             break;
         }
         case APP_CMD_INIT_WINDOW: {
@@ -1295,6 +1412,22 @@ static bool QueryAnchorsByUuids(ovrApp& app) {
     return true;
 }
 
+bool LocateSpaceValidTracked(XrSpace space, XrSpace baseSpace, XrTime time, XrPosef& pose) {
+    XrSpaceLocation spaceLocation = {XR_TYPE_SPACE_LOCATION};
+    XrResult res = XR_SUCCESS;
+    OXR(res = xrLocateSpace(space, baseSpace, time, &spaceLocation));
+    if (XR_SUCCEEDED(res) &&
+        (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) &&
+        (spaceLocation.locationFlags & XR_SPACE_LOCATION_POSITION_TRACKED_BIT) &&
+        (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) &&
+        (spaceLocation.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT)) {
+        pose = spaceLocation.pose;
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void UpdateStageBounds(ovrApp& app) {
     XrExtent2Df stageBounds = {};
 
@@ -1313,15 +1446,13 @@ void UpdateStageBounds(ovrApp& app) {
 void UpdateScenePlanes(ovrApp& app, const XrFrameState& frameState) {
     auto& scene = app.AppRenderer.Scene;
     for (auto& plane : scene.Planes) {
-        XrSpaceLocation spaceLocation = {XR_TYPE_SPACE_LOCATION};
-        XrResult res = XR_SUCCESS;
-        OXR(res = xrLocateSpace(
-                plane.Space, app.LocalSpace, frameState.predictedDisplayTime, &spaceLocation));
-        if (XR_FAILED(res)) {
-            ALOGE("Failed getting anchor pose!");
-            continue;
+        XrPosef pose = {};
+        if (LocateSpaceValidTracked(
+                plane.Space, app.LocalSpace, frameState.predictedDisplayTime, pose)) {
+            plane.SetPose(pose);
+        } else {
+            plane.ResetPose();
         }
-        plane.SetPose(spaceLocation.pose);
     }
 }
 
@@ -1343,7 +1474,10 @@ void CycleSceneVisualizationMode(ovrApp& app) {
     const bool isVisiblePlanesAndVolumes =
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeAll ||
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizePlanesAndVolumes;
-        const bool isVisibleMeshes =
+    const bool isVisibleRoomMeshes =
+        app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeAll ||
+        app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeRoomMeshes;
+    const bool isVisibleMeshes =
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeAll ||
         app.CurrentVisualizationMode == ovrApp::VisualizationMode::VisualizeMeshes;
 
@@ -1354,7 +1488,10 @@ void CycleSceneVisualizationMode(ovrApp& app) {
     for (auto& volume : scene.Volumes) {
         volume.SetVisible(isVisiblePlanesAndVolumes);
     }
-        for (auto& mesh : scene.Meshes) {
+    for (auto& roomMesh : scene.RoomMeshes) {
+        roomMesh.SetVisible(isVisibleRoomMeshes);
+    }
+    for (auto& mesh : scene.Meshes) {
         mesh.SetVisible(isVisibleMeshes);
     }
 }
@@ -1363,15 +1500,13 @@ void UpdateSceneVolumes(ovrApp& app, const XrFrameState& frameState) {
     auto& scene = app.AppRenderer.Scene;
 
     for (auto& volume : scene.Volumes) {
-        XrSpaceLocation spaceLocation = {XR_TYPE_SPACE_LOCATION};
-        XrResult res = XR_SUCCESS;
-        OXR(res = xrLocateSpace(
-                volume.Space, app.LocalSpace, frameState.predictedDisplayTime, &spaceLocation));
-        if (XR_FAILED(res)) {
-            ALOGE("Failed getting anchor pose!");
-            continue;
+        XrPosef pose = {};
+        if (LocateSpaceValidTracked(
+                volume.Space, app.LocalSpace, frameState.predictedDisplayTime, pose)) {
+            volume.SetPose(pose);
+        } else {
+            volume.ResetPose();
         }
-        volume.SetPose(spaceLocation.pose);
     }
 }
 
@@ -1379,18 +1514,29 @@ void UpdateSceneMeshes(ovrApp& app, const XrFrameState& frameState) {
     auto& scene = app.AppRenderer.Scene;
 
     for (auto& mesh : scene.Meshes) {
-        XrSpaceLocation spaceLocation = {XR_TYPE_SPACE_LOCATION};
-        XrResult res = XR_SUCCESS;
-        OXR(res = xrLocateSpace(
-                mesh.Space, app.LocalSpace, frameState.predictedDisplayTime, &spaceLocation));
-        if (XR_FAILED(res)) {
-            ALOGE("Failed getting anchor pose!");
-            continue;
+        XrPosef pose = {};
+        if (LocateSpaceValidTracked(
+                mesh.Space, app.LocalSpace, frameState.predictedDisplayTime, pose)) {
+            mesh.SetPose(pose);
+        } else {
+            mesh.ResetPose();
         }
-        mesh.SetPose(spaceLocation.pose);
     }
 }
 
+void UpdateSceneRoomMeshes(ovrApp& app, const XrFrameState& frameState) {
+    auto& scene = app.AppRenderer.Scene;
+
+    for (auto& roomMesh : scene.RoomMeshes) {
+        XrPosef pose = {};
+        if (LocateSpaceValidTracked(
+                roomMesh.Space, app.LocalSpace, frameState.predictedDisplayTime, pose)) {
+            roomMesh.SetPose(pose);
+        } else {
+            roomMesh.ResetPose();
+        }
+    }
+}
 
 void CreatePassthrough(ovrApp& app) {
     XrPassthroughCreateInfoFB ptci = {XR_TYPE_PASSTHROUGH_CREATE_INFO_FB};
@@ -1510,7 +1656,8 @@ int main() {
         XR_FB_SPATIAL_ENTITY_STORAGE_EXTENSION_NAME,
         XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME,
         XR_META_SPATIAL_ENTITY_MESH_EXTENSION_NAME,
-                XR_META_BOUNDARY_VISIBILITY_EXTENSION_NAME,
+        XR_META_SPATIAL_ENTITY_ROOM_MESH_EXTENSION_NAME,
+        XR_META_BOUNDARY_VISIBILITY_EXTENSION_NAME,
         XR_FB_SCENE_EXTENSION_NAME,
 #if defined(ANDROID)
         XR_FB_SCENE_CAPTURE_EXTENSION_NAME,
@@ -1950,7 +2097,7 @@ int main() {
         instance,
         "xrPassthroughPauseFB",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrPassthroughPauseFB)));
-        OXR(xrGetInstanceProcAddr(
+    OXR(xrGetInstanceProcAddr(
         instance,
         "xrEnumerateSpaceSupportedComponentsFB",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrEnumerateSpaceSupportedComponentsFB)));
@@ -2006,7 +2153,15 @@ int main() {
         instance,
         "xrRequestBoundaryVisibilityMETA",
         (PFN_xrVoidFunction*)(&app.FunPtrs.xrRequestBoundaryVisibilityMETA)));
-        if (stationarySupported) {
+    OXR(xrGetInstanceProcAddr(
+        instance,
+        "xrGetSpaceRoomMeshMETA",
+        (PFN_xrVoidFunction*)(&app.FunPtrs.xrGetSpaceRoomMeshMETA)));
+    OXR(xrGetInstanceProcAddr(
+        instance,
+        "xrGetSpaceRoomMeshFaceIndicesMETA",
+        (PFN_xrVoidFunction*)(&app.FunPtrs.xrGetSpaceRoomMeshFaceIndicesMETA)));
+    if (stationarySupported) {
         OXR(xrGetInstanceProcAddr(
             instance,
             "xrGetStationaryReferenceSpaceIdEXTX2",
@@ -2110,6 +2265,11 @@ int main() {
             }
             app.AppRenderer.Scene.Meshes.clear();
 
+            for (auto& roomMesh : app.AppRenderer.Scene.RoomMeshes) {
+                roomMesh.Geometry.DestroyVAO();
+                roomMesh.Geometry.Destroy();
+            }
+            app.AppRenderer.Scene.RoomMeshes.clear();
 
             app.ClearScene = false;
 
@@ -2132,7 +2292,11 @@ int main() {
                 result = QueryAllAnchorsWithSpecificComponentEnabled(
                     app, XR_SPACE_COMPONENT_TYPE_ROOM_LAYOUT_FB);
                 app.NextQueryType = ovrApp::QueryType::QueryByUuids;
-                        } else if (app.NextQueryType == ovrApp::QueryType::QueryByUuids) {
+            } else if (app.NextQueryType == ovrApp::QueryType::QueryAllRoomMeshEnabled) {
+                result = QueryAllAnchorsWithSpecificComponentEnabled(
+                    app, XR_SPACE_COMPONENT_TYPE_ROOM_MESH_META);
+                app.NextQueryType = ovrApp::QueryType::QueryByUuids;
+            } else if (app.NextQueryType == ovrApp::QueryType::QueryByUuids) {
                 result = QueryAnchorsByUuids(app);
                 app.NextQueryType = ovrApp::QueryType::None;
             }
@@ -2182,9 +2346,10 @@ int main() {
 
         UpdateSceneMeshes(app, frameState);
 
+        UpdateSceneRoomMeshes(app, frameState);
 
         assert(input != nullptr);
-        // A Button: Refresh all by querying room entity that has room layout component enabled.
+        // A Button: Refresh anchors by querying room entity that has room layout component enabled.
         if (input->IsButtonAPressed()) {
             app.ClearScene = true;
             app.NextQueryType = ovrApp::QueryType::QueryAllRoomLayoutEnabled;
@@ -2206,13 +2371,12 @@ int main() {
             lastInputTimes[0] = frameState.predictedDisplayTime;
         }
 
-        // Y Button: Refresh all by querying room entity for room layout anchors
-        // (ceiling/floor/walls) only.
+        // Y Button: Refresh anchors by querying room entity that has room mesh component enabled.
         if (input->IsButtonYPressed()) {
             app.ClearScene = true;
-            app.NextQueryType = ovrApp::QueryType::QueryAllRoomLayoutEnabled;
-            app.QueryAllAnchorsInRoom = false;
-                        lastInputTimes[0] = frameState.predictedDisplayTime;
+            app.NextQueryType = ovrApp::QueryType::QueryAllRoomMeshEnabled;
+            app.QueryAllAnchorsInRoom = true;
+            lastInputTimes[0] = frameState.predictedDisplayTime;
         }
 
         // Left Index Trigger: Toggle plane visualization mode.

@@ -27,7 +27,6 @@ Language    :   C++
 *******************************************************************************/
 
 #include "GeometryRenderer.h"
-#include "Misc/Log.h"
 
 using OVR::Matrix4f;
 using OVR::Posef;
@@ -134,22 +133,22 @@ static const char* GeometryFragmentShaderSrc = R"glsl(
 void GeometryRenderer::Init(const GlGeometry::Descriptor& d) {
     /// Program
     static ovrProgramParm GeometryUniformParms[] = {
-        {"ChannelControl", ovrProgramParmType::FLOAT_VECTOR4},
-        {"DiffuseColor", ovrProgramParmType::FLOAT_VECTOR4},
-        {"SpecularLightDirection", ovrProgramParmType::FLOAT_VECTOR3},
-        {"SpecularLightColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"AmbientLightColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"AdditionalColor", ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "ChannelControl", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+        {.Name = "DiffuseColor", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+        {.Name = "SpecularLightDirection", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "SpecularLightColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "AmbientLightColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "AdditionalColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
     };
 
     std::string programDefs;
 
     /// Do we support vertex color in the goemetyr
-    const bool hasVertexColors = (d.attribs.color.size() > 0);
+    const bool hasVertexColors = (!d.attribs.color.empty());
     if (hasVertexColors) {
         programDefs += "#define HAS_VERTEX_COLORS 1\n";
     }
-    const bool hasMultipleParts = (d.attribs.jointIndices.size() > 0);
+    const bool hasMultipleParts = (!d.attribs.jointIndices.empty());
     if (hasMultipleParts) {
         programDefs += "#define HAS_MULTIPLE_PARTS 1\n";
     }

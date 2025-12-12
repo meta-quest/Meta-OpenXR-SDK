@@ -29,6 +29,7 @@ Notes       :   Much useful info at "UTF-8 and Unicode FAQ"
 
 #include "OVR_UTF8Util.h"
 #include <assert.h>
+#include <array>
 
 namespace OVRFW::UTF8Util {
 
@@ -43,8 +44,9 @@ intptr_t GetLength(const char* buf, intptr_t buflen) {
             length++;
         }
     } else {
-        while (UTF8Util::DecodeNextChar_Advance0(&p))
+        while (UTF8Util::DecodeNextChar_Advance0(&p)) {
             length++;
+        }
     }
 
     return length;
@@ -57,8 +59,9 @@ uint32_t GetCharAt(intptr_t index, const char* putf8str, intptr_t length) {
     if (length != -1) {
         while (buf - putf8str < length) {
             c = UTF8Util::DecodeNextChar_Advance0(&buf);
-            if (index == 0)
+            if (index == 0) {
                 return c;
+            }
             index--;
         }
 
@@ -95,28 +98,30 @@ intptr_t GetByteIndex(intptr_t index, const char* putf8str, intptr_t length) {
         uint32_t c = UTF8Util::DecodeNextChar_Advance0(&buf);
         index--;
 
-        if (c == 0)
+        if (c == 0) {
             return buf - putf8str;
+        }
     };
 
     return buf - putf8str;
 }
 
 int GetEncodeCharSize(uint32_t ucs_character) {
-    if (ucs_character <= 0x7F)
+    if (ucs_character <= 0x7F) {
         return 1;
-    else if (ucs_character <= 0x7FF)
+    } else if (ucs_character <= 0x7FF) {
         return 2;
-    else if (ucs_character <= 0xFFFF)
+    } else if (ucs_character <= 0xFFFF) {
         return 3;
-    else if (ucs_character <= 0x1FFFFF)
+    } else if (ucs_character <= 0x1FFFFF) {
         return 4;
-    else if (ucs_character <= 0x3FFFFFF)
+    } else if (ucs_character <= 0x3FFFFFF) {
         return 5;
-    else if (ucs_character <= 0x7FFFFFFF)
+    } else if (ucs_character <= 0x7FFFFFFF) {
         return 6;
-    else
+    } else {
         return 0;
+    }
 }
 
 uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
@@ -155,27 +160,31 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
 
     c = **putf8Buffer;
     (*putf8Buffer)++;
-    if (c == 0)
+    if (c == 0) {
         return 0; // End of buffer.
+    }
 
-    if ((c & 0x80) == 0)
+    if ((c & 0x80) == 0) {
         return (uint32_t)c; // Conventional 7-bit ASCII.
+    }
 
     // Multi-byte sequences.
     if ((c & 0xE0) == 0xC0) {
         // Two-byte sequence.
         FIRST_BYTE(0x1F, 6);
         NEXT_BYTE(0);
-        if (uc < 0x80)
+        if (uc < 0x80) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else if ((c & 0xF0) == 0xE0) {
         // Three-byte sequence.
         FIRST_BYTE(0x0F, 12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x800)
+        if (uc < 0x800) {
             return INVALID_CHAR; // overlong
+        }
         // Not valid ISO 10646, but Flash requires these to work
         // see AS3 test e15_5_3_2_3 for String.fromCharCode().charCodeAt(0)
         // if (uc >= 0x0D800 && uc <= 0x0DFFF) return INVALID_CHAR;
@@ -187,8 +196,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
         NEXT_BYTE(12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x010000)
+        if (uc < 0x010000) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else if ((c & 0xFC) == 0xF8) {
         // Five-byte sequence.
@@ -197,8 +207,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
         NEXT_BYTE(12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x0200000)
+        if (uc < 0x0200000) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else if ((c & 0xFE) == 0xFC) {
         // Six-byte sequence.
@@ -208,8 +219,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
         NEXT_BYTE(12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x04000000)
+        if (uc < 0x04000000) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else {
         // Invalid.
@@ -258,16 +270,18 @@ void EncodeChar(char* pbuffer, intptr_t* pindex, uint32_t ucs_character) {
 
 intptr_t GetEncodeStringSize(const wchar_t* pchar, intptr_t length) {
     intptr_t len = 0;
-    if (length != -1)
+    if (length != -1) {
         for (int i = 0; i < length; i++) {
             len += GetEncodeCharSize(pchar[i]);
         }
-    else
+    } else {
         for (int i = 0;; i++) {
-            if (pchar[i] == 0)
+            if (pchar[i] == 0) {
                 return len;
+            }
             len += GetEncodeCharSize(pchar[i]);
         }
+    }
     return len;
 }
 
@@ -279,8 +293,9 @@ void EncodeString(char* pbuff, const wchar_t* pchar, intptr_t length) {
         }
     } else {
         for (int i = 0;; i++) {
-            if (pchar[i] == 0)
+            if (pchar[i] == 0) {
                 break;
+            }
             EncodeChar(pbuff, &ofs, pchar[i]);
         }
     }
@@ -290,20 +305,22 @@ void EncodeString(char* pbuff, const wchar_t* pchar, intptr_t length) {
 size_t DecodeString(wchar_t* pbuff, const char* putf8str, intptr_t bytesLen) {
     wchar_t* pbegin = pbuff;
     if (bytesLen == -1) {
-        while (1) {
+        while (true) {
             uint32_t ch = DecodeNextChar_Advance0(&putf8str);
-            if (ch == 0)
+            if (ch == 0) {
                 break;
-            else if (ch >= 0xFFFF)
+            } else if (ch >= 0xFFFF) {
                 ch = 0xFFFD;
+            }
             *pbuff++ = wchar_t(ch);
         }
     } else {
         const char* p = putf8str;
         while ((p - putf8str) < bytesLen) {
             uint32_t ch = DecodeNextChar_Advance0(&p);
-            if (ch >= 0xFFFF)
+            if (ch >= 0xFFFF) {
                 ch = 0xFFFD;
+            }
             *pbuff++ = wchar_t(ch);
         }
     }
@@ -518,13 +535,13 @@ bool DecodePrevChar(char const* p, intptr_t& offset, uint32_t& ch) {
 }
 
 void AppendChar(std::string& s, uint32_t ch) {
-    char buff[8] = {0};
+    std::array<char, 8> buff = {0};
     intptr_t encodeSize = 0;
 
     // Converts ch into UTF8 string and fills it into buff.
-    UTF8Util::EncodeChar(buff, &encodeSize, ch);
+    UTF8Util::EncodeChar(buff.data(), &encodeSize, ch);
     assert(encodeSize >= 0);
-    s += buff;
+    s += buff.data();
 }
 
 } // namespace OVRFW::UTF8Util

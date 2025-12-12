@@ -37,7 +37,7 @@ namespace OVRFW {
 //
 class ModelInScene {
    public:
-    ModelInScene() : Definition(NULL) {}
+    ModelInScene() : Definition(nullptr) {}
 
     void SetModelFile(const ModelFile* mf);
     void AnimateJoints(const double timeInSeconds);

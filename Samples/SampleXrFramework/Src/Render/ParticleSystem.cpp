@@ -28,7 +28,6 @@ Authors     :   Jonathan E. Wright
 #include "ParticleSystem.h"
 
 #include "TextureAtlas.h"
-#include "Render/GeometryBuilder.h"
 #include "Render/GlGeometry.h"
 
 #include <cassert>
@@ -119,7 +118,7 @@ void ovrParticleSystem::Init(
         OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         if (atlas != nullptr) {

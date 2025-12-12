@@ -87,8 +87,7 @@ bool LoadModelFile_OvrScene_Json(
         return false;
     }
 
-    if (modelFile.SubScenes.size() > 0 || modelFile.Nodes.size() > 0 ||
-        modelFile.Models.size() > 0) {
+    if (!modelFile.SubScenes.empty() || !modelFile.Nodes.empty() || !modelFile.Models.empty()) {
         ALOGW(
             "LoadModelFile_OvrScene_Json: model already has data, replacing with %s",
             modelFile.FileName.c_str());
@@ -276,7 +275,7 @@ bool LoadModelFile_OvrScene_Json(
                         const OVR::JsonReader source(surface.GetChildByName("source"));
                         if (source.IsArray()) {
                             while (!source.IsEndOfArray()) {
-                                if (modelSurface.surfaceDef.surfaceName.length()) {
+                                if (!modelSurface.surfaceDef.surfaceName.empty()) {
                                     modelSurface.surfaceDef.surfaceName += ";";
                                 }
                                 modelSurface.surfaceDef.surfaceName += source.GetNextArrayString();
@@ -558,7 +557,7 @@ bool LoadModelFile_OvrScene_Json(
                                     LOGV("%s diffuse only material", materialTypeString);
                                 }
                             }
-                        } else if (attribs.color.size() > 0) {
+                        } else if (!attribs.color.empty()) {
                             // vertex color material
                             if (skinned) {
                                 if (programs.ProgSkinnedVertexColor == nullptr) {

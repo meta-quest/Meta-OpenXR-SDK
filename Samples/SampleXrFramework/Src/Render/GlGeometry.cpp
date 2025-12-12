@@ -218,7 +218,7 @@ GlGeometry FontGeometryCreate(fontVertex_t* verts, int numVerts, OVR::Bounds3f& 
 
     glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_POSITION); // x, y and z
     glVertexAttribPointer(
-        VERTEX_ATTRIBUTE_LOCATION_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(fontVertex_t), (void*)nullptr);
+        VERTEX_ATTRIBUTE_LOCATION_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(fontVertex_t), nullptr);
 
     glEnableVertexAttribArray(VERTEX_ATTRIBUTE_LOCATION_UV0); // s and t
     glVertexAttribPointer(

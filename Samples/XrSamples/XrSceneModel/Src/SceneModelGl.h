@@ -40,6 +40,8 @@
 #include <meta_openxr_preview/openxr_oculus_helpers.h>
 #include <openxr/openxr_platform.h>
 
+#include <meta_openxr_preview/meta_spatial_entity_semantic_label.h>
+#include <meta_openxr_preview/meta_spatial_entity_room_mesh.h>
 
 #include "OVR_Math.h"
 
@@ -52,6 +54,10 @@ struct ovrGeometry {
     void CreatePlane(const std::vector<XrVector3f>& vertices, const XrColor4f& color);
     void CreateVolume(const std::array<XrVector3f, 8>& vertices, const XrColor4f& color);
     void CreateMesh(const XrSpaceTriangleMeshMETA& mesh);
+    void CreateRoomMesh(
+        const XrRoomMeshMETA& roomMesh,
+        const std::vector<XrRoomMeshFaceIndicesMETA>& roomMeshFaceIndicesList,
+        const std::vector<XrColor4f>& colorList);
     void Destroy();
     void CreateVAO();
     void DestroyVAO();
@@ -140,6 +146,8 @@ struct ovrPlane {
 
     void SetPose(const XrPosef& T_World_Plane);
 
+    void ResetPose();
+
     void SetZOffset(const float zOffset);
 
     void SetVisible(const bool isVisible) {
@@ -167,6 +175,8 @@ struct ovrVolume {
 
     void SetPose(const XrPosef& T_World_Volume);
 
+    void ResetPose();
+
     void SetVisible(const bool isVisible) {
         IsVisible_ = isVisible;
     }
@@ -191,6 +201,8 @@ struct ovrMesh {
 
     void SetPose(const XrPosef& T_World_Mesh);
 
+    void ResetPose();
+
     void SetVisible(const bool isVisible) {
         IsVisible_ = isVisible;
     }
@@ -208,6 +220,34 @@ struct ovrMesh {
     bool IsPoseSet_ = false;
 };
 
+struct ovrRoomMesh {
+    explicit ovrRoomMesh(const XrSpace space);
+
+    void Update(
+        const XrRoomMeshMETA& roomMesh,
+        const std::vector<XrRoomMeshFaceIndicesMETA>& roomMeshFaceIndicesList,
+        const std::vector<XrColor4f>& colorList);
+
+    void SetPose(const XrPosef& T_World_RoomMesh);
+
+    void ResetPose();
+
+    void SetVisible(const bool isVisible) {
+        IsVisible_ = isVisible;
+    }
+
+    bool IsRenderable() const {
+        return IsVisible_ && IsPoseSet_ && Geometry.IsRenderable();
+    }
+
+    XrSpace Space;
+    OVR::Posef T_World_RoomMesh;
+    ovrGeometry Geometry;
+
+   private:
+    bool IsVisible_ = true;
+    bool IsPoseSet_ = false;
+};
 
 struct ovrScene {
    public:
@@ -248,11 +288,13 @@ struct ovrScene {
     ovrProgram PlaneProgram;
     ovrProgram VolumeProgram;
     ovrProgram MeshProgram;
+    ovrProgram RoomMeshProgram;
     float ClearColor[4];
 
     std::vector<ovrPlane> Planes;
     std::vector<ovrVolume> Volumes;
     std::vector<ovrMesh> Meshes;
+    std::vector<ovrRoomMesh> RoomMeshes;
 };
 
 struct ovrAppRenderer {

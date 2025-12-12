@@ -65,7 +65,7 @@ class ovrParticleSystem {
    public:
     enum ovrParticleIndex { INVALID_PARTICLE_INDEX = -1 };
 
-    typedef OVR::TypesafeNumberT<int32_t, ovrParticleIndex, INVALID_PARTICLE_INDEX> handle_t;
+    using handle_t = OVR::TypesafeNumberT<int32_t, ovrParticleIndex, INVALID_PARTICLE_INDEX>;
 
     ovrParticleSystem();
     virtual ~ovrParticleSystem();

@@ -27,6 +27,7 @@ Authors     :   Federico Schliemann
 
 #include "ControllerRenderer.h"
 
+#include <array>
 #include "Render/GeometryBuilder.h"
 #include "Render/GlGeometry.h"
 
@@ -188,18 +189,18 @@ bool ControllerRenderer::Init(
     PoseCorrection = poseCorrection;
 
     /// Shader
-    ovrProgramParm UniformParms[] = {
-        {"SpecularLightDirection", ovrProgramParmType::FLOAT_VECTOR3},
-        {"SpecularLightColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"AmbientLightColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
-    };
+    auto UniformParms = std::to_array<ovrProgramParm>({
+        {.Name = "SpecularLightDirection", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "SpecularLightColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "AmbientLightColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "Texture0", .Type = ovrProgramParmType::TEXTURE_SAMPLED},
+    });
     ProgControllerTexture = GlProgram::Build(
         "#define USE_TEXTURE 1\n",
         Controller::VertexShaderSrc,
         "#define USE_TEXTURE 1\n",
         Controller::FragmentShaderSrc,
-        UniformParms,
+        UniformParms.data(),
         4);
 
     ProgControllerColor = GlProgram::Build(
@@ -207,7 +208,7 @@ bool ControllerRenderer::Init(
         Controller::VertexShaderSrc,
         "#define USE_COLOR 1\n",
         Controller::FragmentShaderSrc,
-        UniformParms,
+        UniformParms.data(),
         3);
 
     /// Create surface definition

@@ -30,10 +30,8 @@ Authors     :   John Carmack, J.M.P. van Waveren
 
 #include "OVR_Std.h"
 #include "OVR_JSON.h"
-#include "StringUtils.h"
 
 #include "Misc/Log.h"
-#include "OVR_BinaryFile2.h"
 
 #include <unordered_map>
 
@@ -2236,7 +2234,7 @@ bool LoadModelFile_glTF_OvrScene(
                             }
 
                             const char* bufferName;
-                            if (name.length() > 0) {
+                            if (!name.empty()) {
                                 bufferName = name.c_str();
                             } else {
                                 bufferName = uri.c_str();
@@ -2523,7 +2521,7 @@ ModelFile* LoadModelFile_glB(
                                     newGltfBuffer.byteLength);
 
                                 const char* bufferName;
-                                if (name.length() > 0) {
+                                if (!name.empty()) {
                                     bufferName = name.c_str();
                                 } else {
                                     bufferName = "glB_Buffer";

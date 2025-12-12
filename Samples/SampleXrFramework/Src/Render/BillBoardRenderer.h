@@ -47,7 +47,7 @@ class ovrBillBoardRenderer {
    public:
     static const int MAX_BILLBOARDS = (1ULL << (sizeof(uint16_t) * 8)) - 1;
     enum ovrBillBoardHandle { INVALID_BILLBOARD_HANDLE = MAX_BILLBOARDS };
-    typedef OVR::TypesafeNumberT<uint16_t, ovrBillBoardHandle, INVALID_BILLBOARD_HANDLE> handle_t;
+    using handle_t = OVR::TypesafeNumberT<uint16_t, ovrBillBoardHandle, INVALID_BILLBOARD_HANDLE>;
 
     static float LIFETIME_INFINITE;
 

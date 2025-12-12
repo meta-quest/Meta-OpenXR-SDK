@@ -503,12 +503,12 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
     if (GUIProgramDiffuseOnly.VertexShader == 0 || GUIProgramDiffuseOnly.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformUVOffset", OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformUVOffset", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"ClipUVs", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "ClipUVs", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramDiffuseOnly ");
@@ -523,12 +523,12 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
         GUIProgramDiffuseAlphaDiscard.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformUVOffset", OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformUVOffset", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"ClipUVs", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "ClipUVs", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramDiffuseAlphaDiscard ");
@@ -543,11 +543,11 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
         GUIProgramDiffusePlusAdditive.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramDiffusePlusAdditive ");
@@ -562,11 +562,11 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
         GUIProgramDiffuseComposite.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramDiffuseComposite ");
@@ -581,13 +581,13 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
         GUIProgramDiffuseColorRamp.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformUVOffset", OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformUVOffset", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"ColorTableOffset", OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "ColorTableOffset", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramDiffuseColorRamp ");
@@ -599,13 +599,13 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
         GUIProgramDiffuseColorRampTarget.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"Texture2", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"ColorTableOffset", OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture2", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "ColorTableOffset", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR2},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramDiffuseColorRampTarget ");
@@ -618,11 +618,11 @@ void VRMenuMgrLocal::Init(OvrGuiSys& guiSys) {
     if (GUIProgramAlphaDiffuse.VertexShader == 0 || GUIProgramAlphaDiffuse.FragmentShader == 0) {
         static OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
-            {"UniformColor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-            {"UniformFadeDirection", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformColor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "UniformFadeDirection", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-            {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         ALOG("VRMenuMgrLocal::Init - compiling ... GUIProgramAlphaDiffuse ");
@@ -676,7 +676,7 @@ menuHandle_t VRMenuMgrLocal::CreateObject(VRMenuObjectParms const& parms) {
     // create the handle first so we can enforce setting it be requiring it to be passed to the
     // constructor
     int index = -1;
-    if (FreeList.size() > 0) {
+    if (!FreeList.empty()) {
         index = FreeList.back();
         FreeList.pop_back();
     } else {
@@ -971,7 +971,7 @@ void VRMenuMgrLocal::SubmitForRenderingRecursive(
         }
 
         std::string const& text = obj->GetText();
-        if ((oFlags & VRMENUOBJECT_DONT_RENDER_TEXT) == 0 && text.length() > 0) {
+        if ((oFlags & VRMENUOBJECT_DONT_RENDER_TEXT) == 0 && !text.empty()) {
             Posef const& textLocalPose = obj->GetTextLocalPose();
             Posef curTextPose;
             curTextPose.Translation =
@@ -1070,7 +1070,7 @@ void VRMenuMgrLocal::SubmitForRenderingRecursive(
     }
 
     // submit all children
-    if (obj->Children.size() > 0) {
+    if (!obj->Children.empty()) {
         // If this object has the render hierarchy order flag, then it and all its children should
         // be depth sorted based on this object's distance + the inverse of the submission index.
         // (inverted because we want a higher submission index to render after a lower submission
@@ -1172,7 +1172,7 @@ void VRMenuMgrLocal::SubmitForRenderingRecursive(
             Vector4f(0.0f, 0.0f, 1.0f, 1.0f),
             5,
             false);
-        if (obj->GetSurfaces().size() > 0) {
+        if (!obj->GetSurfaces().empty()) {
             guiSys.GetDefaultFontSurface().DrawTextBillboarded3D(
                 guiSys.GetDefaultFont(),
                 fp,

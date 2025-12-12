@@ -220,8 +220,8 @@ void OvrGazeCursorLocal::Init(ovrFileSys& fileSys) {
 
     {
         static ovrProgramParm cursorUniformParms[] = {
-            {"UniformColor", ovrProgramParmType::FLOAT_VECTOR4},
-            {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "UniformColor", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+            {.Name = "Texture0", .Type = ovrProgramParmType::TEXTURE_SAMPLED},
         };
         // Initialize cursors
         CursorProgram = GlProgram::Build(
@@ -390,7 +390,7 @@ void OvrGazeCursorLocal::Frame(
 
             // random point in circle
             float rx, ry;
-            while (1) {
+            while (true) {
                 rx = frand();
                 ry = frand();
                 if ((rx * rx + ry * ry < 1.0f)) {

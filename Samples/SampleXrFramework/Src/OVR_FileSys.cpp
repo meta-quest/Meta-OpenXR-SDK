@@ -51,13 +51,15 @@ bool HasPermission(const char* fileOrDirName, const permissionFlags_t flags) {
 
     std::string s(fileOrDirName);
     int len = static_cast<int>(s.length());
-    if (len <= 0)
+    if (len <= 0) {
         return false;
+    }
 
     if (s[len - 1] != '/') { // directory ends in a slash
         int end = len - 1;
-        for (; end > 0 && s[end] != '/'; end--)
+        for (; end > 0 && s[end] != '/'; end--) {
             ;
+        }
         s = std::string(&s[0], end);
     }
 
@@ -197,7 +199,7 @@ class ovrFileSysLocal : public ovrFileSys {
    private:
     std::vector<ovrUriScheme*> Schemes;
     JavaVM* Jvm{nullptr};
-    jobject ActivityObject{0};
+    jobject ActivityObject{nullptr};
 
    private:
     int FindSchemeIndexForName(char const* schemeName) const;
@@ -266,7 +268,7 @@ ovrFileSysLocal::ovrFileSysLocal(xrJava const& javaContext) : Jvm(javaContext.Vm
             fileName, sizeof(fileName), "apk://%s/res/raw/font_location.txt", PUI_PACKAGE_NAME);
         char fontPackageName[1024];
         bool success = ReadFile(fileName, buffer);
-        if (success && buffer.size() > 0) {
+        if (success && !buffer.empty()) {
             OVR::OVR_strncpy(
                 fontPackageName,
                 sizeof(fontPackageName),

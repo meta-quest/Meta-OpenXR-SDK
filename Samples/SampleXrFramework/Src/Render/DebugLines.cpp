@@ -26,7 +26,6 @@ Authors     :   Jonathan E. Wright
 *************************************************************************************/
 
 #include "DebugLines.h"
-#include "Misc/Log.h"
 #include "GlGeometry.h"
 #include "GlProgram.h"
 
@@ -75,7 +74,7 @@ class OvrDebugLinesLocal : public OvrDebugLines {
         std::vector<long long> EndFrame;
     };
 
-    typedef unsigned short LineIndex_t;
+    using LineIndex_t = unsigned short;
 
     static const int MAX_DEBUG_LINES = 2048;
 

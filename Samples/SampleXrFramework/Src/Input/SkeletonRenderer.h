@@ -41,8 +41,8 @@ Authors     :   Federico Schliemann
 
 namespace OVRFW {
 
-typedef std::vector<std::pair<ovrParticleSystem::handle_t, ovrBeamRenderer::handle_t>>
-    jointHandles_t;
+using jointHandles_t =
+    std::vector<std::pair<ovrParticleSystem::handle_t, ovrBeamRenderer::handle_t>>;
 
 class ovrSkeletonRenderer {
    public:

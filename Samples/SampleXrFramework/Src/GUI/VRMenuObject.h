@@ -124,7 +124,7 @@ enum eVRMenuObjectFlags {
     VRMENUOBJECT_MAX // not an actual flag, just used for counting the number of enums
 };
 
-typedef OVR::BitFlagsT<eVRMenuObjectFlags> VRMenuObjectFlags_t;
+using VRMenuObjectFlags_t = OVR::BitFlagsT<eVRMenuObjectFlags>;
 
 enum eVRMenuObjectInitFlags {
     VRMENUOBJECT_INIT_ALIGN_TO_VIEW, // align to the camera position on init
@@ -132,14 +132,14 @@ enum eVRMenuObjectInitFlags {
                                      // position
 };
 
-typedef OVR::BitFlagsT<eVRMenuObjectInitFlags> VRMenuObjectInitFlags_t;
+using VRMenuObjectInitFlags_t = OVR::BitFlagsT<eVRMenuObjectInitFlags>;
 
 enum eVRMenuId { INVALID_MENU_ID = INT_MIN };
-typedef OVR::TypesafeNumberT<long long, eVRMenuId, INVALID_MENU_ID> VRMenuId_t;
+using VRMenuId_t = OVR::TypesafeNumberT<long long, eVRMenuId, INVALID_MENU_ID>;
 
 // menu object handles
 enum eMenuIdType { INVALID_MENU_OBJECT_ID = 0 };
-typedef OVR::TypesafeNumberT<uint64_t, eMenuIdType, INVALID_MENU_OBJECT_ID> menuHandle_t;
+using menuHandle_t = OVR::TypesafeNumberT<uint64_t, eMenuIdType, INVALID_MENU_OBJECT_ID>;
 
 // menu render flags
 enum eVRMenuRenderFlags {
@@ -150,7 +150,7 @@ enum eVRMenuRenderFlags {
     VRMENU_RENDER_NO_DEPTH_MASK,
     VRMENU_RENDER_SUBMIT_TEXT_SURFACE
 };
-typedef OVR::BitFlagsT<eVRMenuRenderFlags> VRMenuRenderFlags_t;
+using VRMenuRenderFlags_t = OVR::BitFlagsT<eVRMenuRenderFlags>;
 
 class VRMenuComponent;
 class VRMenuComponent_OnFocusGained;
@@ -652,7 +652,7 @@ class HitTestResult : public OvrCollisionResult {
     OVR::Vector3f RayDir;
 };
 
-typedef std::int16_t guiIndex_t;
+using guiIndex_t = std::int16_t;
 
 struct textMetrics_t {
     textMetrics_t() : w(0.0f), h(0.0f), ascent(0.0f), descent(0.0f), fontHeight(0.0f) {}

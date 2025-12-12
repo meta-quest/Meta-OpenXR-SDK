@@ -42,7 +42,6 @@ Copyright : Copyright (c) Meta Platforms, Inc. and its affiliates. All rights re
 
 #include <openxr/openxr.h>
 #include <meta_openxr_preview/meta_spatial_entity_discovery.h>
-#include <meta_openxr_preview/meta_spatial_entity_persistence.h>
 
 #if defined(ANDROID)
 #include <unistd.h>
@@ -1146,7 +1145,6 @@ static void app_handle_cmd(struct android_app* androidApp, int32_t cmd) {
         case APP_CMD_DESTROY: {
             ALOGV("onDestroy()");
             ALOGV("    APP_CMD_DESTROY");
-            app.Clear();
             break;
         }
         case APP_CMD_INIT_WINDOW: {

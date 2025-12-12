@@ -385,7 +385,7 @@ void main()
 
 void ModelInScene::SetModelFile(const ModelFile* mf) {
     Definition = mf;
-    if (mf != NULL) {
+    if (mf != nullptr) {
         State.GenerateStateFromModelFile(mf);
     }
 };
@@ -393,7 +393,7 @@ void ModelInScene::SetModelFile(const ModelFile* mf) {
 void ModelInScene::AnimateJoints(const double timeInSeconds) {
     // new animation method.
     {
-        if (State.animationTimelineStates.size() > 0) {
+        if (!State.animationTimelineStates.empty()) {
             State.CalculateAnimationFrameAndFraction(
                 MODEL_ANIMATION_TIME_TYPE_LOOP_FORWARD, (float)timeInSeconds);
 
@@ -465,7 +465,7 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
                 /// Fragment
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSingleTexture = OVRFW::GlProgram::Build(
@@ -479,8 +479,8 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
                 /// Fragment
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgLightMapped = OVRFW::GlProgram::Build(
@@ -493,13 +493,13 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"Modelm", OVRFW::ovrProgramParmType::FLOAT_MATRIX4},
+                {.Name = "Modelm", .Type = OVRFW::ovrProgramParmType::FLOAT_MATRIX4},
                 /// Fragment
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture2", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture3", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture4", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture2", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture3", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture4", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgReflectionMapped = OVRFW::GlProgram::Build(
@@ -513,7 +513,7 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
                 /// Fragment
-                {"BaseColorFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "BaseColorFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSimplePBR = OVRFW::GlProgram::Build(
@@ -524,8 +524,8 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
                 /// Fragment
-                {"BaseColorFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-                {"BaseColorTexture", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "BaseColorFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "BaseColorTexture", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgBaseColorPBR = OVRFW::GlProgram::Build(
@@ -539,10 +539,10 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
                 /// Fragment
-                {"BaseColorFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-                {"EmissiveFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "BaseColorFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "EmissiveFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgBaseColorEmissivePBR = OVRFW::GlProgram::Build(
@@ -555,7 +555,7 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
                 /// Fragment
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
@@ -569,9 +569,9 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
                 /// Fragment
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSkinnedSingleTexture = OVRFW::GlProgram::Build(
@@ -584,10 +584,10 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
                 /// Fragment
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSkinnedLightMapped = OVRFW::GlProgram::Build(
@@ -600,14 +600,14 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
-                {"Modelm", OVRFW::ovrProgramParmType::FLOAT_MATRIX4},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "Modelm", .Type = OVRFW::ovrProgramParmType::FLOAT_MATRIX4},
                 /// Fragment
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture2", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture3", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture4", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture2", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture3", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture4", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSkinnedReflectionMapped = OVRFW::GlProgram::Build(
@@ -620,9 +620,9 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
                 /// Fragment
-                {"BaseColorFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "BaseColorFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSkinnedSimplePBR = OVRFW::GlProgram::Build(
@@ -635,10 +635,10 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
                 /// Fragment
-                {"BaseColorFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-                {"BaseColorTexture", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "BaseColorFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "BaseColorTexture", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSkinnedBaseColorPBR = OVRFW::GlProgram::Build(
@@ -651,12 +651,12 @@ ModelGlPrograms OvrSceneView::GetDefaultGLPrograms() {
         {
             OVRFW::ovrProgramParm uniformParms[] = {
                 /// Vertex
-                {"JointMatrices", OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
+                {.Name = "JointMatrices", .Type = OVRFW::ovrProgramParmType::BUFFER_UNIFORM},
                 /// Fragment
-                {"BaseColorFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-                {"EmissiveFactor", OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
-                {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
-                {"Texture1", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "BaseColorFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "EmissiveFactor", .Type = OVRFW::ovrProgramParmType::FLOAT_VECTOR4},
+                {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+                {.Name = "Texture1", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
             };
             const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
             ProgSkinnedBaseColorEmissivePBR = OVRFW::GlProgram::Build(
@@ -693,7 +693,7 @@ void OvrSceneView::LoadWorldModel(
     const bool fromApk) {
     ALOG("OvrSceneView::LoadScene( %s )", sceneFileName);
 
-    if (GlPrograms.ProgSingleTexture == NULL) {
+    if (GlPrograms.ProgSingleTexture == nullptr) {
         GlPrograms = GetDefaultGLPrograms();
     }
 
@@ -721,7 +721,7 @@ void OvrSceneView::LoadWorldModel(
     const MaterialParms& materialParms) {
     ALOG("OvrSceneView::LoadScene( %s )", uri);
 
-    if (GlPrograms.ProgSingleTexture == NULL) {
+    if (GlPrograms.ProgSingleTexture == nullptr) {
         GlPrograms = GetDefaultGLPrograms();
     }
 
@@ -774,19 +774,21 @@ void OvrSceneView::ClearStickAngles() {
 }
 
 ovrSurfaceDef* OvrSceneView::FindNamedSurface(const char* name) const {
-    return (WorldModel.Definition == NULL) ? NULL : WorldModel.Definition->FindNamedSurface(name);
+    return (WorldModel.Definition == nullptr) ? nullptr
+                                              : WorldModel.Definition->FindNamedSurface(name);
 }
 
 const ModelTexture* OvrSceneView::FindNamedTexture(const char* name) const {
-    return (WorldModel.Definition == NULL) ? NULL : WorldModel.Definition->FindNamedTexture(name);
+    return (WorldModel.Definition == nullptr) ? nullptr
+                                              : WorldModel.Definition->FindNamedTexture(name);
 }
 
 const ModelTag* OvrSceneView::FindNamedTag(const char* name) const {
-    return (WorldModel.Definition == NULL) ? NULL : WorldModel.Definition->FindNamedTag(name);
+    return (WorldModel.Definition == nullptr) ? nullptr : WorldModel.Definition->FindNamedTag(name);
 }
 
 Bounds3f OvrSceneView::GetBounds() const {
-    return (WorldModel.Definition == NULL)
+    return (WorldModel.Definition == nullptr)
         ? Bounds3f(Vector3f(0.0f, 0.0f, 0.0f), Vector3f(0.0f, 0.0f, 0.0f))
         : WorldModel.Definition->GetBounds();
 }
@@ -796,7 +798,7 @@ int OvrSceneView::AddModel(ModelInScene* model) {
 
     // scan for a NULL entry
     for (int i = 0; i < modelsSize; ++i) {
-        if (Models[i] == NULL) {
+        if (Models[i] == nullptr) {
             Models[i] = model;
             return i;
         }
@@ -808,7 +810,7 @@ int OvrSceneView::AddModel(ModelInScene* model) {
 }
 
 void OvrSceneView::RemoveModelIndex(int index) {
-    Models[index] = NULL;
+    Models[index] = nullptr;
 }
 
 void OvrSceneView::GetFrameMatrices(
@@ -837,7 +839,7 @@ void OvrSceneView::GenerateFrameSurfaceList(
 
     std::vector<ModelNodeState*> emitNodes;
     for (int i = 0; i < static_cast<int>(Models.size()); i++) {
-        if (Models[i] != NULL) {
+        if (Models[i] != nullptr) {
             ModelState& state = Models[i]->State;
             if (state.DontRenderForClientUid == SuppressModelsWithClientId) {
                 continue;
@@ -1064,7 +1066,7 @@ void OvrSceneView::Frame(
     allSticksY = std::max(-1.0f, std::min(1.0f, allSticksY));
 
     // Allow up / down movement if there is no floor collision model or in 'free move' mode.
-    const bool upDown = (WorldModel.Definition == NULL || FreeMove);
+    const bool upDown = (WorldModel.Definition == nullptr || FreeMove);
     Vector3f gamepadMove(
         LeftStick.x, upDown ? LeftStick.y : 0.0f, upDown ? RightStick.y : allSticksY);
 
@@ -1075,7 +1077,7 @@ void OvrSceneView::Frame(
 
         // Don't let move get too crazy fast
         const float moveDistance = std::min<float>(MoveSpeed * (float)dt, 1.0f);
-        if (WorldModel.Definition != NULL && !FreeMove) {
+        if (WorldModel.Definition != nullptr && !FreeMove) {
             FootPos = SlideMove(
                 FootPos,
                 GetEyeHeight(),
@@ -1107,7 +1109,7 @@ void OvrSceneView::Frame(
 
     if (!Paused) {
         for (int i = 0; i < static_cast<int>(Models.size()); i++) {
-            if (Models[i] != NULL) {
+            if (Models[i] != nullptr) {
                 Models[i]->AnimateJoints(vrFrame.PredictedDisplayTime);
             }
         }

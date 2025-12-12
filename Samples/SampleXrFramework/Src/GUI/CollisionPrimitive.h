@@ -40,7 +40,7 @@ class OvrDebugLines;
 
 enum eContentFlags { CONTENT_NONE = 0, CONTENT_SOLID, CONTENT_ALL = 0x7fffffff };
 
-typedef OVR::BitFlagsT<eContentFlags> ContentFlags_t;
+using ContentFlags_t = OVR::BitFlagsT<eContentFlags>;
 
 //==============================================================
 // OvrCollisionResult

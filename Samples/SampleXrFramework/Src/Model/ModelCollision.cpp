@@ -89,7 +89,7 @@ bool CollisionPolytope::TestRay(
         length = 0.0f;
     }
 
-    if (plane != NULL) {
+    if (plane != nullptr) {
         *plane = Planes[crossing];
     }
     return true;
@@ -138,7 +138,7 @@ bool ModelCollision::TestRay(
         if (Polytopes[i].TestRay(start, dir, clipLength, &clipPlane)) {
             if (clipLength < length) {
                 length = clipLength;
-                if (plane != NULL) {
+                if (plane != nullptr) {
                     *plane = clipPlane;
                 }
                 clipped = true;
@@ -198,7 +198,7 @@ OVR::Vector3f SlideMove(
             // Try to finish the move by sliding along the collision plane.
             float slideDistance = moveDistance;
             collisionModel.TestRay(
-                eyePos - UpVector * RailHeight, slideDirection, slideDistance, NULL);
+                eyePos - UpVector * RailHeight, slideDirection, slideDistance, nullptr);
 
             eyePos += slideDirection * slideDistance;
         }
@@ -207,7 +207,7 @@ OVR::Vector3f SlideMove(
     if (static_cast<int>(groundCollisionModel.Polytopes.size()) != 0) {
         // Check for collisions at foot level, which allows following terrain.
         float downDistance = 10.0f;
-        groundCollisionModel.TestRay(eyePos, -UpVector, downDistance, NULL);
+        groundCollisionModel.TestRay(eyePos, -UpVector, downDistance, nullptr);
 
         // Maintain the minimum camera height.
         if (eyeHeight - downDistance < 1.0f) {

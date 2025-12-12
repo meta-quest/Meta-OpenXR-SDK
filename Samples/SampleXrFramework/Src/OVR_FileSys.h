@@ -43,7 +43,7 @@ Authors     :   Jonathan E. Wright
 typedef struct xrJava_ {
     JavaVM* Vm = nullptr; //< Java Virtual Machine
     JNIEnv* Env = nullptr; //< Thread specific environment
-    jobject ActivityObject = 0; //< Java activity object
+    jobject ActivityObject = nullptr; //< Java activity object
 } xrJava;
 
 namespace OVRFW {
@@ -137,15 +137,17 @@ inline std::string ExtractDirectory(const std::string& s) {
     if (s[l - 1] == '/') { // directory ends in a slash
         end = l - 1;
     } else {
-        for (end = l - 1; end > 0 && s[end] != '/'; end--)
+        for (end = l - 1; end > 0 && s[end] != '/'; end--) {
             ;
+        }
         if (end == 0) {
             end = l - 1;
         }
     }
     int start;
-    for (start = end - 1; start > -1 && s[start] != '/'; start--)
+    for (start = end - 1; start > -1 && s[start] != '/'; start--) {
         ;
+    }
     start++;
 
     return std::string(&s[start], end - start);
@@ -162,7 +164,7 @@ inline bool GetFullPath(
     char const* relativePath,
     char* outPath,
     const int outMaxLen) {
-    assert(outPath != NULL && outMaxLen >= 1);
+    assert(outPath != nullptr && outMaxLen >= 1);
 
     if (FileExists(relativePath)) {
         OVR::OVR_sprintf(outPath, OVR::OVR_strlen(relativePath) + 1, "%s", relativePath);

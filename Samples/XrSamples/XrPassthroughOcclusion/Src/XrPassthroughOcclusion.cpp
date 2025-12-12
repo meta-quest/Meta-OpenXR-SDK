@@ -446,9 +446,6 @@ void Egl::DestroyContext() {
 
 void App::HandleSessionStateChanges(XrSessionState state) {
     if (state == XR_SESSION_STATE_READY) {
-#if defined(XR_USE_PLATFORM_ANDROID)
-        assert(Resumed);
-#endif // defined(XR_USE_PLATFORM_ANDROID)
         assert(SessionActive == false);
 
         XrSessionBeginInfo sessionBeginInfo = {XR_TYPE_SESSION_BEGIN_INFO};

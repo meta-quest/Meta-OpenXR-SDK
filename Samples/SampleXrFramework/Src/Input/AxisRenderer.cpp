@@ -68,7 +68,7 @@ bool ovrAxisRenderer::Init(size_t count, float size) {
 
     /// Create Axis program
     static ovrProgramParm AxisUniformParms[] = {
-        {"JointMatrices", ovrProgramParmType::BUFFER_UNIFORM},
+        {.Name = "JointMatrices", .Type = ovrProgramParmType::BUFFER_UNIFORM},
     };
     ProgAxis = GlProgram::Build(
         AxisVertexShaderSrc,

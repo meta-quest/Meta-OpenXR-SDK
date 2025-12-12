@@ -62,7 +62,7 @@ bool LoadModelFile_OvrScene(
     const int fileDataLength,
     const ModelGlPrograms& programs,
     const MaterialParms& materialParms,
-    ModelGeo* outModelGeo = NULL);
+    ModelGeo* outModelGeo = nullptr);
 
 bool LoadModelFile_glTF_OvrScene(
     ModelFile* modelFilePtr,
@@ -72,7 +72,7 @@ bool LoadModelFile_glTF_OvrScene(
     const int fileDataLength,
     const ModelGlPrograms& programs,
     const MaterialParms& materialParms,
-    ModelGeo* outModelGeo = NULL);
+    ModelGeo* outModelGeo = nullptr);
 
 ModelFile* LoadModelFile_glB(
     const char* fileName,
@@ -80,5 +80,5 @@ ModelFile* LoadModelFile_glB(
     const int fileDataLength,
     const ModelGlPrograms& programs,
     const MaterialParms& materialParms,
-    ModelGeo* outModelGeo = NULL);
+    ModelGeo* outModelGeo = nullptr);
 } // namespace OVRFW

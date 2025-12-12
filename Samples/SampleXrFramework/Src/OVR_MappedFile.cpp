@@ -38,9 +38,7 @@ Authors     :   Chris Taylor
 #endif
 
 #include <sys/mman.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <unistd.h>
 
 #if defined(OVR_OS_ANDROID)
@@ -160,10 +158,10 @@ void MappedFile::Close() {
 */
 
 MappedView::MappedView() {
-    Data = 0;
+    Data = nullptr;
     Length = 0;
     Offset = 0;
-    File = 0;
+    File = nullptr;
     Map = MAP_FAILED;
 }
 
@@ -205,10 +203,10 @@ uint8_t* MappedView::MapView(size_t offset, uint32_t length) {
     }
 
     // Use MAP_PRIVATE so that memory is not exposed to other processes.
-    Map = mmap(0, length, prot, MAP_PRIVATE, File->File, offset);
+    Map = mmap(nullptr, length, prot, MAP_PRIVATE, File->File, offset);
 
     if (Map == MAP_FAILED) {
-        return 0;
+        return nullptr;
     }
 
     Data = reinterpret_cast<uint8_t*>(Map);
@@ -224,7 +222,7 @@ void MappedView::Close() {
         munmap(Map, Length);
         Map = MAP_FAILED;
     }
-    Data = 0;
+    Data = nullptr;
     Length = 0;
     Offset = 0;
 }

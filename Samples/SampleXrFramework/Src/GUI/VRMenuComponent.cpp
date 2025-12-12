@@ -26,7 +26,6 @@ Authors     :   Jonathan E. Wright
 *************************************************************************************/
 
 #include "VRMenuComponent.h"
-#include "VRMenuMgr.h"
 
 namespace OVRFW {
 

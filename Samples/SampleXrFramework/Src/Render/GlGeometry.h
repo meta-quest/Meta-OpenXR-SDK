@@ -44,7 +44,7 @@ struct VertexAttribs {
     std::vector<OVR::Vector4f> jointWeights;
 };
 
-typedef uint16_t TriangleIndex;
+using TriangleIndex = uint16_t;
 
 // Font specific vertex
 
@@ -58,7 +58,7 @@ struct fontVertex_t {
     std::uint8_t fontParms[4];
 };
 
-typedef TriangleIndex fontIndex_t;
+using fontIndex_t = TriangleIndex;
 
 class GlGeometry {
    public:

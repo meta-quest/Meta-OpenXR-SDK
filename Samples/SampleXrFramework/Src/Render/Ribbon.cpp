@@ -28,6 +28,7 @@ Authors     :   Jonathan E. Wright
 #include "Ribbon.h"
 
 #include <algorithm>
+#include <array>
 
 #include "OVR_Math.h"
 #include "Render/GlTexture.h"
@@ -130,15 +131,12 @@ ovrRibbon::ovrRibbon(const ovrPointList& pointList, const float width, const Vec
 #if 1
     gc.UniformData[0].Data = &Texture;
 
-    ovrProgramParm parms[] = {
-        {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
-    };
+    constexpr auto parms = std::to_array<ovrProgramParm>({
+        {.Name = "Texture0", .Type = ovrProgramParmType::TEXTURE_SAMPLED},
+    });
 
-    gc.Program = GlProgram::Build(
-        ribbonVertexShader,
-        ribbonFragmentShader,
-        &parms[0],
-        sizeof(parms) / sizeof(ovrProgramParm));
+    gc.Program =
+        GlProgram::Build(ribbonVertexShader, ribbonFragmentShader, parms.data(), parms.size());
 #else
     gc.Program = GlProgram::Build(ribbonVertexShader, ribbonFragmentShader, nullptr, 0);
 #endif

@@ -36,7 +36,6 @@ Authors     :   Jonathan E. Wright, Warsam Osman, Madhu Kalva
 
 #if !defined(OVR_OS_WIN32)
 #include <dirent.h>
-#include <unistd.h>
 #else
 #include "windows.h"
 #endif // !defined(OVR_OS_WIN32)
@@ -103,7 +102,7 @@ std::unordered_map<std::string, std::string> RelativeDirectoryFileList(
                     ALOG("RelativeDirectoryFileList adding - %s", s.c_str());
 #endif
 
-                    std::string lowerCaseS = s.c_str();
+                    std::string lowerCaseS = s;
                     std::transform(
                         lowerCaseS.begin(), lowerCaseS.end(), lowerCaseS.begin(), ::tolower);
                     uniqueStrings[lowerCaseS] = s;
@@ -114,7 +113,7 @@ std::unordered_map<std::string, std::string> RelativeDirectoryFileList(
                     ALOG("RelativeDirectoryFileList adding - %s", s.c_str());
 #endif
 
-                    std::string lowerCaseS = s.c_str();
+                    std::string lowerCaseS = s;
                     std::transform(
                         lowerCaseS.begin(), lowerCaseS.end(), lowerCaseS.begin(), ::tolower);
                     uniqueStrings[lowerCaseS] = s;
@@ -169,15 +168,17 @@ std::string ExtractFileBase(const std::string& s) {
     if (s[l - 1] == '/') { // directory ends in a slash
         end = l - 1;
     } else {
-        for (end = l - 1; end > 0 && s[end] != '.'; end--)
+        for (end = l - 1; end > 0 && s[end] != '.'; end--) {
             ;
+        }
         if (end == 0) {
             end = l;
         }
     }
     int start;
-    for (start = end - 1; start > -1 && s[start] != '/'; start--)
+    for (start = end - 1; start > -1 && s[start] != '/'; start--) {
         ;
+    }
     start++;
 
     return std::string(&s[start], end - start);
@@ -256,7 +257,7 @@ void OvrMetaData::InitFromDirectory(
             datum->Tags.push_back(currentCategory.CategoryTag);
             if (GetFullPath(searchPaths, s.c_str(), datum->Url)) {
                 // always use the lowercase version of the URL to search the map
-                std::string lowerCaseUrl = datum->Url.c_str();
+                std::string lowerCaseUrl = datum->Url;
                 const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
                 loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
 
@@ -334,7 +335,7 @@ void OvrMetaData::InitFromFileList(
             datum->Tags.push_back(currentCategory.CategoryTag);
 
             // always use the lowercase version of the URL
-            std::string lowerCaseUrl = datum->Url.c_str();
+            std::string lowerCaseUrl = datum->Url;
             const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
             loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
             auto datumIter = UrlToIndex.find(lowerCaseUrl);
@@ -668,7 +669,7 @@ void OvrMetaData::DedupMetaData(
         OvrMetaDatum* metaDatum = existingData[i];
 
         // always use the lowercase version of the URL
-        std::string lowerCaseUrl = metaDatum->Url.c_str();
+        std::string lowerCaseUrl = metaDatum->Url;
         const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
         loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
         auto iter = newData.find(lowerCaseUrl);
@@ -835,7 +836,7 @@ void OvrMetaData::ExtractMetaData(
                 ALOG("OvrMetaData::ExtractMetaData adding datum %s", metaDatum->Url.c_str());
 
                 // always use the lowercase version of the URL
-                std::string lowerCaseUrl = metaDatum->Url.c_str();
+                std::string lowerCaseUrl = metaDatum->Url;
                 const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
                 loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
                 auto iter = outMetaData.find(lowerCaseUrl);
@@ -884,7 +885,7 @@ void OvrMetaData::ExtractRemoteMetaData(
                 ExtractExtendedData(jsonDatum, *metaDatum);
 
                 // always use the lowercase version of the URL
-                std::string lowerCaseUrl = metaDatum->Url.c_str();
+                std::string lowerCaseUrl = metaDatum->Url;
                 const auto& loc = std::use_facet<std::ctype<char>>(std::locale());
                 loc.tolower(&lowerCaseUrl[0], &lowerCaseUrl[0] + lowerCaseUrl.length());
                 auto iter = outMetaData.find(lowerCaseUrl);

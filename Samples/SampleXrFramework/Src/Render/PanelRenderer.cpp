@@ -27,7 +27,6 @@ Authors     :   Federico Schliemann
 
 #include "PanelRenderer.h"
 
-#include "Misc/Log.h"
 #include "GlGeometry.h"
 
 using OVR::Matrix4f;
@@ -91,13 +90,13 @@ void main()
 )glsl";
 
 static ovrProgramParm UniformParms[] = {
-    {"ChannelEnable", ovrProgramParmType::FLOAT_VECTOR4},
-    {"GraphOffset", ovrProgramParmType::FLOAT_VECTOR2},
-    {"ChannelData", ovrProgramParmType::BUFFER_UNIFORM},
-    {"ChannelColor0", ovrProgramParmType::FLOAT_VECTOR4},
-    {"ChannelColor1", ovrProgramParmType::FLOAT_VECTOR4},
-    {"ChannelColor2", ovrProgramParmType::FLOAT_VECTOR4},
-    {"ChannelColor3", ovrProgramParmType::FLOAT_VECTOR4},
+    {.Name = "ChannelEnable", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+    {.Name = "GraphOffset", .Type = ovrProgramParmType::FLOAT_VECTOR2},
+    {.Name = "ChannelData", .Type = ovrProgramParmType::BUFFER_UNIFORM},
+    {.Name = "ChannelColor0", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+    {.Name = "ChannelColor1", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+    {.Name = "ChannelColor2", .Type = ovrProgramParmType::FLOAT_VECTOR4},
+    {.Name = "ChannelColor3", .Type = ovrProgramParmType::FLOAT_VECTOR4},
 };
 
 void ovrPanelRenderer::Init() {

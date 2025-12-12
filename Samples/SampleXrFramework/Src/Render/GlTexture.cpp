@@ -114,27 +114,31 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
 
     c = **putf8Buffer;
     (*putf8Buffer)++;
-    if (c == 0)
+    if (c == 0) {
         return 0; // End of buffer.
+    }
 
-    if ((c & 0x80) == 0)
+    if ((c & 0x80) == 0) {
         return (uint32_t)c; // Conventional 7-bit ASCII.
+    }
 
     // Multi-byte sequences.
     if ((c & 0xE0) == 0xC0) {
         // Two-byte sequence.
         FIRST_BYTE(0x1F, 6);
         NEXT_BYTE(0);
-        if (uc < 0x80)
+        if (uc < 0x80) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else if ((c & 0xF0) == 0xE0) {
         // Three-byte sequence.
         FIRST_BYTE(0x0F, 12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x800)
+        if (uc < 0x800) {
             return INVALID_CHAR; // overlong
+        }
         // Not valid ISO 10646, but Flash requires these to work
         // see AS3 test e15_5_3_2_3 for String.fromCharCode().charCodeAt(0)
         // if (uc >= 0x0D800 && uc <= 0x0DFFF) return INVALID_CHAR;
@@ -146,8 +150,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
         NEXT_BYTE(12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x010000)
+        if (uc < 0x010000) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else if ((c & 0xFC) == 0xF8) {
         // Five-byte sequence.
@@ -156,8 +161,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
         NEXT_BYTE(12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x0200000)
+        if (uc < 0x0200000) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else if ((c & 0xFE) == 0xFC) {
         // Six-byte sequence.
@@ -167,8 +173,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
         NEXT_BYTE(12);
         NEXT_BYTE(6);
         NEXT_BYTE(0);
-        if (uc < 0x04000000)
+        if (uc < 0x04000000) {
             return INVALID_CHAR; // overlong
+        }
         return uc;
     } else {
         // Invalid.
@@ -184,8 +191,9 @@ uint32_t DecodeNextChar_Advance0(const char** putf8Buffer) {
 // null character is hit.
 inline uint32_t DecodeNextChar(const char** putf8Buffer) {
     uint32_t ch = DecodeNextChar_Advance0(putf8Buffer);
-    if (ch == 0)
+    if (ch == 0) {
         (*putf8Buffer)--;
+    }
     return ch;
 }
 
@@ -336,10 +344,16 @@ GetASTCTextureSize(const eTextureFormat format, const int w, const int h, const 
 
     int const NUM_ASTC_FORMATS = (Texture_ASTC_End - Texture_ASTC_Start) >> 8;
     blockDims_t const blockDims[NUM_ASTC_FORMATS] = {
-        {4, 4, 1}, {5, 4, 1},  {5, 5, 1},  {6, 5, 1},  {6, 6, 1},   {8, 5, 1},   {8, 6, 1},
-        {8, 8, 1}, {10, 5, 1}, {10, 6, 1}, {10, 8, 1}, {10, 10, 1}, {12, 10, 1}, {12, 12, 1},
-        {4, 4, 1}, {5, 4, 1},  {5, 5, 1},  {6, 5, 1},  {6, 6, 1},   {8, 5, 1},   {8, 6, 1},
-        {8, 8, 1}, {10, 5, 1}, {10, 6, 1}, {10, 8, 1}, {10, 10, 1}, {12, 10, 1}, {12, 12, 1}};
+        {.x = 4, .y = 4, .z = 1},   {.x = 5, .y = 4, .z = 1},   {.x = 5, .y = 5, .z = 1},
+        {.x = 6, .y = 5, .z = 1},   {.x = 6, .y = 6, .z = 1},   {.x = 8, .y = 5, .z = 1},
+        {.x = 8, .y = 6, .z = 1},   {.x = 8, .y = 8, .z = 1},   {.x = 10, .y = 5, .z = 1},
+        {.x = 10, .y = 6, .z = 1},  {.x = 10, .y = 8, .z = 1},  {.x = 10, .y = 10, .z = 1},
+        {.x = 12, .y = 10, .z = 1}, {.x = 12, .y = 12, .z = 1}, {.x = 4, .y = 4, .z = 1},
+        {.x = 5, .y = 4, .z = 1},   {.x = 5, .y = 5, .z = 1},   {.x = 6, .y = 5, .z = 1},
+        {.x = 6, .y = 6, .z = 1},   {.x = 8, .y = 5, .z = 1},   {.x = 8, .y = 6, .z = 1},
+        {.x = 8, .y = 8, .z = 1},   {.x = 10, .y = 5, .z = 1},  {.x = 10, .y = 6, .z = 1},
+        {.x = 10, .y = 8, .z = 1},  {.x = 10, .y = 10, .z = 1}, {.x = 12, .y = 10, .z = 1},
+        {.x = 12, .y = 12, .z = 1}};
 
     int const index = GetASTCIndex(format);
 
@@ -1701,7 +1715,7 @@ GlTexture LoadTextureFromOtherApplicationPackage(
 
     std::vector<uint8_t> buffer;
     ovr_ReadFileFromOtherApplicationPackage(zipFile, nameInZip, buffer);
-    if (buffer.size() == 0) {
+    if (buffer.empty()) {
         return GlTexture(0, 0, 0);
     }
 

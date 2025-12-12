@@ -31,7 +31,6 @@ Authors     :   Jonathan E. Wright
 
 #include "Misc/Log.h"
 
-#include "GazeCursor.h"
 #include "VRMenuMgr.h"
 #include "GuiSys.h"
 #include "VRMenuComponent.h"
@@ -267,7 +266,7 @@ static void FindTargetPath(
     menuHandle_t const curHandle,
     std::vector<menuHandle_t>& targetPath) {
     FindTargetPath(guiSys, curHandle, targetPath);
-    if (targetPath.size() == 0) {
+    if (targetPath.empty()) {
         targetPath.push_back(rootHandle); // ensure at least root is in the path
     }
 }
@@ -302,7 +301,7 @@ void VRMenuEventHandler::HandleEvents(
                 DispatchToPath(guiSys, vrFrame, event, focusPath, false);
                 break;
             case EVENT_DISPATCH_TARGET:
-                if (targetPath.size() == 0 || event.TargetHandle != targetPath.back()) {
+                if (targetPath.empty() || event.TargetHandle != targetPath.back()) {
                     targetPath.clear();
                     FindTargetPath(guiSys, rootHandle, event.TargetHandle, targetPath);
                 }

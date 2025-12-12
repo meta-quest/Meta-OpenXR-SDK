@@ -233,6 +233,10 @@ class XrHandsApp : public OVRFW::XrApp {
     }
 
     virtual bool SessionInit() override {
+
+        /// Use LocalSpace instead of Stage Space.
+        CurrentSpace = LocalSpace;
+
         /// Init session bound objects
         if (false == controllerRenderL_.Init(true)) {
             ALOG("AppInit::Init L controller renderer FAILED.");
@@ -476,12 +480,12 @@ class XrHandsApp : public OVRFW::XrApp {
             locationsR.jointLocations = jointLocationsR_;
 
             XrHandJointsLocateInfoEXT locateInfoL{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
-            locateInfoL.baseSpace = GetStageSpace();
+            locateInfoL.baseSpace = GetLocalSpace();
             locateInfoL.time = ToXrTime(in.PredictedDisplayTime);
             OXR(xrLocateHandJointsEXT_(handTrackerL_, &locateInfoL, &locationsL));
 
             XrHandJointsLocateInfoEXT locateInfoR{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
-            locateInfoR.baseSpace = GetStageSpace();
+            locateInfoR.baseSpace = GetLocalSpace();
             locateInfoR.time = ToXrTime(in.PredictedDisplayTime);
             OXR(xrLocateHandJointsEXT_(handTrackerR_, &locateInfoR, &locationsR));
 

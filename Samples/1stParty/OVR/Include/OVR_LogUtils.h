@@ -30,7 +30,7 @@ Authors     :   Jonathan E. Wright
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h> /* va_list, va_start, va_arg, va_end */
+#include <stdarg.h>
 #include <time.h>
 #include <string.h>
 #include <atomic>

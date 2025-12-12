@@ -47,7 +47,7 @@ class ovrBeamRenderer {
    public:
     static const int MAX_BEAMS = (1ULL << (sizeof(uint16_t) * 8)) - 1;
     enum ovrBeamHandle { INVALID_BEAM_HANDLE = MAX_BEAMS };
-    typedef OVR::TypesafeNumberT<uint16_t, ovrBeamHandle, INVALID_BEAM_HANDLE> handle_t;
+    using handle_t = OVR::TypesafeNumberT<uint16_t, ovrBeamHandle, INVALID_BEAM_HANDLE>;
 
     static float LIFETIME_INFINITE;
 

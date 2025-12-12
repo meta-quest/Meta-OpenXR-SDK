@@ -693,7 +693,7 @@ bool OvrGuiSysLocal::IsAnyMenuActive() const {
         return false;
     }
 
-    return ActiveMenus.size() > 0;
+    return !ActiveMenus.empty();
 }
 
 //==============================

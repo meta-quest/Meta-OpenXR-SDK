@@ -61,7 +61,7 @@ class ovrPointList_Vector : public ovrPointList {
     ovrPointList_Vector(const int maxPoints);
 
     virtual bool IsEmpty() const override {
-        return Points.size() == 0;
+        return Points.empty();
     }
     virtual bool IsFull() const override {
         return false;

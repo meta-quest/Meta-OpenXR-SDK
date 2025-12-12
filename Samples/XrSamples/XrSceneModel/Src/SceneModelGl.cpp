@@ -502,6 +502,71 @@ void ovrGeometry::CreateMesh(const XrSpaceTriangleMeshMETA& mesh) {
     IsRenderable_ = true;
 }
 
+void ovrGeometry::CreateRoomMesh(
+    const XrRoomMeshMETA& roomMesh,
+    const std::vector<XrRoomMeshFaceIndicesMETA>& roomMeshFaceIndicesList,
+    const std::vector<XrColor4f>& colorList) {
+    if (roomMesh.vertexCountOutput == 0 || roomMesh.faceCountOutput == 0 ||
+        roomMesh.faceCountOutput != roomMeshFaceIndicesList.size() ||
+        roomMesh.faceCountOutput != colorList.size()) {
+        IsRenderable_ = false;
+        return;
+    }
+
+    struct ColoredVertex {
+        XrVector3f position;
+        XrColor4f color;
+    };
+
+    std::vector<ColoredVertex> vertices;
+    std::vector<uint32_t> indices;
+    uint32_t index = 0;
+    for (uint32_t f = 0; f < roomMesh.faceCountOutput; ++f) {
+        for (uint32_t i = 0; i < roomMeshFaceIndicesList[f].indexCountOutput; ++i) {
+            vertices.emplace_back(
+                ColoredVertex{roomMesh.vertices[roomMeshFaceIndicesList[f].indices[i]], colorList[f]});
+            indices.emplace_back(index++);
+        }
+    }
+
+    VertexAttribs_[0].Index = VERTEX_ATTRIBUTE_LOCATION_POSITION;
+    VertexAttribs_[0].Size = 3;
+    VertexAttribs_[0].Type = GL_FLOAT;
+    VertexAttribs_[0].Normalized = false;
+    VertexAttribs_[0].Stride = sizeof(ColoredVertex);
+    VertexAttribs_[0].Pointer = (const GLvoid*)offsetof(ColoredVertex, position);
+
+    VertexAttribs_[1].Index = VERTEX_ATTRIBUTE_LOCATION_COLOR;
+    VertexAttribs_[1].Size = 4;
+    VertexAttribs_[1].Type = GL_FLOAT;
+    VertexAttribs_[1].Normalized = false;
+    VertexAttribs_[1].Stride = sizeof(ColoredVertex);
+    VertexAttribs_[1].Pointer = (const GLvoid*)offsetof(ColoredVertex, color);
+
+    if (VertexBuffer_ == 0) {
+        GL(glGenBuffers(1, &VertexBuffer_));
+    }
+    GL(glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer_));
+    GL(glBufferData(
+        GL_ARRAY_BUFFER, sizeof(ColoredVertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW));
+    GL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+
+    if (IndexBuffer_ == 0) {
+        GL(glGenBuffers(1, &IndexBuffer_));
+    }
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IndexBuffer_));
+    GL(glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        sizeof(uint32_t) * indices.size(),
+        indices.data(),
+        GL_STATIC_DRAW));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    IndexCount_ = indices.size();
+
+    CreateVAO();
+
+    IsRenderable_ = true;
+}
 
 void ovrGeometry::Destroy() {
     if (IndexBuffer_ != 0) {
@@ -870,6 +935,11 @@ void ovrPlane::SetPose(const XrPosef& T_World_Plane_Xr) {
     IsPoseSet_ = true;
 }
 
+void ovrPlane::ResetPose() {
+    T_World_Plane = {};
+    IsPoseSet_ = false;
+}
+
 /*
 ================================================================================
 
@@ -900,6 +970,11 @@ void ovrVolume::SetPose(const XrPosef& T_World_Volume_Xr) {
     IsPoseSet_ = true;
 }
 
+void ovrVolume::ResetPose() {
+    T_World_Volume = {};
+    IsPoseSet_ = false;
+}
+
 /*
 ================================================================================
 
@@ -919,6 +994,37 @@ void ovrMesh::SetPose(const XrPosef& T_World_Mesh_Xr) {
     IsPoseSet_ = true;
 }
 
+void ovrMesh::ResetPose() {
+    T_World_Mesh = {};
+    IsPoseSet_ = false;
+}
+
+/*
+================================================================================
+
+ovrRoomMesh
+
+================================================================================
+*/
+
+ovrRoomMesh::ovrRoomMesh(const XrSpace space) : Space(space) {}
+
+void ovrRoomMesh::Update(
+    const XrRoomMeshMETA& roomMesh,
+    const std::vector<XrRoomMeshFaceIndicesMETA>& roomMeshFaceIndicesList,
+    const std::vector<XrColor4f>& colorList) {
+    Geometry.CreateRoomMesh(roomMesh, roomMeshFaceIndicesList, colorList);
+}
+
+void ovrRoomMesh::SetPose(const XrPosef& T_World_RoomMesh_Xr) {
+    T_World_RoomMesh = FromXrPosef(T_World_RoomMesh_Xr);
+    IsPoseSet_ = true;
+}
+
+void ovrRoomMesh::ResetPose() {
+    T_World_RoomMesh = {};
+    IsPoseSet_ = false;
+}
 
 /*
 ================================================================================
@@ -961,7 +1067,12 @@ void ovrScene::Clear() {
     }
     Meshes.clear();
 
+    RoomMeshProgram.Clear();
+    for (auto& roomMesh : RoomMeshes) {
+        roomMesh.Geometry.Clear();
     }
+    RoomMeshes.clear();
+}
 
 bool ovrScene::IsCreated() {
     return CreatedScene;
@@ -1026,7 +1137,11 @@ void ovrScene::Create() {
         ALOGE("Failed to compile mesh program!");
     }
 
-    
+    // RoomMeshes
+    if (!RoomMeshProgram.Create(VERTEX_SHADER, FRAGMENT_SHADER)) {
+        ALOGE("Failed to compile room mesh program!");
+    }
+
     CreatedScene = true;
 
     CreateVAOs();
@@ -1433,6 +1548,37 @@ void ovrAppRenderer::RenderFrame(const FrameIn& frameIn) {
     GL(glDisable(GL_BLEND));
     GL(glUseProgram(0));
 
-    
+    // Render room meshes
+    GL(glUseProgram(Scene.RoomMeshProgram.Program));
+    GL(glBindBufferBase(
+        GL_UNIFORM_BUFFER,
+        Scene.RoomMeshProgram.UniformBinding[ovrUniform::Index::SCENE_MATRICES],
+        Scene.SceneMatrices));
+    if (Scene.RoomMeshProgram.UniformLocation[ovrUniform::Index::VIEW_ID] >= 0) {
+        GL(glUniform1i(Scene.RoomMeshProgram.UniformLocation[ovrUniform::Index::VIEW_ID], 0));
+    }
+    GL(glEnable(GL_BLEND));
+    GL(glEnable(GL_CULL_FACE));
+    GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    for (const auto& roomMesh : Scene.RoomMeshes) {
+        if (!roomMesh.IsRenderable()) {
+            continue;
+        }
+        if (Scene.RoomMeshProgram.UniformLocation[ovrUniform::Index::MODEL_MATRIX] >= 0) {
+            const Matrix4f transform = Matrix4f(roomMesh.T_World_RoomMesh);
+            GL(glUniformMatrix4fv(
+                Scene.RoomMeshProgram.UniformLocation[ovrUniform::Index::MODEL_MATRIX],
+                1,
+                GL_TRUE,
+                &transform.M[0][0]));
+        }
+        roomMesh.Geometry.BindVAO();
+        GL(glDrawElements(GL_TRIANGLES, roomMesh.Geometry.IndexCount(), GL_UNSIGNED_INT, nullptr));
+        GL(glBindVertexArray(0));
+    }
+    GL(glDisable(GL_CULL_FACE));
+    GL(glDisable(GL_BLEND));
+    GL(glUseProgram(0));
+
     Framebuffer.Unbind();
 }

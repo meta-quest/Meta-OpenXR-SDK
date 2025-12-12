@@ -28,8 +28,6 @@ Authors     :   Jonathan E. Wright
 #include "BillBoardRenderer.h"
 #include "TextureAtlas.h"
 
-#include "Misc/Log.h"
-
 using OVR::Matrix4f;
 using OVR::Posef;
 using OVR::Quatf;
@@ -116,7 +114,7 @@ void ovrBillBoardRenderer::Init(const int maxBillBoards, const bool depthTest) {
         OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         TextureProgram = OVRFW::GlProgram::Build(
@@ -188,7 +186,7 @@ ovrBillBoardRenderer::handle_t ovrBillBoardRenderer::AddBillBoard(
     handle_t handle;
 
     // ALOG( "ovrBillBoardRenderer::AddDebugLine" );
-    if (FreeBillBoards.size() > 0) {
+    if (!FreeBillBoards.empty()) {
         handle = FreeBillBoards[static_cast<int>(FreeBillBoards.size()) - 1];
         FreeBillBoards.pop_back();
     } else {
@@ -222,7 +220,7 @@ ovrBillBoardRenderer::handle_t ovrBillBoardRenderer::AddBillBoard(
     handle_t handle;
 
     // ALOG( "ovrBillBoardRenderer::AddDebugLine" );
-    if (FreeBillBoards.size() > 0) {
+    if (!FreeBillBoards.empty()) {
         handle = FreeBillBoards[static_cast<int>(FreeBillBoards.size()) - 1];
         FreeBillBoards.pop_back();
     } else {

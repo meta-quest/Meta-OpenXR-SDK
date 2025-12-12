@@ -203,8 +203,9 @@ OvrTrailsAnimComponent::OvrTrailsAnimComponent(
 
 float OvrTrailsAnimComponent::GetAlphaForFrame(const int frame) const {
     const int currentFrame = GetCurFrame();
-    if (frame == currentFrame)
+    if (frame == currentFrame) {
         return 1.0f;
+    }
 
     const float alpha = GetFractionalFrame();
     const float aheadFactor = 1.0f / FramesAhead;

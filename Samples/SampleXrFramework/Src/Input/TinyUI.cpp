@@ -471,8 +471,9 @@ void TinyUI::ShowAll() {
 void TinyUI::HideAll(const std::vector<VRMenuObject*>& exceptions) {
     ForAll([=](VRMenuObject* menu) {
         for (const VRMenuObject* e : exceptions) {
-            if (e == menu)
+            if (e == menu) {
                 return;
+            }
         }
         menu->SetVisible(false);
     });

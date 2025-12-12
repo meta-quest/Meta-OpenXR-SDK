@@ -171,7 +171,7 @@ void BuildModelSurfaceList(
 
     for (int nodeNum = 0; nodeNum < static_cast<int>(emitNodes.size()); nodeNum++) {
         const ModelNodeState& nodeState = *emitNodes[nodeNum];
-        if (nodeState.GetNode() != NULL && nodeState.GetNode()->model != NULL) {
+        if (nodeState.GetNode() != nullptr && nodeState.GetNode()->model != nullptr) {
             // #TODO currently we aren't properly updating the geo local bounds for skinned animated
             // objects.  Fix that.
             bool allowCulling = true;

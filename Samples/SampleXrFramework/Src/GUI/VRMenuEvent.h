@@ -65,7 +65,7 @@ enum eVRMenuEventType {
     VRMENU_EVENT_MAX
 };
 
-typedef OVR::BitFlagsT<eVRMenuEventType, uint64_t> VRMenuEventFlags_t;
+using VRMenuEventFlags_t = OVR::BitFlagsT<eVRMenuEventType, uint64_t>;
 
 enum eEventDispatchType {
     EVENT_DISPATCH_TARGET, // send only to target

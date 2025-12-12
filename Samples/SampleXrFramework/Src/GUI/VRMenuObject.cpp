@@ -996,7 +996,7 @@ void VRMenuObject::Init(OvrGuiSys& guiSys, VRMenuObjectParms const& parms) {
             TextLocalPose.Translation.x * DEFAULT_TEXEL_SCALE,
             TextLocalPose.Translation.y * DEFAULT_TEXEL_SCALE,
             TextLocalPose.Translation.z};
-        if (Surfaces.size() > 0) {
+        if (!Surfaces.empty()) {
             Vector2f dims = Surfaces[0].GetDims();
             LocalScale = Vector3f(LocalScale.x / dims.x, LocalScale.y / dims.y, LocalScale.z);
         }
@@ -1218,7 +1218,7 @@ bool VRMenuObject::HitTest_r(
                 CullBounds.b[1].x, CullBounds.b[1].y, CullBounds.b[1].z );
     */
     // test against cull bounds if we have children  ... otherwise cullBounds == localBounds
-    if (Children.size() > 0) {
+    if (!Children.empty()) {
         if (CullBounds.IsInverted()) {
             ALOG("CullBounds are inverted!!");
             return false;

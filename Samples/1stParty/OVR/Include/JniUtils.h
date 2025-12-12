@@ -125,6 +125,23 @@ class TempJniEnv {
 
 #endif // defined(OVR_OS_ANDROID)
 
+#if defined(OVR_OS_ANDROID)
+inline jstring ovr_NewStringUTF(JNIEnv* jni, char const* str) {
+    OVR_ASSERT(str);
+    if (jni->ExceptionCheck()) {
+        OVR_WARN("ovr_NewStringUTF found existing exception");
+        jni->ExceptionClear();
+    }
+    jstring result = jni->NewStringUTF(str);
+    if (result == nullptr) {
+        OVR_FAIL("ovr_NewStringUTF failed with NULL");
+    } else if (jni->ExceptionOccurred()) {
+        OVR_FAIL("ovr_NewStringUTF threw a JNI exception");
+    }
+    return result;
+}
+#endif // defined(OVR_OS_ANDROID)
+
 //==============================================================
 // JavaObject
 //
@@ -144,10 +161,10 @@ class JavaObject {
         OVR_ASSERT(Jni != NULL);
         if (Object != NULL) {
             Jni->DeleteLocalRef(Object);
-        }
-        if (Jni->ExceptionOccurred()) {
-            OVR_LOG("JNI exception occurred calling DeleteLocalRef!");
-            Jni->ExceptionClear();
+            if (Jni->ExceptionOccurred()) {
+                OVR_FAIL("JNI exception occurred calling DeleteLocalRef!");
+                Jni->ExceptionClear();
+            }
         }
 #endif
         Jni = NULL;
@@ -226,11 +243,7 @@ class JavaString : public JavaObject {
     JavaString(JNIEnv* jni_, char const* string_) : JavaObject(jni_, NULL) {
 #if defined(OVR_OS_ANDROID)
         OVR_ASSERT(string_);
-        SetJObject(GetJNI()->NewStringUTF(string_));
-        if (GetJNI()->ExceptionOccurred()) {
-            OVR_ASSERT(!(bool)"JNI exception occurred calling NewStringUTF!");
-            OVR_LOG("JNI exception occurred calling NewStringUTF!");
-        }
+        SetJObject(ovr_NewStringUTF(GetJNI(), string_));
         OVR_ASSERT(GetJObject());
 #else
         OVR_UNUSED(string_);
@@ -263,10 +276,12 @@ class JavaUTFChars : public JavaString {
     JavaUTFChars(JNIEnv* jni_, jstring const string_) : JavaString(jni_, string_), UTFString(NULL) {
         OVR_ASSERT(string_);
 #if defined(OVR_OS_ANDROID)
+        GetJNI()->ExceptionClear();
         UTFString = GetJNI()->GetStringUTFChars(GetJString(), NULL);
-        if (GetJNI()->ExceptionOccurred()) {
-            OVR_ASSERT(!(bool)"JNI exception occurred calling GetStringUTFChars!");
-            OVR_LOG("JNI exception occurred calling GetStringUTFChars!");
+        if (UTFString == NULL) {
+            OVR_FAIL("GetStringUTFChars returned NULL");
+        } else if (GetJNI()->ExceptionOccurred()) {
+            OVR_FAIL("GetStringUTFChars threw a JNI exception");
         }
         OVR_ASSERT(UTFString);
 #endif
@@ -275,10 +290,10 @@ class JavaUTFChars : public JavaString {
     ~JavaUTFChars() {
 #if defined(OVR_OS_ANDROID)
         OVR_ASSERT(UTFString != NULL);
+        GetJNI()->ExceptionClear();
         GetJNI()->ReleaseStringUTFChars(GetJString(), UTFString);
         if (GetJNI()->ExceptionOccurred()) {
-            OVR_ASSERT(!(bool)"JNI exception occurred calling ReleaseStringUTFChars!");
-            OVR_LOG("JNI exception occurred calling ReleaseStringUTFChars!");
+            OVR_FAIL("ReleaseStringUTFChars threw a JNI exception");
         }
 #endif
     }
@@ -300,14 +315,8 @@ class JavaUTFChars : public JavaString {
 #include <unistd.h>
 #include <pthread.h>
 
-// Use this EVERYWHERE and you can insert your own catch here if you have string references leaking.
-// Even better, use the JavaString / JavaUTFChars classes instead and they will free resources for
-// you automatically.
-inline jobject ovr_NewStringUTF(JNIEnv* jni, char const* str) {
-    return jni->NewStringUTF(str);
-}
-inline char const* ovr_GetStringUTFChars(JNIEnv* jni, jstring javaStr, jboolean* isCopy) {
-    char const* str = jni->GetStringUTFChars(javaStr, isCopy);
+inline char const* ovr_GetStringUTFChars(JNIEnv* jni, jstring javaStr) {
+    char const* str = jni->GetStringUTFChars(javaStr, nullptr);
     return str;
 }
 
@@ -380,7 +389,7 @@ inline jclass ovr_GetLocalClassReferenceWithLoader(
     jmethodID loadClassMethodId = jni->GetMethodID(
         classLoaderClass.GetJClass(), "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 
-    JavaString classNameString(jni, jni->NewStringUTF(className));
+    JavaString classNameString(jni, ovr_NewStringUTF(jni, className));
     jclass localClass = static_cast<jclass>(
         jni->CallObjectMethod(classLoader, loadClassMethodId, classNameString.GetJString()));
 
@@ -645,15 +654,12 @@ inline bool ovr_GetInstalledPackagePath(
         return false;
     }
 
-    jobject packageNameObj = jni->NewStringUTF(packageName);
-    if (packageNameObj == NULL) {
-        OVR_LOG("ovr_GetInstalledPackagePath packageNameObj == NULL");
-        return false;
-    }
-
+    jobject packageNameObj = ovr_NewStringUTF(jni, packageName);
     jint jZero = 0;
     jobject applicationInfo =
         jni->CallObjectMethod(packageManager, getApplicationInfoMethod, packageNameObj, jZero);
+    jni->DeleteLocalRef(packageNameObj);
+
     if (applicationInfo == NULL) {
         OVR_LOG(
             "ovr_GetInstalledPackagePath applicationInfo == NULL packageName='%s'", packageName);
@@ -686,13 +692,12 @@ inline bool ovr_GetInstalledPackagePath(
         return false;
     }
 
-    const char* sourceDir_ch = jni->GetStringUTFChars(sourceDir, 0);
+    const char* sourceDir_ch = jni->GetStringUTFChars(sourceDir, NULL);
     if (sourceDir_ch == NULL) {
         OVR_LOG("ovr_GetInstalledPackagePath sourceDir_ch == NULL");
         return false;
     }
 
-    /// If all goes well ... :)
     OVR::OVR_strcpy(packagePath, packagePathSize, sourceDir_ch);
 
 #if defined(OVR_BUILD_DEBUG)
@@ -776,7 +781,7 @@ ovr_GetPackageSignatures(JNIEnv* jni, jobject activityObject, const char* packag
     jfieldID signaturesFieldId = jni->GetFieldID(
         packageInfoClass.GetJClass(), "signatures", "[Landroid/content/pm/Signature;");
 
-    JavaString packageNameStringObject(jni, jni->NewStringUTF(packageName));
+    JavaString packageNameStringObject(jni, ovr_NewStringUTF(jni, packageName));
 
     JavaObject packageManager(
         jni, jni->CallObjectMethod(activityObject, getPackageManagerMethodId));

@@ -197,7 +197,7 @@ ovrParseResult ParseTypesafeNumber_int(
     void* outPtr,
     size_t const /*arraySize*/) {
     enum eTempEnum { INVALID_TEMP_ENUM = 0 };
-    typedef OVR::TypesafeNumberT<int, eTempEnum, INVALID_TEMP_ENUM> TempTypesafeNumber;
+    using TempTypesafeNumber = OVR::TypesafeNumberT<int, eTempEnum, INVALID_TEMP_ENUM>;
 
     TempTypesafeNumber& out = *static_cast<TempTypesafeNumber*>(outPtr);
 
@@ -223,7 +223,7 @@ ovrParseResult ParseTypesafeNumber_long_long(
     void* outPtr,
     size_t const /*arraySize*/) {
     enum eTempEnum { INVALID_TEMP_ENUM = 0 };
-    typedef OVR::TypesafeNumberT<long long, eTempEnum, INVALID_TEMP_ENUM> TempTypesafeNumber;
+    using TempTypesafeNumber = OVR::TypesafeNumberT<long long, eTempEnum, INVALID_TEMP_ENUM>;
 
     TempTypesafeNumber& out = *static_cast<TempTypesafeNumber*>(outPtr);
 

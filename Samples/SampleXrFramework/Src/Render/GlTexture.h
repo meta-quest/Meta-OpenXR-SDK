@@ -62,7 +62,7 @@ enum eTextureFlags {
     TEXTUREFLAG_FLIP_Y_ON_LOAD
 };
 
-typedef OVR::BitFlagsT<eTextureFlags> TextureFlags_t;
+using TextureFlags_t = OVR::BitFlagsT<eTextureFlags>;
 
 enum eTextureFormat {
     Texture_None = 0x00000,

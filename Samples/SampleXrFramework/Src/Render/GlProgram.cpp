@@ -27,8 +27,6 @@ Authors     :   John Carmack
 
 #include "GlProgram.h"
 
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "Misc/Log.h"

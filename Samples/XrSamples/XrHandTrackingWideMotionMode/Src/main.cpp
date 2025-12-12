@@ -316,12 +316,22 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
             if (hand_Base_L_->AreLocationsActive() && hand_Base_L_->IsPositionValid()) {
                 /// Render solid Hands
                 handRenderer_Base_L_.Solidity = 1.0f;
+                /// BEGIN_SDK_REMOVE
+                if(hand_Base_L_->WideMotionModeSource().wideMotionSource == XR_HAND_TRACKING_WIDE_MOTION_MODE_SOURCE_INFERENCE_METAX1){
+                    handRenderer_Base_L_.Solidity = 0.25f;
+                }
+                /// END_SDK_REMOVE
                 handRenderer_Base_L_.Render(out.Surfaces);
             }
 
             if (hand_Base_R_->AreLocationsActive() && hand_Base_R_->IsPositionValid()) {
                 /// Render solid Hands
                 handRenderer_Base_R_.Solidity = 1.0f;
+                /// BEGIN_SDK_REMOVE
+                if(hand_Base_R_->WideMotionModeSource().wideMotionSource == XR_HAND_TRACKING_WIDE_MOTION_MODE_SOURCE_INFERENCE_METAX1){
+                    handRenderer_Base_R_.Solidity = 0.25f;
+                }
+                /// END_SDK_REMOVE
                 handRenderer_Base_R_.Render(out.Surfaces);
             }
         }
@@ -330,6 +340,11 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
             if (hand_WMM_L_->AreLocationsActive() && hand_WMM_L_->IsPositionValid()) {
                 /// Render solid Hands
                 handRenderer_WMM_L_.Solidity = 1.0f;
+                /// BEGIN_SDK_REMOVE
+                if(hand_WMM_L_->WideMotionModeSource().wideMotionSource == XR_HAND_TRACKING_WIDE_MOTION_MODE_SOURCE_INFERENCE_METAX1){
+                    handRenderer_WMM_L_.Solidity = 0.25f;
+                }
+                /// END_SDK_REMOVE
                 handRenderer_WMM_L_.Render(out.Surfaces);
                 axisRendererL_.Render(OVR::Matrix4f(), in, out);
             }
@@ -337,6 +352,11 @@ class XrHandTrackingWideMotionModeApp : public OVRFW::XrApp {
             if (hand_WMM_R_->AreLocationsActive() && hand_WMM_R_->IsPositionValid()) {
                 /// Render solid Hands
                 handRenderer_WMM_R_.Solidity = 1.0f;
+                /// BEGIN_SDK_REMOVE
+                if(hand_WMM_R_->WideMotionModeSource().wideMotionSource == XR_HAND_TRACKING_WIDE_MOTION_MODE_SOURCE_INFERENCE_METAX1){
+                    handRenderer_WMM_R_.Solidity = 0.25f;
+                }
+                /// END_SDK_REMOVE
                 handRenderer_WMM_R_.Render(out.Surfaces);
                 axisRendererR_.Render(OVR::Matrix4f(), in, out);
             }

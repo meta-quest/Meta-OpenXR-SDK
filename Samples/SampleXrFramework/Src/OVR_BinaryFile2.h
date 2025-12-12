@@ -46,7 +46,7 @@ class BinaryReader {
 
     uint32_t ReadUInt32() const {
         const int bytes = sizeof(uint32_t);
-        if (Data == NULL || bytes > Size - Offset) {
+        if (Data == nullptr || bytes > Size - Offset) {
             return 0;
         }
         Offset += bytes;
@@ -56,7 +56,7 @@ class BinaryReader {
     template <typename _type_>
     bool ReadArray(std::vector<_type_>& out, const int numElements) const {
         const int bytes = numElements * sizeof(out[0]);
-        if (Data == NULL || bytes > Size - Offset) {
+        if (Data == nullptr || bytes > Size - Offset) {
             out.resize(0);
             return false;
         }

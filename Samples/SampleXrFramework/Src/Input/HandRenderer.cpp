@@ -173,14 +173,14 @@ namespace OVRFW {
 bool HandRenderer::Init(const XrHandTrackingMeshFB* mesh, bool leftHand) {
     /// Shader
     ovrProgramParm UniformParms[] = {
-        {"Texture0", ovrProgramParmType::TEXTURE_SAMPLED},
-        {"SpecularLightDirection", ovrProgramParmType::FLOAT_VECTOR3},
-        {"SpecularLightColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"AmbientLightColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"JointMatrices", ovrProgramParmType::BUFFER_UNIFORM},
-        {"GlowColor", ovrProgramParmType::FLOAT_VECTOR3},
-        {"Confidence", ovrProgramParmType::FLOAT},
-        {"Solidity", ovrProgramParmType::FLOAT},
+        {.Name = "Texture0", .Type = ovrProgramParmType::TEXTURE_SAMPLED},
+        {.Name = "SpecularLightDirection", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "SpecularLightColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "AmbientLightColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "JointMatrices", .Type = ovrProgramParmType::BUFFER_UNIFORM},
+        {.Name = "GlowColor", .Type = ovrProgramParmType::FLOAT_VECTOR3},
+        {.Name = "Confidence", .Type = ovrProgramParmType::FLOAT},
+        {.Name = "Solidity", .Type = ovrProgramParmType::FLOAT},
     };
     ProgHand = GlProgram::Build(
         "",

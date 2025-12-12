@@ -36,8 +36,6 @@ Authors     :   Jonathan E. Wright
 
 #include "OVR_Locale.h"
 
-#include <sys/stat.h>
-
 #include <vector>
 #include <unordered_map>
 
@@ -163,7 +161,7 @@ bool ovrLocaleInternal::AddStringsFromAndroidFormatXMLBuffer(
     }
 
     tinyxml2::XMLElement const* curElement = root->FirstChildElement();
-    for (; curElement != NULL; curElement = curElement->NextSiblingElement()) {
+    for (; curElement != nullptr; curElement = curElement->NextSiblingElement()) {
         if (OVR::OVR_stricmp(curElement->Value(), "string") != 0) {
             ALOG("WARNING: Expected element value 'string', found '%s'!\n", curElement->Value());
             continue;
@@ -288,42 +286,42 @@ bool ovrLocaleInternal::GetStringJNI(char const* key, char const* defaultOut, st
 
     /// JNI version
     JavaClass activityClass(&jni, jni.GetObjectClass(activityObject));
-    if (activityClass.GetJClass() == 0) {
+    if (activityClass.GetJClass() == nullptr) {
         ALOG("GetStringJNI activityClass == 0");
         out = "JAVAERROR";
         return false;
     }
     const jmethodID getPackageNameMethod =
         jni.GetMethodID(activityClass.GetJClass(), "getPackageName", "()Ljava/lang/String;");
-    if (getPackageNameMethod == 0) {
+    if (getPackageNameMethod == nullptr) {
         ALOG("GetStringJNI getPackageNameMethod == 0");
         out = "JAVAERROR";
         return false;
     }
     const jmethodID getResourcesMethod = jni.GetMethodID(
         activityClass.GetJClass(), "getResources", "()Landroid/content/res/Resources;");
-    if (getResourcesMethod == 0) {
+    if (getResourcesMethod == nullptr) {
         ALOG("GetStringJNI getResourcesMethod == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaObject packageName(&jni, jni.CallObjectMethod(activityObject, getPackageNameMethod));
-    if (packageName.GetJObject() == 0) {
+    if (packageName.GetJObject() == nullptr) {
         ALOG("GetStringJNI packageName == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaObject resources(&jni, jni.CallObjectMethod(activityObject, getResourcesMethod));
-    if (resources.GetJObject() == 0) {
+    if (resources.GetJObject() == nullptr) {
         ALOG("GetStringJNI resources == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaClass resourcesClass(&jni, jni.GetObjectClass(resources.GetJObject()));
-    if (resourcesClass.GetJClass() == 0) {
+    if (resourcesClass.GetJClass() == nullptr) {
         ALOG("GetStringJNI resourcesClass == 0");
         out = "JAVAERROR";
         return false;
@@ -333,21 +331,21 @@ bool ovrLocaleInternal::GetStringJNI(char const* key, char const* defaultOut, st
         resourcesClass.GetJClass(),
         "getIdentifier",
         "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I");
-    if (getIdentifierMethod == 0) {
+    if (getIdentifierMethod == nullptr) {
         ALOG("GetStringJNI getIdentifierMethod == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaString keyObj(&jni, realKey);
-    if (keyObj.GetJObject() == 0) {
+    if (keyObj.GetJObject() == nullptr) {
         ALOG("GetStringJNI keyObj == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaString stringObj(&jni, "string");
-    if (stringObj.GetJObject() == 0) {
+    if (stringObj.GetJObject() == nullptr) {
         ALOG("GetStringJNI stringObj == 0");
         out = "JAVAERROR";
         return false;
@@ -367,21 +365,21 @@ bool ovrLocaleInternal::GetStringJNI(char const* key, char const* defaultOut, st
 
     const jmethodID getTextMethod = jni.GetMethodID(
         resourcesClass.GetJClass(), "getText", "(Ljava/lang/Integer;)Ljava/lang/String;");
-    if (getTextMethod == 0) {
+    if (getTextMethod == nullptr) {
         ALOG("GetStringJNI getTextMethod == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaObject textObject(&jni, jni.CallObjectMethod(resources.GetJObject(), getTextMethod, id));
-    if (textObject.GetJObject() == 0) {
+    if (textObject.GetJObject() == nullptr) {
         ALOG("GetStringJNI textObject == 0");
         out = "JAVAERROR";
         return false;
     }
 
     JavaClass textObjectClass(&jni, jni.GetObjectClass(textObject.GetJObject()));
-    if (textObjectClass.GetJClass() == 0) {
+    if (textObjectClass.GetJClass() == nullptr) {
         ALOG("GetStringJNI textObjectClass == 0");
         out = "JAVAERROR";
         return false;
@@ -389,7 +387,7 @@ bool ovrLocaleInternal::GetStringJNI(char const* key, char const* defaultOut, st
 
     const jmethodID toStringMethd =
         jni.GetMethodID(textObjectClass.GetJClass(), "toString", "()Ljava/lang/String;");
-    if (toStringMethd == 0) {
+    if (toStringMethd == nullptr) {
         ALOG("GetStringJNI toStringMethd == 0");
         out = "JAVAERROR";
         return false;
@@ -397,13 +395,13 @@ bool ovrLocaleInternal::GetStringJNI(char const* key, char const* defaultOut, st
 
     JavaString textObjectString(
         &jni, (jstring)jni.CallObjectMethod(textObject.GetJObject(), toStringMethd));
-    if (textObjectString.GetJObject() == 0) {
+    if (textObjectString.GetJObject() == nullptr) {
         ALOG("GetStringJNI textObjectString == NULL");
         out = "JAVAERROR";
         return false;
     }
 
-    const char* textObjectString_ch = jni.GetStringUTFChars(textObjectString.GetJString(), 0);
+    const char* textObjectString_ch = jni.GetStringUTFChars(textObjectString.GetJString(), nullptr);
     out = textObjectString_ch;
     jni.ReleaseStringUTFChars(textObjectString.GetJString(), textObjectString_ch);
 #else
@@ -419,12 +417,12 @@ bool ovrLocaleInternal::GetLocalizedString(
     char const* key,
     char const* defaultStr,
     std::string& out) const {
-    if (key == NULL) {
+    if (key == nullptr) {
         return false;
     }
 
     if (strstr(key, LOCALIZED_KEY_PREFIX) == key) {
-        if (Strings.size() > 0) {
+        if (!Strings.empty()) {
             std::string realKey(key + LOCALIZED_KEY_PREFIX_LEN);
             auto it = StringHash.find(realKey);
             if (it != StringHash.end()) {
@@ -439,7 +437,7 @@ bool ovrLocaleInternal::GetLocalizedString(
     if (GetStringJNI(key, defaultStr, out)) {
         return true;
     }
-    out = defaultStr != NULL ? defaultStr : "";
+    out = defaultStr != nullptr ? defaultStr : "";
     return false;
 }
 
@@ -525,7 +523,7 @@ ovrLocale*
 ovrLocale::Create(JNIEnv& jni_, jobject activity_, char const* name, ovrFileSys* fileSys) {
     ALOG("ovrLocale::Create - entered");
 
-    ovrLocale* localePtr = NULL;
+    ovrLocale* localePtr = nullptr;
 
     /// Find default language, default to EN
     std::string languageCode = "en";
@@ -539,28 +537,28 @@ ovrLocale::Create(JNIEnv& jni_, jobject activity_, char const* name, ovrFileSys*
 
 #if defined(OVR_OS_ANDROID)
     JavaClass localeClass(&jni_, jni_.FindClass("java/util/Locale")); // class pointer of Locale
-    if (localeClass.GetJClass() == NULL) {
+    if (localeClass.GetJClass() == nullptr) {
         ALOG("ovrLocale::Create - localeClass == NULL");
     } else {
         jmethodID getDefaultMethod =
             jni_.GetStaticMethodID(localeClass.GetJClass(), "getDefault", "()Ljava/util/Locale;");
-        if (getDefaultMethod == NULL) {
+        if (getDefaultMethod == nullptr) {
             ALOG("ovrLocale::Create - getDefaultMethod == NULL");
         } else {
             jobject defaultLocale =
                 jni_.CallStaticObjectMethod(localeClass.GetJClass(), getDefaultMethod);
-            if (defaultLocale == NULL) {
+            if (defaultLocale == nullptr) {
                 ALOG("ovrLocale::Create - defaultLocale == NULL");
             } else {
                 jmethodID getLanguageMethod = jni_.GetMethodID(
                     localeClass.GetJClass(), "getLanguage", "()Ljava/lang/String;");
-                if (getLanguageMethod == NULL) {
+                if (getLanguageMethod == nullptr) {
                     ALOG("ovrLocale::Create - getLanguageMethod == NULL");
                 } else {
                     jstring language =
                         (jstring)jni_.CallObjectMethod(defaultLocale, getLanguageMethod);
                     if (language) {
-                        const char* language_ch = jni_.GetStringUTFChars(language, 0);
+                        const char* language_ch = jni_.GetStringUTFChars(language, nullptr);
                         ALOG("ovrLocale::Create - languageCode = `%s`", language_ch);
                         languageCode = language_ch;
                         jni_.ReleaseStringUTFChars(language, language_ch);
@@ -583,7 +581,7 @@ ovrLocale::Create(JNIEnv& jni_, jobject activity_, char const* name, ovrFileSys*
 // ovrLocale::Destroy
 void ovrLocale::Destroy(ovrLocale*& localePtr) {
     delete localePtr;
-    localePtr = NULL;
+    localePtr = nullptr;
 }
 
 //==============================

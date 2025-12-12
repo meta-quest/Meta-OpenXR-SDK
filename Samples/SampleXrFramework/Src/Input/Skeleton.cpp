@@ -62,8 +62,9 @@ void ovrSkeleton::SetJoints(const std::vector<ovrJoint>& newJoints) {
 }
 
 void ovrSkeleton::UpdateWorldFromLocal() const {
-    if (false == WorldSpaceDirty)
+    if (false == WorldSpaceDirty) {
         return;
+    }
 
     assert(Joints.size() == LocalSpacePoses.size());
     assert(Joints.size() == WorldSpacePoses.size());

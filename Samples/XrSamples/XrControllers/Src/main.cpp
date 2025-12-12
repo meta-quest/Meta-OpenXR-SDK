@@ -31,6 +31,7 @@ Language    :   C++
 #include <algorithm>
 #include <openxr/openxr.h>
 
+#include <meta_openxr_preview/extx1_haptic_parametric.h>
 
 #include <sstream>
 #include <iomanip>
@@ -98,12 +99,23 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         return result;
     }
 
+    bool SupportsParametricHaptics() {
+        XrSystemHapticParametricPropertiesEXTX1 systemHapticParametricProperties{XR_TYPE_SYSTEM_HAPTIC_PARAMETRIC_PROPERTIES_EXTX1};
+        XrSystemProperties systemProperties = {XR_TYPE_SYSTEM_PROPERTIES, &systemHapticParametricProperties};
+        OXR(xrGetSystemProperties(Instance, GetSystemId(), &systemProperties));
+        if (systemHapticParametricProperties.supportsParametricHaptics == XR_FALSE) {
+            ALOGE("System does not support parametric haptics");
+            return false;
+        }
+        return true;
+    }
 
     // Returns a list of OpenXr extensions needed for this app
     virtual std::vector<const char*> GetExtensions() override {
         std::vector<const char*> extensions = XrApp::GetExtensions();
         extensions.push_back(XR_FB_HAPTIC_AMPLITUDE_ENVELOPE_EXTENSION_NAME);
         extensions.push_back(XR_FB_HAPTIC_PCM_EXTENSION_NAME);
+        extensions.push_back(XR_EXTX1_HAPTIC_PARAMETRIC_EXTENSION_NAME);
                 return extensions;
     }
 
@@ -536,6 +548,10 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
                 mainHapticAction_, LeftHandPath, aeBufferSimple, std::size(aeBufferSimple), 0.5f);
         });
 
+        position.x -= 0.4f;
+        ui_.AddButton("Parametric", position, size, [this] {
+            VibrateControllerParametric(mainHapticAction_, LeftHandPath);
+        });
 
         // Right Hand
         position = {+1.2f, 0.7f, -1.9f};
@@ -554,6 +570,10 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
                 mainHapticAction_, RightHandPath, aeBufferSingle, std::size(aeBufferSingle), 1.0f);
         });
 
+        position.x += 0.4f;
+        ui_.AddButton("Parametric", position, size, [this] {
+            VibrateControllerParametric(mainHapticAction_, RightHandPath);
+        });
 
         position = {+0.0f, 0.5f, -1.9f};
         position.y -= dh;
@@ -1260,6 +1280,39 @@ Function to create PCM samples from an array of amplitudes, frequency and durati
         t.detach();
     }
 
+    void VibrateControllerParametric(
+        const XrAction& action,
+        const XrPath& subactionPath)
+    {
+        if (!SupportsParametricHaptics()) {
+            return;
+        }
+
+        const std::vector<XrHapticParametricPointEXTX1> amplitudePoints{{
+            {0, 0.0}, {100000000, 1.0}, {270000000, 1.0}, {480000000, 0.7}, {750000000, 0.6},
+            {1000000000, 1.0}}};
+         const std::vector<XrHapticParametricPointEXTX1> frequencyPoints{{
+            {0, 1.0}, {1000000000, 0.0}}};
+         const std::vector<XrHapticParametricTransientEXTX1> transients{{
+            {600000000, 1.0, 1.0}}};
+
+        XrHapticParametricVibrationEXTX1 parametricVibration{
+            XR_TYPE_HAPTIC_PARAMETRIC_VIBRATION_EXTX1};
+        parametricVibration.amplitudePointCount = amplitudePoints.size();
+        parametricVibration.amplitudePoints = amplitudePoints.data();
+        parametricVibration.frequencyPointCount = frequencyPoints.size();
+        parametricVibration.frequencyPoints = frequencyPoints.data();
+        parametricVibration.transientCount = transients.size();
+        parametricVibration.transients = transients.data();
+        parametricVibration.minFrequencyHz = XR_FREQUENCY_UNSPECIFIED;
+        parametricVibration.maxFrequencyHz = XR_FREQUENCY_UNSPECIFIED;
+        parametricVibration.streamFrameType = XR_HAPTIC_PARAMETRIC_STREAM_FRAME_TYPE_NONE_EXTX1;
+        XrHapticActionInfo hapticActionInfo{XR_TYPE_HAPTIC_ACTION_INFO};
+        hapticActionInfo.action = action;
+        hapticActionInfo.subactionPath = subactionPath;
+        OXR(xrApplyHapticFeedback(
+            Session, &hapticActionInfo, reinterpret_cast<const XrHapticBaseHeader*>(&parametricVibration)));
+    }
 
     void StopHapticEffect(const XrAction& action, const XrPath& subactionPath) {
         XrHapticActionInfo hai = {XR_TYPE_HAPTIC_ACTION_INFO, nullptr};

@@ -52,8 +52,8 @@ ovrLexer::ovrLexer(const char* source, const size_t sourceLength, char const* pu
       SourceLength(sourceLength),
       p(Source),
       Error(LEX_RESULT_OK),
-      Punctuation(NULL) {
-    size_t len = punctuation == NULL ? 0 : OVR::OVR_strlen(punctuation);
+      Punctuation(nullptr) {
+    size_t len = punctuation == nullptr ? 0 : OVR::OVR_strlen(punctuation);
     if (len == 0) {
         Punctuation = new char[16];
         Punctuation[0] = '\0';
@@ -65,7 +65,7 @@ ovrLexer::ovrLexer(const char* source, const size_t sourceLength, char const* pu
 
 //==============================
 // ovrLexer::ovrLexer
-ovrLexer::ovrLexer(const char* source) : ovrLexer(source, OVR::OVR_strlen(source), NULL) {}
+ovrLexer::ovrLexer(const char* source) : ovrLexer(source, OVR::OVR_strlen(source), nullptr) {}
 
 //==============================
 // ovrLexer::ovrLexer
@@ -97,7 +97,7 @@ ovrLexer::ovrLexer(ovrLexer&& other) {
 ovrLexer::~ovrLexer() {
     assert(Error == LEX_RESULT_OK || Error == LEX_RESULT_EOF);
     delete Punctuation;
-    Punctuation = NULL;
+    Punctuation = nullptr;
 }
 
 //==============================
@@ -113,7 +113,7 @@ ovrLexer& ovrLexer::operator=(const ovrLexer& other) {
     p = other.p;
     Error = other.Error;
 
-    size_t len = other.Punctuation == NULL ? 0 : OVR::OVR_strlen(other.Punctuation);
+    size_t len = other.Punctuation == nullptr ? 0 : OVR::OVR_strlen(other.Punctuation);
     if (len == 0) {
         Punctuation = new char[16];
         Punctuation[0] = '\0';
@@ -308,8 +308,8 @@ uint32_t ovrLexer::TranslateEscapeCode(uint32_t const inCh) {
 //==============================
 // ovrLexer::NextToken
 ovrLexer::ovrResult ovrLexer::NextToken(char* token, size_t const maxTokenSize) {
-    if (token == NULL || maxTokenSize <= 0) {
-        assert(token != NULL && maxTokenSize > 0);
+    if (token == nullptr || maxTokenSize <= 0) {
+        assert(token != nullptr && maxTokenSize > 0);
         return LEX_RESULT_ERROR;
     }
 

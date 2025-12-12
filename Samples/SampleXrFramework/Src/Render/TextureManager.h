@@ -36,7 +36,7 @@ namespace OVRFW {
 
 enum ovrTextureHandle { INVALID_TEXTURE_HANDLE = -1 };
 
-typedef OVR::TypesafeNumberT<int, ovrTextureHandle, INVALID_TEXTURE_HANDLE> textureHandle_t;
+using textureHandle_t = OVR::TypesafeNumberT<int, ovrTextureHandle, INVALID_TEXTURE_HANDLE>;
 
 class ovrManagedTexture {
    public:

@@ -43,7 +43,7 @@ Authors     :   Jonathan E. Wright
 namespace OVRFW {
 
 bool UriPathStartsWithDriveLetter(char const* uriPath) {
-    if (uriPath == NULL || uriPath[0] == '\0') {
+    if (uriPath == nullptr || uriPath[0] == '\0') {
         return false;
     }
     if (uriPath[0] != '/') {
@@ -101,8 +101,8 @@ bool AppendUriPath(
     const char NIX_PATH_SEPARATOR = '/';
     const char URI_PATH_SEPARATOR = '/';
 
-    if (inPath == NULL || outPath == NULL || appendPath == NULL || outPathSize < 2) {
-        assert(inPath != NULL && outPath != NULL && appendPath != NULL && outPathSize > 1);
+    if (inPath == nullptr || outPath == nullptr || appendPath == nullptr || outPathSize < 2) {
+        assert(inPath != nullptr && outPath != nullptr && appendPath != nullptr && outPathSize > 1);
         return false;
     }
     intptr_t inOfs = 0;
@@ -380,7 +380,7 @@ bool ovrUriScheme_File::OpenHost_Internal(char const* hostName, char const* uriS
     // TODO: Add AllocHost() / AllocHost_Internal() to ovrUriScheme? Requires an ovrUriHost base
     // class, though...
     ovrFileHost* host = new ovrFileHost(hostName, uriSource);
-    assert(host != NULL);
+    assert(host != nullptr);
 
     if (!host->Open()) {
         return false;
@@ -393,8 +393,8 @@ bool ovrUriScheme_File::OpenHost_Internal(char const* hostName, char const* uriS
 // ovrUriScheme_File::CloseHost_Internal
 void ovrUriScheme_File::CloseHost_Internal(char const* hostName) {
     ovrFileHost* host = FindHostByHostName(hostName);
-    assert(host != NULL);
-    if (host != NULL) {
+    assert(host != nullptr);
+    if (host != nullptr) {
         host->Close();
     }
 }
@@ -406,12 +406,12 @@ void ovrUriScheme_File::Shutdown_Internal() {}
 //==============================
 // ovrUriScheme_File::FindHostIndexByHostName
 int ovrUriScheme_File::FindHostIndexByHostName(char const* hostName) const {
-    if ((hostName == NULL || hostName[0] == '\0') && Hosts.size() > 0) {
+    if ((hostName == nullptr || hostName[0] == '\0') && !Hosts.empty()) {
         return 0;
     }
 
     for (int i = 0; i < static_cast<int>(Hosts.size()); ++i) {
-        assert(Hosts[i] != NULL);
+        assert(Hosts[i] != nullptr);
         if (OVR::OVR_strcmp(Hosts[i]->GetHostName(), hostName) == 0) {
             return i;
         }
@@ -424,7 +424,7 @@ int ovrUriScheme_File::FindHostIndexByHostName(char const* hostName) const {
 ovrUriScheme_File::ovrFileHost* ovrUriScheme_File::FindHostByHostName(char const* hostName) const {
     int index = FindHostIndexByHostName(hostName);
     if (index < 0) {
-        return NULL;
+        return nullptr;
     }
     return Hosts[index];
 }
@@ -433,7 +433,7 @@ ovrUriScheme_File::ovrFileHost* ovrUriScheme_File::FindHostByHostName(char const
 // ovruriScheme_File::AddHostSourceUri
 void ovrUriScheme_File::AddHostSourceUri(char const* hostName, char const* sourceUri) {
     ovrFileHost* host = FindHostByHostName(hostName);
-    if (host == NULL) {
+    if (host == nullptr) {
         OpenHost(hostName, sourceUri);
         return;
     }
@@ -464,7 +464,7 @@ void ovrUriScheme_File::ovrFileHost::AddSourceUri(char const* sourceUri) {
 
 //==============================
 // ovrStream_File::ovrStream_File
-ovrStream_File::ovrStream_File(ovrUriScheme const& scheme) : ovrStream(scheme), F(NULL) {}
+ovrStream_File::ovrStream_File(ovrUriScheme const& scheme) : ovrStream(scheme), F(nullptr) {}
 
 //==============================
 // ovrStream_File::~ovrStream_File
@@ -482,18 +482,18 @@ bool ovrStream_File::GetLocalPathFromUri_Internal(const char* uri, std::string& 
             uri,
             schemeName,
             sizeof(schemeName),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
             hostName,
             sizeof(hostName),
             port,
             uriPath,
             sizeof(uriPath),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0)) {
         ALOG("ovrStream_File::GetLocalPathFromUri_Internal: invalid uri '%s'", uri);
         assert(false);
@@ -514,8 +514,8 @@ bool ovrStream_File::GetLocalPathFromUri_Internal(const char* uri, std::string& 
     }
 
     ovrUriScheme_File::ovrFileHost* host = GetFileScheme().FindHostByHostName(hostName);
-    if (host == NULL) {
-        assert(host != NULL);
+    if (host == nullptr) {
+        assert(host != nullptr);
         return false;
     }
 
@@ -524,27 +524,27 @@ bool ovrStream_File::GetLocalPathFromUri_Internal(const char* uri, std::string& 
     if (i >= 0) {
         // find the host's base path
         char const* sourceUri = host->GetSourceUri(i);
-        assert(sourceUri != NULL);
+        assert(sourceUri != nullptr);
         // in this case, the URI path should ALWAYS have a leading slash!
         assert(uriPath[0] == '/');
         // convert the source uri into a system path
         char basePath[ovrFileSys::OVR_MAX_PATH_LEN];
         if (!ovrUri::ParseUri(
                 sourceUri,
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0,
                 port,
                 basePath,
                 sizeof(basePath),
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0)) {
             ALOG(
                 "ovrStream_File::GetLocalPathFromUri_Internal: invalid source uri '%s'", sourceUri);
@@ -562,12 +562,12 @@ bool ovrStream_File::GetLocalPathFromUri_Internal(const char* uri, std::string& 
 //==============================
 // ovrStream_File::Open_Internal
 bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
-    if (F != NULL) {
-        assert(F == NULL);
+    if (F != nullptr) {
+        assert(F == nullptr);
         ALOG("Attempted to open file '%s' with an already open file handle.", uri);
         return false;
     }
-    char const* fmode = NULL;
+    char const* fmode = nullptr;
     switch (mode) {
         case OVR_STREAM_MODE_READ:
             fmode = "rb";
@@ -579,8 +579,8 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
             assert(false);
             return false;
     }
-    if (fmode == NULL) {
-        assert(fmode != NULL);
+    if (fmode == nullptr) {
+        assert(fmode != nullptr);
         return false;
     }
 
@@ -593,18 +593,18 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
             uri,
             schemeName,
             sizeof(schemeName),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
             hostName,
             sizeof(hostName),
             port,
             uriPath,
             sizeof(uriPath),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0)) {
         ALOG("ovrStream_File::Open_Internal: invalid uri '%s'", uri);
         assert(false);
@@ -621,7 +621,7 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
     if (UriPathStartsWithDriveLetter(uriPath)) {
         OVR::OVR_sprintf(fullPath, sizeof(fullPath), "%s", SafePathFromUriPath(uriPath));
         F = fopen(fullPath, fmode);
-        if (F != NULL) {
+        if (F != nullptr) {
             Uri = uri;
             return true;
         } else {
@@ -634,8 +634,8 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
     }
 
     ovrUriScheme_File::ovrFileHost* host = GetFileScheme().FindHostByHostName(hostName);
-    if (host == NULL) {
-        assert(host != NULL);
+    if (host == nullptr) {
+        assert(host != nullptr);
         return false;
     }
 
@@ -643,27 +643,27 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
     for (int i = host->GetNumSourceUris() - 1; i >= 0; --i) {
         // find the host's base path
         char const* sourceUri = host->GetSourceUri(i);
-        assert(sourceUri != NULL);
+        assert(sourceUri != nullptr);
         // in this case, the URI path should ALWAYS have a leading slash!
         assert(uriPath[0] == '/');
         // convert the source uri into a system path
         char basePath[ovrFileSys::OVR_MAX_PATH_LEN];
         if (!ovrUri::ParseUri(
                 sourceUri,
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0,
                 port,
                 basePath,
                 sizeof(basePath),
-                NULL,
+                nullptr,
                 0,
-                NULL,
+                nullptr,
                 0)) {
             ALOG("ovrStream_File::Open_Internal: invalid source uri '%s'", sourceUri);
             assert(false);
@@ -673,7 +673,7 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
         // OVR_sprintf( fullPath, sizeof( fullPath ), "%s%s", ovrPathUtils::SafePathFromUriPath(
         // basePath ), uriPath );
         F = fopen(fullPath, fmode);
-        if (F != NULL) {
+        if (F != nullptr) {
             Uri = uri;
             return true;
         } else {
@@ -689,16 +689,16 @@ bool ovrStream_File::Open_Internal(char const* uri, ovrStreamMode const mode) {
 //==============================
 // ovrStream_File::Close_Internal
 void ovrStream_File::Close_Internal() {
-    if (F != NULL) {
+    if (F != nullptr) {
         fclose(F);
-        F = NULL;
+        F = nullptr;
     }
 }
 
 //==============================
 // ovrStream_File::Flush_Internal
 void ovrStream_File::Flush_Internal() {
-    if (F != NULL) {
+    if (F != nullptr) {
         fflush(F);
     }
 }
@@ -802,7 +802,7 @@ bool ovrUriScheme_Apk::OpenHost_Internal(char const* hostName, char const* sourc
         return false;
     }
     ovrApkHost* host = new ovrApkHost(hostName, sourceUri);
-    assert(host != NULL);
+    assert(host != nullptr);
 
     if (!host->Open()) {
         return false;
@@ -815,8 +815,8 @@ bool ovrUriScheme_Apk::OpenHost_Internal(char const* hostName, char const* sourc
 // ovrUriScheme_Apk::CloseHost_Internal
 void ovrUriScheme_Apk::CloseHost_Internal(char const* hostName) {
     ovrApkHost* host = FindHostByHostName(hostName);
-    assert(host != NULL);
-    if (host != NULL) {
+    assert(host != nullptr);
+    if (host != nullptr) {
         host->Close();
     }
 }
@@ -824,12 +824,12 @@ void ovrUriScheme_Apk::CloseHost_Internal(char const* hostName) {
 //==============================
 // ovrUriScheme_Apk::FindHostIndexByHostName
 int ovrUriScheme_Apk::FindHostIndexByHostName(char const* hostName) const {
-    if ((hostName == NULL || hostName[0] == '\0') && Hosts.size() > 0) {
+    if ((hostName == nullptr || hostName[0] == '\0') && !Hosts.empty()) {
         return 0;
     }
 
     for (int i = 0; i < static_cast<int>(Hosts.size()); ++i) {
-        assert(Hosts[i] != NULL);
+        assert(Hosts[i] != nullptr);
         if (OVR::OVR_strcmp(Hosts[i]->GetHostName(), hostName) == 0) {
             return i;
         }
@@ -842,7 +842,7 @@ int ovrUriScheme_Apk::FindHostIndexByHostName(char const* hostName) const {
 ovrUriScheme_Apk::ovrApkHost* ovrUriScheme_Apk::FindHostByHostName(char const* hostName) const {
     int index = FindHostIndexByHostName(hostName);
     if (index < 0) {
-        return NULL;
+        return nullptr;
     }
     return Hosts[index];
 }
@@ -851,9 +851,9 @@ ovrUriScheme_Apk::ovrApkHost* ovrUriScheme_Apk::FindHostByHostName(char const* h
 // ovrUriScheme_Apk::GetZipFileForHostName
 void* ovrUriScheme_Apk::GetZipFileForHostName(char const* hostName) const {
     ovrApkHost* host = FindHostByHostName(hostName);
-    if (host == NULL) {
-        assert(host != NULL);
-        return NULL;
+    if (host == nullptr) {
+        assert(host != nullptr);
+        return nullptr;
     }
     return host->GetZipFile();
 }
@@ -893,7 +893,7 @@ bool ovrUriScheme_Apk::ovrApkHost::Open() {
     assert(valid && OVR::OVR_stricmp(scheme, "file") == 0);
 
     ZipFile = ovr_OpenOtherApplicationPackage(path);
-    if (ZipFile == NULL) {
+    if (ZipFile == nullptr) {
         ALOG("Failed to open apk: '%s'", SourceUri.c_str());
         return false;
     }
@@ -903,11 +903,11 @@ bool ovrUriScheme_Apk::ovrApkHost::Open() {
 //==============================
 // ovrUriScheme_Apk::ovrApkHost::Close
 void ovrUriScheme_Apk::ovrApkHost::Close() {
-    assert(ZipFile != NULL);
-    if (ZipFile != NULL) {
+    assert(ZipFile != nullptr);
+    if (ZipFile != nullptr) {
         ovr_CloseOtherApplicationPackage(ZipFile);
     }
-    assert(ZipFile == NULL);
+    assert(ZipFile == nullptr);
 }
 
 //==============================
@@ -917,7 +917,7 @@ void ovrUriScheme_Apk::Shutdown_Internal() {
     for (int i = 0; i < static_cast<int>(Hosts.size()); ++i) {
         Hosts[i]->Close();
         delete Hosts[i];
-        Hosts[i] = NULL;
+        Hosts[i] = nullptr;
     }
     Hosts.clear();
 }
@@ -961,20 +961,20 @@ bool ovrStream_Apk::Open_Internal(char const* uri, ovrStreamMode const mode) {
     char path[ovrFileSys::OVR_MAX_SCHEME_LEN];
     if (!ovrUri::ParseUri(
             uri,
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
             hostName,
             sizeof(hostName),
             port,
             path,
             sizeof(path),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0)) {
         ALOG("ovrStream_Apk::Open_Internal: invalid Uri '%s'", uri);
         return false;
@@ -982,7 +982,7 @@ bool ovrStream_Apk::Open_Internal(char const* uri, ovrStreamMode const mode) {
 
     // get the zip file for this host
     void* zipFile = GetApkScheme().GetZipFileForHostName(hostName);
-    if (zipFile == NULL) {
+    if (zipFile == nullptr) {
         ALOG("ovrStream_Apk::Open_Internal: no zip file for uri '%s', host '%s'", uri, hostName);
         return false;
     }
@@ -1023,20 +1023,20 @@ bool ovrStream_Apk::ReadFile_Internal(std::vector<uint8_t>& outBuffer) {
     char path[ovrFileSys::OVR_MAX_SCHEME_LEN];
     if (!ovrUri::ParseUri(
             GetUri(),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0,
             hostName,
             sizeof(hostName),
             port,
             path,
             sizeof(path),
-            NULL,
+            nullptr,
             0,
-            NULL,
+            nullptr,
             0)) {
         ALOG("ovrStream_Apk::ReadFile_Internal: invalid Uri '%s'", GetUri());
         return false;

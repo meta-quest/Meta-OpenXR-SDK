@@ -28,8 +28,6 @@ Authors     :   Jonathan E. Wright
 #include "BeamRenderer.h"
 #include "TextureAtlas.h"
 
-#include "Misc/Log.h"
-
 using OVR::Matrix4f;
 using OVR::Posef;
 using OVR::Quatf;
@@ -115,7 +113,7 @@ void ovrBeamRenderer::Init(const int maxBeams, const bool depthTest) {
         OVRFW::ovrProgramParm uniformParms[] = {
             /// Vertex
             /// Fragment
-            {"Texture0", OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
+            {.Name = "Texture0", .Type = OVRFW::ovrProgramParmType::TEXTURE_SAMPLED},
         };
         const int uniformCount = sizeof(uniformParms) / sizeof(OVRFW::ovrProgramParm);
         TextureProgram =
@@ -188,7 +186,7 @@ ovrBeamRenderer::handle_t ovrBeamRenderer::AddBeam(
     handle_t handle;
 
     // ALOG( "ovrBeamRenderer::AddDebugLine" );
-    if (FreeBeams.size() > 0) {
+    if (!FreeBeams.empty()) {
         handle = FreeBeams[static_cast<int>(FreeBeams.size()) - 1];
         FreeBeams.pop_back();
     } else {
@@ -222,7 +220,7 @@ ovrBeamRenderer::handle_t ovrBeamRenderer::AddBeam(
     handle_t handle;
 
     // ALOG( "ovrBeamRenderer::AddDebugLine" );
-    if (FreeBeams.size() > 0) {
+    if (!FreeBeams.empty()) {
         handle = FreeBeams[static_cast<int>(FreeBeams.size()) - 1];
         FreeBeams.pop_back();
     } else {
