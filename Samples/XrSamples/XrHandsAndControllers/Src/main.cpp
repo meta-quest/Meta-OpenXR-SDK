@@ -45,6 +45,8 @@ Copyright   :   Copyright (c) Meta Platforms, Inc. and affiliates.
 #include "Input/HandRenderer.h"
 #include "Input/TinyUI.h"
 #include "Render/SimpleBeamRenderer.h"
+#include "Render/GeometryBuilder.h"
+#include "Render/GeometryRenderer.h"
 #include "meta_openxr_preview/openxr_oculus_helpers.h"
 
 // All physical units in OpenXR are in meters, but sometimes it's more useful
@@ -653,6 +655,12 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             (PFN_xrVoidFunction*)(&xrPauseSimultaneousHandsAndControllersTrackingMETA_)));
         assert(xrPauseSimultaneousHandsAndControllersTrackingMETA_);
 
+        lPokeExtCubeGeometry_.Add(
+            OVRFW::BuildUnitCubeDescriptor(),
+            OVRFW::GeometryBuilder::kInvalidIndex,
+            {0.65f, 0.f, 0.f, 1.f});
+        lPokeExtCubeRenderer_.Init(lPokeExtCubeGeometry_.ToGeometryDescriptor());
+
         return true;
     }
 
@@ -1096,6 +1104,11 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             }
         }
 
+        auto currentLPose = handPokeLeftLocation_.pose;
+        lPokeExtCubeRenderer_.SetPose(FromXrPosef(currentLPose));
+        lPokeExtCubeRenderer_.SetScale({5_cm, 5_cm, 5_cm});
+        lPokeExtCubeRenderer_.Update();
+
         cursorBeamRenderer_.Update(in, ui_.HitTestDevices());
         ui_.Update(in);
     }
@@ -1145,6 +1158,8 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
             handRendererR_.Render(out.Surfaces);
         }
 
+        lPokeExtCubeRenderer_.Render(out.Surfaces);
+
         /// Render beams last, since they render with transparency (alpha blending)
         cursorBeamRenderer_.Render(in, out);
     }
@@ -1155,6 +1170,8 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
         controllerRendererL_.Shutdown();
         controllerRendererR_.Shutdown();
         cursorBeamRenderer_.Shutdown();
+
+        lPokeExtCubeRenderer_.Shutdown();
 
         /// Hand Trackers & Renderers
         OXR(xrDestroyHandTrackerEXT_(handTrackerL_));
@@ -1559,6 +1576,9 @@ class XrHandsAndControllersSampleApp : public OVRFW::XrApp {
     bool handInFrameL_ = false;
     bool handInFrameR_ = false;
     OVR::Vector4f jointColor_{0.4, 0.5, 0.2, 0.5};
+
+    OVRFW::GeometryBuilder lPokeExtCubeGeometry_;
+    OVRFW::GeometryRenderer lPokeExtCubeRenderer_;
 
     XrActionSet actionSetMenu_{XR_NULL_HANDLE};
     XrActionSet actionSetWorld_{XR_NULL_HANDLE};
